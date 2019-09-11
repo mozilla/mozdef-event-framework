@@ -68,10 +68,10 @@ Parameters:
     Default: mozilla/zoom2mozdef-event-framework/master
     Description:  owner/repository/branch
 
-  MergeLambdaParameter:
+  ConfigDirectory:
     Type: String
     Default: config
-    Description: Directory name for private configuration files
+    Description: Directory name for private configuration files for the merger lambda function.
 
 Resources:
   # Grouping similar resources together
@@ -355,7 +355,7 @@ Resources:
       Runtime: "nodejs10.x"
       MemorySize: 128
 
-  TestBuild:
+  Test-Build-Deploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Name: !Join ["", ["Test-Build",  "-", !Ref 'AWS::StackName'] ]
@@ -364,37 +364,11 @@ Resources:
       TimeoutInMinutes: 5
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Join [ "", ["buildspec", "-", !Ref 'Environment', ".yml"]]
+        BuildSpec: !Join [ "", [!Ref 'ConfigDirectory', "/", "buildspec", "-", !Ref 'Environment', ".yml"]]
       Environment:
         Type: "LINUX_CONTAINER"
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/nodejs:10.1.0
-      Artifacts:
-        Type: CODEPIPELINE
-
-  BuildDeploy:
-    Type: "AWS::CodeBuild::Project"
-    Properties:
-      Name: !Join ["", ["Build-Deploy",  "-", !Ref 'AWS::StackName'] ]
-      Description: Demo of CodeBuild with CodeDeploy pipeline.
-      ServiceRole: !Ref CodeBuildRole
-      TimeoutInMinutes: 5
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: !Sub |
-            version: 0.2
-            phases:
-              build:
-                commands:
-                  - bash deploy.sh
-      Environment:
-        Type: "LINUX_CONTAINER"
-        ComputeType: BUILD_GENERAL1_SMALL
-        EnvironmentVariables:
-          - Name: env
-            Type: PLAINTEXT
-            Value: !Ref Environment
-        Image: aws/codebuild/nodejs:10.1.0
+        Image: aws/codebuild/standard:2.0
       Artifacts:
         Type: CODEPIPELINE
 
@@ -464,9 +438,9 @@ Resources:
               RunOrder: 3
   
         # Stage 3:  Build using Serverless Framework
-        - Name: TestBuild
+        - Name: Test-Build-Deploy
           Actions:
-            - Name: !Join [ "", ["TestBuild",  "-", !Ref 'AWS::StackName'] ]
+            - Name: !Join [ "", ["Test-Build-Deploy",  "-", !Ref 'AWS::StackName'] ]
               RunOrder: 5
               InputArtifacts:
                 - Name: Build-Ready
@@ -476,7 +450,7 @@ Resources:
                 Provider: CodeBuild
                 Version: 1
               Configuration:
-                ProjectName:  !Ref TestBuild
+                ProjectName:  !Ref Test-Build-Deploy
               OutputArtifacts:
                 - Name: Deploy-Ready
 
