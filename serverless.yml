@@ -1,0 +1,100 @@
+service: mozdef-event-framework
+provider:
+  name: aws
+  runtime: python3.7
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-west-2'}
+  endpointType: REGIONAL
+  tracing:
+    apiGateway: true
+    lambda: true
+  tags:
+    Project: ${self:custom.cfg.project}
+  stackName: ${self:custom.cfg.resource_name}-${self:provider.stage}
+  apiName: ${self:custom.cfg.resource_name}-eventframework-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:GetQueueAttributes
+        - sqs:ListQueues
+      Resource: arn:aws:sqs:*:*:${self:custom.cfg.resource_name}
+    - Effect: Allow
+      Action: 
+        - ssm:GetParameter
+        - ssm:GetParametersByPath
+      Resource:
+        - "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.cfg.authToken}"
+    - Effect: Allow
+      Action: kms:Decrypt
+      Resource:
+        # Using default AWS SSM key in KMS here, we can change if we want at the expense of more complexity
+        - "arn:aws:kms:#{AWS::Region}:#{AWS::AccountId}:key/alias/aws/ssm"
+  # You can define service wide environment variables here
+  environment:
+    REGION: '#{AWS::Region}'
+    # Adding resource queue URL as global environment variable
+    # We could also store this in SSM
+    SQS_URL:
+      Ref: ResourceQueue
+    token_param: "/mozdef-event-framework/dev/${self:custom.cfg.resource_name}/auth_token"
+    efServiceName: ${self:custom.cfg.api_path}
+
+
+package:
+  # This is to keep the package to be uploaded as small as possible in size
+  exclude:
+    - .venv/**
+    - .virtualenv/**
+    - .git/**
+    - __pycache__/**
+    - node_modules/**
+    - ./Makefile
+    - .vscode
+    - tests/**
+
+functions:
+  custom_authorizer: 
+    handler: functions/authorizer.validate_token
+  event_framework:
+    handler: functions/handler.lambda_handler
+    description: Lambda for handling webhook requests
+    events:
+      - http:
+          path: ${self:custom.cfg.api_path}
+          method: ${self:custom.cfg.api_method}
+          cors: true
+          authorizer: ${self:custom.authorizer.validate_token}
+
+resources:
+  Resources:
+    RestApi:
+      Type: 'AWS::ApiGateway::RestApi'
+      Properties:
+        Name: ${self:custom.cfg.resource_name}-eventframework-${self:provider.stage}
+    ResourceQueue:    
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.cfg.resource_name}
+        MessageRetentionPeriod: 1209600
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - DeadLetterQueue
+            - Arn
+          maxReceiveCount: 10
+    DeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.cfg.resource_name}-dead-letter-queue
+        MessageRetentionPeriod: 1209600
+
+# We will eventually need all these plugins, so adding them here
+plugins:
+  - '@anttiviljami/serverless-stack-output'
+  #- serverless-python-requirements
+  #- serverless-pseudo-parameters
+  #- serverless-prune-plugin
+
+custom: ${file(./config/customVars.yml)}
