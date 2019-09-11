@@ -33,7 +33,12 @@ Parameters:
   CodePipelineBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name
     Type: String
-    Default: codepipeline-test-
+    Default: mozdef-ef-utility-bucket
+
+  LambdaBucketPrefix:
+    Description: An existing bucket which holds the merger lambda function.
+    Type: String
+    Default: mozdef-ef-lambda-bucket
   
   CodeCommitRepository:
     Description: "CodeCommit repository for config values"
@@ -47,17 +52,43 @@ Parameters:
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
     
+  # The below is required to create a Github webhook via CloudFormation
+  # Adding NoEcho to mask sensitive values with asterisks.
+  GitHubSecret:
+    Type: String
+    NoEcho: true
+  GitHubPersonalAccessToken:
+    NoEcho: true
+    Type: String
+    Default:  GitHub Personal Access Token
+    Description:  CodePipeline requires a personal access token
   GitHubRepository:
     Type: String
-    Default: owner/repo/branch
+    # Defaulting to our public PoC repo
+    Default: mozilla/zoom2mozdef-event-framework/master
     Description:  owner/repository/branch
 
-  GitHubOAuthToken:
+  MergeLambdaParameter:
     Type: String
-    Default:  GitHub OAuth Token Here
-    Description:  CodePipeline requires an OAuthToken
+    Default: config
+    Description: Directory name for private configuration files
 
 Resources:
+  # Grouping similar resources together
+  PipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubSecret
+      Filters:
+        - JsonPath: "$.ref"
+          MatchEquals: refs/heads/{Branch}
+      TargetPipeline: !Ref Pipeline
+      TargetAction: CodeSource
+      Name: Github-PipelineWebhook
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: true
 
   CloudWatchCodeCommitEventRole:
     Type: "AWS::IAM::Role"
@@ -170,8 +201,6 @@ Resources:
             - 'logs:FilterLogEvents'
             - 'logs:DescribeLogStreams'
             - 'logs:DeleteLogGroup'
-            - 's3:putObject'
-            - 's3:getObject'
             - 'codebuild:*'
             - 'codecommit:GetBranch'
             - 'codecommit:GetCommit'
@@ -197,10 +226,12 @@ Resources:
             - 'lambda:PublishVersion'
             - 'lambda:RemovePermission'
             - 'lambda:Update*'
+            - 'lambda:PublishLayerVersion'
             - 'apigateway:GET'
             - 'apigateway:POST'
             - 'apigateway:PUT'
             - 'apigateway:DELETE'
+            - 'apigateway:PATCH'
             - 's3:CreateBucket'
             - 's3:DeleteBucket'
             - 's3:ListBucket'
@@ -208,6 +239,10 @@ Resources:
             - 's3:PutObject'
             - 's3:GetObject'
             - 's3:DeleteObject'
+            - 's3:PutEncryptionConfiguration'
+            - 's3:GetEncryptionConfiguration'
+            - 's3:putObject'
+            - 's3:getObject'
             - 'iam:PassRole'
             - 'kinesis:*'
             - 'iam:GetRole'
@@ -220,6 +255,14 @@ Resources:
             - 'events:Remove*'
             - 'events:Delete*'
             - 'dynamodb:*'
+            - 'ssm:PutParameter'
+            - 'ssm:GetParameter'
+            - 'ssm:GetParametersByPath'
+            - 'ssm:AddTagsToResource'
+            - 'sqs:CreateQueue'
+            - 'sqs:SendMessage'
+            - 'sqs:GetQueueAttributes'
+            - 'sqs:ListQueues'
           Resource: "*"
       Roles:
         -  !Ref CodeBuildRole
@@ -302,13 +345,14 @@ Resources:
       FunctionName:
         'Fn::Join': [ "", ["CodePipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Code:
-        S3Bucket: !Join [ "", ["codepipelinemergelambda",  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment', "-", !Ref "AWS::Region"]]
+        # Using the LambdaBucketPrefix parameter here
+        S3Bucket: !Join [ "", [!Ref LambdaBucketPrefix,  "-", !Ref 'AWS::StackName', !Ref 'Environment', "-", !Ref "AWS::Region"]]
         S3Key: merge.zip
       Role: !GetAtt CodePipelineLambdaRole.Arn
       Description: "Lambda Function to merge artifacts in CodePipeline"
       Timeout: 30
       Handler: "merge.handler"
-      Runtime: "nodejs10"
+      Runtime: "nodejs10.x"
       MemorySize: 128
 
   TestBuild:
