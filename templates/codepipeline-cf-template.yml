@@ -30,15 +30,19 @@ Parameters:
     Type: 'String'
     Default: 'dev'
 
+  Service:
+    Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef
+    Type: String
+
   CodePipelineBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name
     Type: String
-    Default: mozdef-ef-utility-bucket
+    Default: mozdef-ef-utility-bucket-
 
-  LambdaBucketPrefix:
-    Description: An existing bucket which holds the merger lambda function.
+  LambdaBucket:
+    Description: An EXISTING bucket which holds the merger lambda function.
     Type: String
-    Default: mozdef-ef-lambda-bucket
+    Default: mozdef-ef-merger-lambda-bucket
   
   CodeCommitRepository:
     Description: "CodeCommit repository for config values"
@@ -53,15 +57,8 @@ Parameters:
     ConstraintDescription: "Can contain only ASCII characters."
     
   # The below is required to create a Github webhook via CloudFormation
-  # Adding NoEcho to mask sensitive values with asterisks.
-  GitHubSecret:
-    Type: String
-    NoEcho: true
-  GitHubPersonalAccessToken:
-    NoEcho: true
-    Type: String
-    Default:  GitHub Personal Access Token
-    Description:  CodePipeline requires a personal access token
+  # Removed personal access token parameter as it is accessed from 
+  # AWS Secrets Manager
   GitHubRepository:
     Type: String
     # Defaulting to our public PoC repo
@@ -80,7 +77,8 @@ Resources:
     Properties:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
-        SecretToken: !Ref GitHubSecret
+        # Obtaining from AWS Secrets Manager
+        SecretToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref "Environment", "/codepipeline/github/:SecretString:WebhookSecret}}" ] ]
       Filters:
         - JsonPath: "$.ref"
           MatchEquals: refs/heads/{Branch}
@@ -345,8 +343,8 @@ Resources:
       FunctionName:
         'Fn::Join': [ "", ["CodePipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Code:
-        # Using the LambdaBucketPrefix parameter here
-        S3Bucket: !Join [ "", [!Ref LambdaBucketPrefix,  "-", !Ref 'AWS::StackName', !Ref 'Environment', "-", !Ref "AWS::Region"]]
+        # Using the LambdaBucket parameter here
+        S3Bucket: !Join [ "", [!Ref LambdaBucket ]]
         S3Key: merge.zip
       Role: !GetAtt CodePipelineLambdaRole.Arn
       Description: "Lambda Function to merge artifacts in CodePipeline"
@@ -355,7 +353,7 @@ Resources:
       Runtime: "nodejs10.x"
       MemorySize: 128
 
-  Test-Build-Deploy:
+  TestBuildDeploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Name: !Join ["", ["Test-Build",  "-", !Ref 'AWS::StackName'] ]
@@ -384,7 +382,7 @@ Resources:
       RoleArn: !Join [ "", ["arn:aws:iam::", !Ref "AWS::AccountId", ":role/", !Ref CodePipelineRole  ] ]
       Stages:
 
-        # Stage 1.1:  Get the source from CodeCommit:
+        # Stage 1:  Get the source from CodeCommit, and then from the Github repo
         - Name: Source
           Actions:
             - Name: ConfigSource
@@ -413,7 +411,8 @@ Resources:
                 Branch: !Select [2, !Split [ "/" , !Ref GitHubRepository ]]
                 # We don't need to poll Github anymore as we are adding a webhook
                 PollForSourceChanges: false
-                OAuthToken: !Ref GitHubPersonalAccessToken
+                # Obtaining from Secrets Manager
+                OAuthToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref "Environment", "/codepipeline/github/:SecretString:PersonalAccessToken}}" ] ]
               OutputArtifacts:
                 - Name: CodeSourceOutput
 
@@ -439,9 +438,9 @@ Resources:
               RunOrder: 3
   
         # Stage 3:  Build using Serverless Framework
-        - Name: Test-Build-Deploy
+        - Name: TestBuildDeploy
           Actions:
-            - Name: !Join [ "", ["Test-Build-Deploy",  "-", !Ref 'AWS::StackName'] ]
+            - Name: !Join [ "", ["TestBuildDeploy",  "-", !Ref 'AWS::StackName'] ]
               RunOrder: 5
               InputArtifacts:
                 - Name: Build-Ready
@@ -451,7 +450,7 @@ Resources:
                 Provider: CodeBuild
                 Version: 1
               Configuration:
-                ProjectName:  !Ref Test-Build-Deploy
+                ProjectName:  !Ref TestBuildDeploy
               OutputArtifacts:
                 - Name: Deploy-Ready
 
