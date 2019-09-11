@@ -287,6 +287,7 @@ Resources:
             - codecommit:GetUploadArchiveStatus
             - codecommit:CancelUploadArchive
             - lambda:InvokeFunction
+            - secretsmanager:GetSecretValue
           Resource:
             - "*"
       Roles:
@@ -412,7 +413,7 @@ Resources:
                 # We don't need to poll Github anymore as we are adding a webhook
                 PollForSourceChanges: false
                 # Obtaining from Secrets Manager
-                OAuthToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref "Environment", "/codepipeline/github/:SecretString:PersonalAccessToken}}" ] ]
+                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github/:SecretString:PersonalAccessToken}}" ] ]
               OutputArtifacts:
                 - Name: CodeSourceOutput
 
