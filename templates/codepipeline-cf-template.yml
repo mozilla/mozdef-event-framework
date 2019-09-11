@@ -411,8 +411,9 @@ Resources:
                 Owner: !Select [0, !Split [ "/" , !Ref GitHubRepository ]]
                 Repo: !Select [1, !Split [ "/" , !Ref GitHubRepository ]]
                 Branch: !Select [2, !Split [ "/" , !Ref GitHubRepository ]]
-                PollForSourceChanges: true
-                OAuthToken: !Ref GitHubOAuthToken
+                # We don't need to poll Github anymore as we are adding a webhook
+                PollForSourceChanges: false
+                OAuthToken: !Ref GitHubPersonalAccessToken
               OutputArtifacts:
                 - Name: CodeSourceOutput
 
@@ -429,7 +430,7 @@ Resources:
                 Provider: Lambda
               Configuration:
                 FunctionName: !Ref MergeLambda
-                UserParameters: "config'"
+                UserParameters: !Ref ConfigDirectory
               InputArtifacts:
                 - Name: CodeSourceOutput
                 - Name: ConfigSourceOutput
@@ -453,23 +454,6 @@ Resources:
                 ProjectName:  !Ref Test-Build-Deploy
               OutputArtifacts:
                 - Name: Deploy-Ready
-
-        # Stage 4:  Build and Deploy using Serverless Framework
-        - Name: BuildDeploy
-          Actions:
-            - Name: !Join ["", ["BuildDeploy",  "-", !Ref 'AWS::StackName'] ]
-              RunOrder: 6
-              InputArtifacts:
-                - Name: Deploy-Ready
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: 1
-              Configuration:
-                ProjectName:  !Ref BuildDeploy
-              OutputArtifacts:
-                - Name: Deploy-App
 
 Outputs:
   CodeBuild:
