@@ -45,12 +45,6 @@ Parameters:
     Description: An EXISTING bucket which holds the merger lambda function.
     Type: String
     Default: mozdef-ef-merger-lambda-bucket
-  
-  # CodeCommitRepository:
-  #   Description: "CodeCommit repository for config values"
-  #   Type: String
-  #   Default: repository-name
-  #   ConstraintDescription: "Can contain only ASCII characters."
 
   CodeCommitRepositoryBranch:
     Description: "The name of the branch for the CodeCommit repo"
@@ -162,33 +156,6 @@ Resources:
             Service: "codebuild.amazonaws.com"
           Action: "sts:AssumeRole"
 
-  CodePipelineRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName:
-        'Fn::Join': [ "", ["CodePipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: "Allow"
-          Principal:
-            Service: "codepipeline.amazonaws.com"
-          Action: "sts:AssumeRole"
-  
-  CodePipelineLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName:
-        'Fn::Join': [ "", ["CodePipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      Path: /
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: "Allow"
-          Principal:
-            Service: "lambda.amazonaws.com"
-          Action: "sts:AssumeRole"
-
   # This can be restricted more
   CodeBuildPolicy:
     Type: "AWS::IAM::Policy"
@@ -273,6 +240,19 @@ Resources:
       Roles:
         -  !Ref CodeBuildRole
 
+  CodePipelineRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName:
+        'Fn::Join': [ "", ["CodePipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            Service: "codepipeline.amazonaws.com"
+          Action: "sts:AssumeRole"
+
   CodePipelinePolicy:
     Type: "AWS::IAM::Policy"
     Properties:
@@ -301,6 +281,20 @@ Resources:
             - "*"
       Roles:
         -  !Ref CodePipelineRole
+  
+  CodePipelineLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        'Fn::Join': [ "", ["CodePipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+          Action: "sts:AssumeRole"
 
   CodePipelineLambdaPolicy:
     Type: "AWS::IAM::Policy"
