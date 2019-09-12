@@ -26,9 +26,9 @@ Parameters:
     - dev
     - stg
     - prod
-    Description: 'Environment'
-    Type: 'String'
-    Default: 'dev'
+    Description: Environment
+    Type: String
+    Default: dev
 
   Service:
     Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef
@@ -37,7 +37,7 @@ Parameters:
   CodePipelineBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name
     Type: String
-    Default: mozdef-ef-utility-bucket-
+    Default: mozdef-ef-utility-bucket
 
   LambdaBucket:
     Description: An EXISTING bucket which holds the merger lambda function.
@@ -62,7 +62,7 @@ Parameters:
   GitHubRepository:
     Type: String
     # Defaulting to our public PoC repo
-    Default: mozilla/zoom2mozdef-event-framework/master
+    Default: mozilla/mozdef-event-framework-template/master
     Description:  owner/repository/branch
 
   ConfigDirectory:
@@ -78,7 +78,7 @@ Resources:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
         # Obtaining from AWS Secrets Manager
-        SecretToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref "Environment", "/codepipeline/github/:SecretString:WebhookSecret}}" ] ]
+        SecretToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:WebhookSecret}}" ]]
       Filters:
         - JsonPath: "$.ref"
           MatchEquals: refs/heads/{Branch}
@@ -288,6 +288,7 @@ Resources:
             - codecommit:CancelUploadArchive
             - lambda:InvokeFunction
             - secretsmanager:GetSecretValue
+            - kms:Decrypt
           Resource:
             - "*"
       Roles:
@@ -336,7 +337,7 @@ Resources:
   S3CodePipeline:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', !Ref 'Environment', "-", !Ref "AWS::Region"]]
+      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', !Ref 'Environment']]
   
   MergeLambda:
     Type: AWS::Lambda::Function
@@ -413,7 +414,7 @@ Resources:
                 # We don't need to poll Github anymore as we are adding a webhook
                 PollForSourceChanges: false
                 # Obtaining from Secrets Manager
-                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github/:SecretString:PersonalAccessToken}}" ] ]
+                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
 
