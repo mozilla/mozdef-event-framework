@@ -41,10 +41,10 @@ Parameters:
     Type: String
     Default: mozdef-ef-utility-bucket
 
-  LambdaBucket:
-    Description: An EXISTING bucket which holds the merger lambda function.
+  HelperBucket:
+    Description: An EXISTING bucket which holds the merger lambda function code and codecommit code.
     Type: String
-    Default: mozdef-ef-merger-lambda-bucket
+    Default: mozdef-ef-helper-bucket
 
   CodeCommitRepositoryBranch:
     Description: "The name of the branch for the CodeCommit repo"
@@ -89,6 +89,10 @@ Resources:
     Properties: 
       RepositoryDescription: CodeCommit repository to hold configuration files for the external source
       RepositoryName: !Join [ "", [ !Ref Service, "-ef-config" ]]
+      Code:
+        S3:
+          Bucket: !Join [ "", [!Ref HelperBucket ]]
+          Key: !Join [ "", [ !Ref Service, "-ef-config" ]]
 
   CloudWatchCodeCommitEventRole:
     Type: "AWS::IAM::Role"
@@ -347,8 +351,8 @@ Resources:
       FunctionName:
         'Fn::Join': [ "", ["CodePipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Code:
-        # Using the LambdaBucket parameter here
-        S3Bucket: !Join [ "", [!Ref LambdaBucket ]]
+        # Using the HelperBucket parameter here
+        S3Bucket: !Join [ "", [!Ref HelperBucket ]]
         S3Key: merge.zip
       Role: !GetAtt CodePipelineLambdaRole.Arn
       Description: "Lambda Function to merge artifacts in CodePipeline"
