@@ -92,7 +92,7 @@ Resources:
       Code:
         S3:
           Bucket: !Join [ "", [!Ref HelperBucket ]]
-          Key: !Join [ "", [ !Ref Service, "-ef-config" ]]
+          Key: !Join [ "", [ !Ref Service, "-ef-config.zip" ]]
 
   CloudWatchCodeCommitEventRole:
     Type: "AWS::IAM::Role"
