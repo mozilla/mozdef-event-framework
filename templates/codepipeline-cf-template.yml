@@ -343,7 +343,7 @@ Resources:
   S3CodePipeline:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', !Ref 'Environment']]
+      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
   
   MergeLambda:
     Type: AWS::Lambda::Function
