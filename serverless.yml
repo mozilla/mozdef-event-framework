@@ -1,8 +1,37 @@
-service: mozdef-event-framework
+# I suggest we should declare env variables in the build script, and make 
+# serverless access them using the below notation during build/deploy time.
+# This way we would not need a custom vars file for configuration
+
+# Default values for env variables are not supported by serverless
+service: ${env:SERVICE}
+plugins:
+# Removing the serverless-stack-output plugin, as I do not think
+# we need it, but I may be wrong
+  - serverless-pseudo-parameters
+  - serverless-prune-plugin
+custom:
+  authorizer:
+    validate_token:
+      name: custom_authorizer
+      type: token
+      identitySource: method.request.header.Authorization
+      identityValidationExpression: '.*'
+  cfg:
+    # Taking some values from build script as environment
+    # variables so they remain generic
+    resource_name: ${env:RESOURCE_NAME}
+    api_method: POST
+    api_path: ${env:API_PATH}
+    authToken: ${env:SERVICE}/${env:STAGE}/${env:RESOURCE_NAME}/auth_token
+    project: 'mozdef-event-framework'
+prune:
+  automatic: true
+  number: 5
+
 provider:
   name: aws
   runtime: python3.7
-  stage: ${opt:stage, 'dev'}
+  stage: ${env:STAGE}
   region: ${opt:region, 'us-west-2'}
   endpointType: REGIONAL
   tracing:
@@ -11,35 +40,39 @@ provider:
   tags:
     Project: ${self:custom.cfg.project}
   stackName: ${self:custom.cfg.resource_name}-${self:provider.stage}
-  apiName: ${self:custom.cfg.resource_name}-eventframework-${self:provider.stage}
+  apiName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - sqs:SendMessage
         - sqs:GetQueueAttributes
         - sqs:ListQueues
-      Resource: arn:aws:sqs:*:*:${self:custom.cfg.resource_name}
+      Resource: 
+        - "arn:aws:sqs:*:*:${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
         - ssm:GetParametersByPath
       Resource:
-        - "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.cfg.authToken}"
+        - "arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:custom.cfg.project}/${self:custom.cfg.authToken}"
     - Effect: Allow
       Action: kms:Decrypt
       Resource:
-        # Using default AWS SSM key in KMS here, we can change if we want at the expense of more complexity
+        # Using default AWS SSM key in KMS here, 
+        # we can change if we want at the expense of more complexity
         - "arn:aws:kms:#{AWS::Region}:#{AWS::AccountId}:key/alias/aws/ssm"
-  # You can define service wide environment variables here
+  # We can define environment variables here 
+  # so can refer to them from within code
   environment:
     REGION: '#{AWS::Region}'
+    SERVICE: '${env:SERVICE}'
+    STAGE: '${env:STAGE}'
+    RESOURCE_NAME: '${env:RESOURCE_NAME}'
+    TOKEN: "/${self:custom.cfg.project}/${self:custom.cfg.authToken}"
     # Adding resource queue URL as global environment variable
     # We could also store this in SSM
     SQS_URL:
       Ref: ResourceQueue
-    token_param: "/mozdef-event-framework/dev/${self:custom.cfg.resource_name}/auth_token"
-    efServiceName: ${self:custom.cfg.api_path}
-
 
 package:
   # This is to keep the package to be uploaded as small as possible in size
@@ -56,9 +89,9 @@ package:
 functions:
   custom_authorizer: 
     handler: functions/authorizer.validate_token
-  event_framework:
+  event_handler:
     handler: functions/handler.lambda_handler
-    description: Lambda for handling webhook requests
+    description: Lambda for handling events from ${env:RESOURCE_NAME} resource.
     events:
       - http:
           path: ${self:custom.cfg.api_path}
@@ -71,11 +104,11 @@ resources:
     RestApi:
       Type: 'AWS::ApiGateway::RestApi'
       Properties:
-        Name: ${self:custom.cfg.resource_name}-eventframework-${self:provider.stage}
+        Name: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}-apigw
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.resource_name}
+        QueueName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
         RedrivePolicy:
@@ -87,14 +120,5 @@ resources:
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.resource_name}-dead-letter-queue
+        QueueName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}-DLQ
         MessageRetentionPeriod: 1209600
-
-# We will eventually need all these plugins, so adding them here
-plugins:
-  - '@anttiviljami/serverless-stack-output'
-  #- serverless-python-requirements
-  #- serverless-pseudo-parameters
-  #- serverless-prune-plugin
-
-custom: ${file(./config/customVars.yml)}
