@@ -26,20 +26,25 @@ Parameters:
     - dev
     - stg
     - prod
-    Description: 'Environment'
-    Type: 'String'
-    Default: 'dev'
+    Description: Environment
+    Type: String
+    Default: dev
+
+  Service:
+    Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef
+    Type: String
+    Default: template
+    ConstraintDescription: "Can contain only ASCII characters."
 
   CodePipelineBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name
     Type: String
-    Default: codepipeline-test-
-  
-  CodeCommitRepository:
-    Description: "CodeCommit repository for config values"
+    Default: mozdef-ef-utility-bucket
+
+  HelperBucket:
+    Description: An EXISTING bucket which holds the merger lambda function code and codecommit code.
     Type: String
-    Default: repository-name
-    ConstraintDescription: "Can contain only ASCII characters."
+    Default: mozdef-ef-helper-bucket
 
   CodeCommitRepositoryBranch:
     Description: "The name of the branch for the CodeCommit repo"
@@ -47,17 +52,47 @@ Parameters:
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
     
+  # The below is required to create a Github webhook via CloudFormation
+  # Removed personal access token parameter as it is accessed from 
+  # AWS Secrets Manager
   GitHubRepository:
     Type: String
-    Default: owner/repo/branch
+    # Defaulting to our public PoC repo
+    Default: mozilla/mozdef-event-framework-template/master
     Description:  owner/repository/branch
 
-  GitHubOAuthToken:
+  ConfigDirectory:
     Type: String
-    Default:  GitHub OAuth Token Here
-    Description:  CodePipeline requires an OAuthToken
+    Default: config
+    Description: Directory name for private configuration files for the merger lambda function.
 
 Resources:
+  # Grouping similar resources together
+  PipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        # Obtaining from AWS Secrets Manager
+        SecretToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:WebhookSecret}}" ]]
+      Filters:
+        - JsonPath: "$.ref"
+          MatchEquals: refs/heads/{Branch}
+      TargetPipeline: !Ref Pipeline
+      TargetAction: CodeSource
+      Name: Github-PipelineWebhook
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: true
+  
+  CodeCommitRepository:
+    Type: AWS::CodeCommit::Repository
+    Properties: 
+      RepositoryDescription: CodeCommit repository to hold configuration files for the external source
+      RepositoryName: !Join [ "", [ !Ref Service, "-ef-config" ]]
+      Code:
+        S3:
+          Bucket: !Join [ "", [!Ref HelperBucket ]]
+          Key: !Join [ "", [ !Ref Service, "-ef-config.zip" ]]
 
   CloudWatchCodeCommitEventRole:
     Type: "AWS::IAM::Role"
@@ -72,6 +107,20 @@ Resources:
               Service: "events.amazonaws.com"
             Action: "sts:AssumeRole"
       Path: /
+  
+  CloudwatchCodeCommitEventPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName:
+        'Fn::Join': [ "", ["CloudwatchCodeCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Action: codepipeline:StartPipelineExecution
+          Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
+      Roles:
+        - !Ref CloudWatchCodeCommitEventRole
 
   CloudWatchCodeCommitEventRule:
     Type: AWS::Events::Rule
@@ -111,47 +160,6 @@ Resources:
             Service: "codebuild.amazonaws.com"
           Action: "sts:AssumeRole"
 
-  CodePipelineRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName:
-        'Fn::Join': [ "", ["CodePipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: "Allow"
-          Principal:
-            Service: "codepipeline.amazonaws.com"
-          Action: "sts:AssumeRole"
-  
-  CodePipelineLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName:
-        'Fn::Join': [ "", ["CodePipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      Path: /
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: "Allow"
-          Principal:
-            Service: "lambda.amazonaws.com"
-          Action: "sts:AssumeRole"
-
-  CloudwatchCodeCommitEventPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName:
-        'Fn::Join': [ "", ["CloudwatchCodeCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: Allow
-          Action: codepipeline:StartPipelineExecution
-          Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
-      Roles:
-        - !Ref CloudWatchCodeCommitEventRole
-
   # This can be restricted more
   CodeBuildPolicy:
     Type: "AWS::IAM::Policy"
@@ -170,8 +178,6 @@ Resources:
             - 'logs:FilterLogEvents'
             - 'logs:DescribeLogStreams'
             - 'logs:DeleteLogGroup'
-            - 's3:putObject'
-            - 's3:getObject'
             - 'codebuild:*'
             - 'codecommit:GetBranch'
             - 'codecommit:GetCommit'
@@ -197,10 +203,12 @@ Resources:
             - 'lambda:PublishVersion'
             - 'lambda:RemovePermission'
             - 'lambda:Update*'
+            - 'lambda:PublishLayerVersion'
             - 'apigateway:GET'
             - 'apigateway:POST'
             - 'apigateway:PUT'
             - 'apigateway:DELETE'
+            - 'apigateway:PATCH'
             - 's3:CreateBucket'
             - 's3:DeleteBucket'
             - 's3:ListBucket'
@@ -208,6 +216,10 @@ Resources:
             - 's3:PutObject'
             - 's3:GetObject'
             - 's3:DeleteObject'
+            - 's3:PutEncryptionConfiguration'
+            - 's3:GetEncryptionConfiguration'
+            - 's3:putObject'
+            - 's3:getObject'
             - 'iam:PassRole'
             - 'kinesis:*'
             - 'iam:GetRole'
@@ -220,9 +232,30 @@ Resources:
             - 'events:Remove*'
             - 'events:Delete*'
             - 'dynamodb:*'
+            - 'ssm:PutParameter'
+            - 'ssm:GetParameter'
+            - 'ssm:GetParametersByPath'
+            - 'ssm:AddTagsToResource'
+            - 'sqs:CreateQueue'
+            - 'sqs:SendMessage'
+            - 'sqs:GetQueueAttributes'
+            - 'sqs:ListQueues'
           Resource: "*"
       Roles:
         -  !Ref CodeBuildRole
+
+  CodePipelineRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName:
+        'Fn::Join': [ "", ["CodePipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            Service: "codepipeline.amazonaws.com"
+          Action: "sts:AssumeRole"
 
   CodePipelinePolicy:
     Type: "AWS::IAM::Policy"
@@ -246,10 +279,26 @@ Resources:
             - codecommit:GetUploadArchiveStatus
             - codecommit:CancelUploadArchive
             - lambda:InvokeFunction
+            - secretsmanager:GetSecretValue
+            - kms:Decrypt
           Resource:
             - "*"
       Roles:
         -  !Ref CodePipelineRole
+  
+  CodePipelineLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        'Fn::Join': [ "", ["CodePipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+          Action: "sts:AssumeRole"
 
   CodePipelineLambdaPolicy:
     Type: "AWS::IAM::Policy"
@@ -294,7 +343,7 @@ Resources:
   S3CodePipeline:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', !Ref 'Environment', "-", !Ref "AWS::Region"]]
+      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
   
   MergeLambda:
     Type: AWS::Lambda::Function
@@ -302,16 +351,17 @@ Resources:
       FunctionName:
         'Fn::Join': [ "", ["CodePipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Code:
-        S3Bucket: !Join [ "", ["codepipelinemergelambda",  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment', "-", !Ref "AWS::Region"]]
+        # Using the HelperBucket parameter here
+        S3Bucket: !Join [ "", [!Ref HelperBucket ]]
         S3Key: merge.zip
       Role: !GetAtt CodePipelineLambdaRole.Arn
       Description: "Lambda Function to merge artifacts in CodePipeline"
       Timeout: 30
       Handler: "merge.handler"
-      Runtime: "nodejs10"
+      Runtime: "nodejs10.x"
       MemorySize: 128
 
-  TestBuild:
+  TestBuildDeploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Name: !Join ["", ["Test-Build",  "-", !Ref 'AWS::StackName'] ]
@@ -320,37 +370,11 @@ Resources:
       TimeoutInMinutes: 5
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Join [ "", ["buildspec", "-", !Ref 'Environment', ".yml"]]
+        BuildSpec: !Join [ "", [!Ref 'ConfigDirectory', "/", "buildspec", "-", !Ref 'Environment', ".yml"]]
       Environment:
         Type: "LINUX_CONTAINER"
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/nodejs:10.1.0
-      Artifacts:
-        Type: CODEPIPELINE
-
-  BuildDeploy:
-    Type: "AWS::CodeBuild::Project"
-    Properties:
-      Name: !Join ["", ["Build-Deploy",  "-", !Ref 'AWS::StackName'] ]
-      Description: Demo of CodeBuild with CodeDeploy pipeline.
-      ServiceRole: !Ref CodeBuildRole
-      TimeoutInMinutes: 5
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: !Sub |
-            version: 0.2
-            phases:
-              build:
-                commands:
-                  - bash deploy.sh
-      Environment:
-        Type: "LINUX_CONTAINER"
-        ComputeType: BUILD_GENERAL1_SMALL
-        EnvironmentVariables:
-          - Name: env
-            Type: PLAINTEXT
-            Value: !Ref Environment
-        Image: aws/codebuild/nodejs:10.1.0
+        Image: aws/codebuild/standard:2.0
       Artifacts:
         Type: CODEPIPELINE
 
@@ -366,7 +390,7 @@ Resources:
       RoleArn: !Join [ "", ["arn:aws:iam::", !Ref "AWS::AccountId", ":role/", !Ref CodePipelineRole  ] ]
       Stages:
 
-        # Stage 1.1:  Get the source from CodeCommit:
+        # Stage 1:  Get the source from CodeCommit, and then from the Github repo
         - Name: Source
           Actions:
             - Name: ConfigSource
@@ -393,8 +417,10 @@ Resources:
                 Owner: !Select [0, !Split [ "/" , !Ref GitHubRepository ]]
                 Repo: !Select [1, !Split [ "/" , !Ref GitHubRepository ]]
                 Branch: !Select [2, !Split [ "/" , !Ref GitHubRepository ]]
-                PollForSourceChanges: true
-                OAuthToken: !Ref GitHubOAuthToken
+                # We don't need to poll Github anymore as we are adding a webhook
+                PollForSourceChanges: false
+                # Obtaining from Secrets Manager
+                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
 
@@ -411,7 +437,7 @@ Resources:
                 Provider: Lambda
               Configuration:
                 FunctionName: !Ref MergeLambda
-                UserParameters: "config'"
+                UserParameters: !Ref ConfigDirectory
               InputArtifacts:
                 - Name: CodeSourceOutput
                 - Name: ConfigSourceOutput
@@ -420,9 +446,9 @@ Resources:
               RunOrder: 3
   
         # Stage 3:  Build using Serverless Framework
-        - Name: TestBuild
+        - Name: TestBuildDeploy
           Actions:
-            - Name: !Join [ "", ["TestBuild",  "-", !Ref 'AWS::StackName'] ]
+            - Name: !Join [ "", ["TestBuildDeploy",  "-", !Ref 'AWS::StackName'] ]
               RunOrder: 5
               InputArtifacts:
                 - Name: Build-Ready
@@ -432,26 +458,9 @@ Resources:
                 Provider: CodeBuild
                 Version: 1
               Configuration:
-                ProjectName:  !Ref TestBuild
+                ProjectName:  !Ref TestBuildDeploy
               OutputArtifacts:
                 - Name: Deploy-Ready
-
-        # Stage 4:  Build and Deploy using Serverless Framework
-        - Name: BuildDeploy
-          Actions:
-            - Name: !Join ["", ["BuildDeploy",  "-", !Ref 'AWS::StackName'] ]
-              RunOrder: 6
-              InputArtifacts:
-                - Name: Deploy-Ready
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: 1
-              Configuration:
-                ProjectName:  !Ref BuildDeploy
-              OutputArtifacts:
-                - Name: Deploy-App
 
 Outputs:
   CodeBuild:
