@@ -219,7 +219,6 @@ Resources:
             - 's3:PutEncryptionConfiguration'
             - 's3:GetEncryptionConfiguration'
             - 'iam:PassRole'
-            - 'kinesis:*'
             - 'iam:GetRole'
             - 'iam:CreateRole'
             - 'iam:PutRolePolicy'
