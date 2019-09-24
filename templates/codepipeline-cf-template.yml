@@ -263,20 +263,20 @@ Resources:
         Statement:
           Effect: Allow
           Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - s3:putObject
-            - s3:getObject
-            - codebuild:*
-            - codecommit:GetBranch
-            - codecommit:GetCommit
-            - codecommit:UploadArchive
-            - codecommit:GetUploadArchiveStatus
-            - codecommit:CancelUploadArchive
-            - lambda:InvokeFunction
-            - secretsmanager:GetSecretValue
-            - kms:Decrypt
+            - 'logs:CreateLogGroup'
+            - 'logs:CreateLogStream'
+            - 'logs:PutLogEvents'
+            - 's3:putObject'
+            - 's3:getObject'
+            - 'codebuild:*'
+            - 'codecommit:GetBranch'
+            - 'codecommit:GetCommit'
+            - 'codecommit:UploadArchive'
+            - 'codecommit:GetUploadArchiveStatus'
+            - 'codecommit:CancelUploadArchive'
+            - 'lambda:InvokeFunction'
+            - 'secretsmanager:GetSecretValue'
+            - 'kms:Decrypt'
           Resource:
             - "*"
       Roles:
