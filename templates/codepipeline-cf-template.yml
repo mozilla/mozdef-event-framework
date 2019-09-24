@@ -51,7 +51,15 @@ Parameters:
     Type: String
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
-    
+
+  CreateGitHubWebHook:
+    AllowedValues:
+      - "Y"
+      - ""
+    Description: "Y if you want a GitHub webook to be created as a part of this stack. Leave empty if there is already a webhook for this repo."
+    Type: String
+    Default: ""
+  
   # The below is required to create a Github webhook via CloudFormation
   # Removed personal access token parameter as it is accessed from 
   # AWS Secrets Manager
@@ -66,9 +74,13 @@ Parameters:
     Default: config
     Description: Directory name for private configuration files for the merger lambda function.
 
+Conditions:
+  NeedsGitHubWebHook: !Equals [!Ref CreateGitHubWebHook, "Y"]
+
 Resources:
   # Grouping similar resources together
   PipelineWebhook:
+    Condition: NeedsGitHubWebHook
     Type: AWS::CodePipeline::Webhook
     Properties:
       Authentication: GITHUB_HMAC
