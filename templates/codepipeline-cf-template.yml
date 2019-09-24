@@ -31,13 +31,13 @@ Parameters:
     Default: dev
 
   Service:
-    Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef
+    Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef.
     Type: String
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
 
   CodePipelineBucketPrefix:
-    Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name
+    Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name.
     Type: String
     Default: mozdef-ef-utility-bucket
 
@@ -47,11 +47,11 @@ Parameters:
     Default: mozdef-ef-helper-bucket
 
   CodeCommitRepositoryBranch:
-    Description: "The name of the branch for the CodeCommit repo"
+    Description: The name of the branch for the CodeCommit repo.
     Type: String
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
-    
+  
   # The below is required to create a Github webhook via CloudFormation
   # Removed personal access token parameter as it is accessed from 
   # AWS Secrets Manager
@@ -59,30 +59,35 @@ Parameters:
     Type: String
     # Defaulting to our public PoC repo
     Default: mozilla/mozdef-event-framework-template/master
-    Description:  owner/repository/branch
+    Description:  Github repository to be used as a source, in the form of "owner/repository/branch".
 
   ConfigDirectory:
     Type: String
     Default: config
     Description: Directory name for private configuration files for the merger lambda function.
 
+# This helps grouping similar parameters together when deploying via AWS Console
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Stack Configuration"
+        Parameters:
+          - Environment
+          - Service
+          - CodePipelineBucketPrefix
+          - HelperBucket
+      - Label:
+          default: "GitHub Configuration"
+        Parameters:
+          - GitHubRepository
+      - Label:
+          default: "CodeCommit Configuration"
+        Parameters:
+          - CodeCommitRepositoryBranch
+          - ConfigDirectory
+
 Resources:
-  # Grouping similar resources together
-  PipelineWebhook:
-    Type: AWS::CodePipeline::Webhook
-    Properties:
-      Authentication: GITHUB_HMAC
-      AuthenticationConfiguration:
-        # Obtaining from AWS Secrets Manager
-        SecretToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:WebhookSecret}}" ]]
-      Filters:
-        - JsonPath: "$.ref"
-          MatchEquals: refs/heads/{Branch}
-      TargetPipeline: !Ref Pipeline
-      TargetAction: CodeSource
-      Name: Github-PipelineWebhook
-      TargetPipelineVersion: !GetAtt Pipeline.Version
-      RegisterWithThirdParty: true
   
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
@@ -92,7 +97,10 @@ Resources:
       Code:
         S3:
           Bucket: !Join [ "", [!Ref HelperBucket ]]
-          Key: !Join [ "", [ !Ref Service, "-ef-config.zip" ]]
+          # Hardcoding the name of the zip file containing
+          # the skeleton/template files in the Codecommit repo 
+          # (this does not have to change)
+          Key: !Join [ "", [ "template-ef-config.zip" ]]
 
   CloudWatchCodeCommitEventRole:
     Type: "AWS::IAM::Role"
@@ -122,7 +130,7 @@ Resources:
       Roles:
         - !Ref CloudWatchCodeCommitEventRole
 
-  CloudWatchCodeCommitEventRule:
+  CloudWatchCommitEventRule:
     Type: AWS::Events::Rule
     Properties:
       EventPattern:
@@ -131,20 +139,20 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          - !Sub 'arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:${CodeCommitRepository}'
+          - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !GetAtt 'CodeCommitRepository.Arn' ] ] 
         detail:
           event:
             - referenceCreated
             - referenceUpdated
           repositoryName:
-            - !Ref CodeCommitRepository
+            - !GetAtt 'CodeCommitRepository.Name'
           referenceName:
             - !Ref CodeCommitRepositoryBranch
       Targets:
         -
           Arn: 
             !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
-          RoleArn: !GetAtt CloudWatchCodeCommitEventRole.Arn
+          RoleArn: !GetAtt 'CloudWatchCodeCommitEventRole.Arn'
           Id: !Ref Pipeline
 
   CodeBuildRole:
@@ -218,10 +226,7 @@ Resources:
             - 's3:DeleteObject'
             - 's3:PutEncryptionConfiguration'
             - 's3:GetEncryptionConfiguration'
-            - 's3:putObject'
-            - 's3:getObject'
             - 'iam:PassRole'
-            - 'kinesis:*'
             - 'iam:GetRole'
             - 'iam:CreateRole'
             - 'iam:PutRolePolicy'
@@ -231,7 +236,6 @@ Resources:
             - 'events:Put*'
             - 'events:Remove*'
             - 'events:Delete*'
-            - 'dynamodb:*'
             - 'ssm:PutParameter'
             - 'ssm:GetParameter'
             - 'ssm:GetParametersByPath'
@@ -354,7 +358,7 @@ Resources:
         # Using the HelperBucket parameter here
         S3Bucket: !Join [ "", [!Ref HelperBucket ]]
         S3Key: merge.zip
-      Role: !GetAtt CodePipelineLambdaRole.Arn
+      Role: !GetAtt 'CodePipelineLambdaRole.Arn'
       Description: "Lambda Function to merge artifacts in CodePipeline"
       Timeout: 30
       Handler: "merge.handler"
@@ -402,12 +406,12 @@ Resources:
                 Version: 1
               Configuration:
                 BranchName: !Ref CodeCommitRepositoryBranch
-                RepositoryName: !Ref CodeCommitRepository
+                RepositoryName: !GetAtt 'CodeCommitRepository.Name'
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: ConfigSourceOutput
             - Name: CodeSource
-              RunOrder: 2
+              RunOrder: 1
               ActionTypeId:
                 Category: Source
                 Owner: ThirdParty
@@ -417,8 +421,8 @@ Resources:
                 Owner: !Select [0, !Split [ "/" , !Ref GitHubRepository ]]
                 Repo: !Select [1, !Split [ "/" , !Ref GitHubRepository ]]
                 Branch: !Select [2, !Split [ "/" , !Ref GitHubRepository ]]
-                # We don't need to poll Github anymore as we are adding a webhook
-                PollForSourceChanges: false
+                # Since we are not using a webhook, we need to poll
+                PollForSourceChanges: true
                 # Obtaining from Secrets Manager
                 OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
@@ -443,13 +447,13 @@ Resources:
                 - Name: ConfigSourceOutput
               OutputArtifacts:
                 - Name: Build-Ready
-              RunOrder: 3
+              RunOrder: 2
   
         # Stage 3:  Build using Serverless Framework
         - Name: TestBuildDeploy
           Actions:
             - Name: !Join [ "", ["TestBuildDeploy",  "-", !Ref 'AWS::StackName'] ]
-              RunOrder: 5
+              RunOrder: 3
               InputArtifacts:
                 - Name: Build-Ready
               ActionTypeId:
@@ -468,7 +472,7 @@ Outputs:
   Environment:
     Value: !Ref Environment
   CodecommitRepo:
-    Value: !Ref CodeCommitRepository
+    Value: !GetAtt 'CodeCommitRepository.Name'
   CodecommitBranch:
     Value: !Ref CodeCommitRepositoryBranch
   GithubRepo:
