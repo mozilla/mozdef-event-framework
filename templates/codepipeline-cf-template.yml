@@ -52,16 +52,6 @@ Parameters:
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
   
-  # Adding a parameter to be used in a conditional for 
-  # creating a webhook for a given GitHub repo as a source.
-  # CreateGitHubWebHook:
-  #   AllowedValues:
-  #     - "Y"
-  #     - ""
-  #   Description: Y if you want to create a GitHub webhook for the above repo for the first time, or updating an existing stack. Leave empty otherwise.
-  #   Type: String
-  #   Default: ""
-  
   # The below is required to create a Github webhook via CloudFormation
   # Removed personal access token parameter as it is accessed from 
   # AWS Secrets Manager
@@ -91,39 +81,13 @@ Metadata:
           default: "GitHub Configuration"
         Parameters:
           - GitHubRepository
-          # - CreateGitHubWebHook
       - Label:
           default: "CodeCommit Configuration"
         Parameters:
           - CodeCommitRepositoryBranch
           - ConfigDirectory
 
-# Adding a condition here based on the parameter above
-# Conditions:
-#   NeedsGitHubWebHook: !Equals [!Ref CreateGitHubWebHook, "Y"]
-
 Resources:
-  # PipelineWebhook:
-    # Create a pipeline webhook based on the condition
-    # Condition: NeedsGitHubWebHook
-    # Apply a update replace policy to prevent from multiple webhooks
-    # being created for the given GitHub repo during stack update
-    # UpdateReplacePolicy: Delete
-    # Type: AWS::CodePipeline::Webhook
-    # Properties:
-    #   Authentication: GITHUB_HMAC
-    #   AuthenticationConfiguration:
-    #     # Obtaining from AWS Secrets Manager
-    #     SecretToken: !Join [ "", ["{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:WebhookSecret}}" ]]
-    #   Filters:
-    #     - JsonPath: "$.ref"
-    #       MatchEquals: refs/heads/{Branch}
-    #   TargetPipeline: !Ref Pipeline
-    #   TargetAction: CodeSource
-    #   # Parametrize the name of the webhook so CF does not complain that it already exists
-    #   Name: !Join [ "", [!Select [0, !Split [ "/" , !Ref GitHubRepository ]], "-", !Select [1, !Split [ "/" , !Ref GitHubRepository ]], "-", "webhook" ]]
-    #   TargetPipelineVersion: !GetAtt 'Pipeline.Version'
-    #   RegisterWithThirdParty: true
   
   CodeCommitRepository:
     Type: AWS::CodeCommit::Repository
@@ -457,7 +421,7 @@ Resources:
                 Owner: !Select [0, !Split [ "/" , !Ref GitHubRepository ]]
                 Repo: !Select [1, !Split [ "/" , !Ref GitHubRepository ]]
                 Branch: !Select [2, !Split [ "/" , !Ref GitHubRepository ]]
-                # Since we are not using a webhook anymore, we need to poll
+                # Since we are not using a webhook, we need to poll
                 PollForSourceChanges: true
                 # Obtaining from Secrets Manager
                 OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
