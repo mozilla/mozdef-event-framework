@@ -102,11 +102,11 @@ Resources:
           # (this does not have to change)
           Key: !Join [ "", [ "template-ef-config.zip" ]]
 
-  CloudWatchCodeCommitEventRole:
+  CloudWatchCommitEventRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["CloudWatchCodeCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["CloudWatchCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -116,11 +116,11 @@ Resources:
             Action: "sts:AssumeRole"
       Path: /
   
-  CloudwatchCodeCommitEventPolicy:
+  CloudwatchCommitEventPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["CloudwatchCodeCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["CloudwatchCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -128,7 +128,7 @@ Resources:
           Action: codepipeline:StartPipelineExecution
           Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
       Roles:
-        - !Ref CloudWatchCodeCommitEventRole
+        - !Ref CloudWatchCommitEventRole
 
   CloudWatchCommitEventRule:
     Type: AWS::Events::Rule
@@ -152,7 +152,7 @@ Resources:
         -
           Arn: 
             !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
-          RoleArn: !GetAtt 'CloudWatchCodeCommitEventRole.Arn'
+          RoleArn: !GetAtt 'CloudWatchCommitEventRole.Arn'
           Id: !Ref Pipeline
 
   CodeBuildRole:
