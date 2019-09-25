@@ -36,7 +36,7 @@ Parameters:
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
 
-  CodePipelineBucketPrefix:
+  PipelineBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name.
     Type: String
     Default: mozdef-ef-utility-bucket
@@ -75,7 +75,7 @@ Metadata:
         Parameters:
           - Environment
           - Service
-          - CodePipelineBucketPrefix
+          - PipelineBucketPrefix
           - HelperBucket
       - Label:
           default: "GitHub Configuration"
@@ -248,11 +248,11 @@ Resources:
       Roles:
         -  !Ref CodeBuildRole
 
-  CodePipelineRole:
+  PipelineRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["CodePipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -261,11 +261,11 @@ Resources:
             Service: "codepipeline.amazonaws.com"
           Action: "sts:AssumeRole"
 
-  CodePipelinePolicy:
+  PipelinePolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["CodePipelinePolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PipelinePolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -288,13 +288,13 @@ Resources:
           Resource:
             - "*"
       Roles:
-        -  !Ref CodePipelineRole
+        -  !Ref PipelineRole
   
-  CodePipelineLambdaRole:
+  PipelineLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["CodePipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Path: /
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -304,11 +304,11 @@ Resources:
             Service: "lambda.amazonaws.com"
           Action: "sts:AssumeRole"
 
-  CodePipelineLambdaPolicy:
+  PipelineLambdaPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["CodePipelineLambdaPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PipelineLambdaPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -342,23 +342,23 @@ Resources:
               - logs:CreateLogStream
               - logs:PutLogEvents
       Roles:
-        -  !Ref CodePipelineLambdaRole
+        -  !Ref PipelineLambdaRole
   
-  S3CodePipeline:
+  S3Pipeline:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      BucketName: !Join [ "", [!Ref PipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
   
   MergeLambda:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName:
-        'Fn::Join': [ "", ["CodePipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Code:
         # Using the HelperBucket parameter here
         S3Bucket: !Join [ "", [!Ref HelperBucket ]]
         S3Key: merge.zip
-      Role: !GetAtt 'CodePipelineLambdaRole.Arn'
+      Role: !GetAtt 'PipelineLambdaRole.Arn'
       Description: "Lambda Function to merge artifacts in CodePipeline"
       Timeout: 30
       Handler: "merge.handler"
@@ -386,12 +386,12 @@ Resources:
   Pipeline:
     Type: "AWS::CodePipeline::Pipeline"
     Properties:
-      Name: !Join [ "", ["DevOps-Pipeline", "-", !Ref 'AWS::StackName'] ]
+      Name: !Join [ "", ["MozDef-Pipeline", "-", !Ref 'AWS::StackName'] ]
       ArtifactStore:
-        Location: !Ref S3CodePipeline
+        Location: !Ref S3Pipeline
         Type: S3
       RestartExecutionOnUpdate: true
-      RoleArn: !Join [ "", ["arn:aws:iam::", !Ref "AWS::AccountId", ":role/", !Ref CodePipelineRole  ] ]
+      RoleArn: !Join [ "", ["arn:aws:iam::", !Ref "AWS::AccountId", ":role/", !Ref PipelineRole  ] ]
       Stages:
 
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
@@ -481,13 +481,13 @@ Outputs:
     Value: !Ref CodeBuildRole
   CodeBuildPolicy:
     Value: !Ref CodeBuildPolicy
-  CodePipelineRole:
-    Value: !Ref CodePipelineRole
-  CodePipelineLambdaRole:
-    Value: !Ref CodePipelineLambdaRole
-  CodePipelinePolicy:
-    Value: !Ref CodePipelinePolicy
-  CodePipelineLambdaPolicy:
-    Value: !Ref CodePipelineLambdaPolicy
-  S3Codepipeline:
-    Value: !Ref S3CodePipeline
+  PipelineRole:
+    Value: !Ref PipelineRole
+  PipelineLambdaRole:
+    Value: !Ref PipelineLambdaRole
+  PipelinePolicy:
+    Value: !Ref PipelinePolicy
+  PipelineLambdaPolicy:
+    Value: !Ref PipelineLambdaPolicy
+  S3Pipeline:
+    Value: !Ref S3Pipeline
