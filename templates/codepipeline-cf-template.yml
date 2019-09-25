@@ -52,7 +52,6 @@ Parameters:
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
   
-  # The below is required to create a Github webhook via CloudFormation
   # Removed personal access token parameter as it is accessed from 
   # AWS Secrets Manager
   GitHubRepository:
@@ -128,7 +127,7 @@ Resources:
         Statement:
           Effect: Allow
           Action: codepipeline:StartPipelineExecution
-          Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
+          Resource: !GetAtt Pipeline.Arn
       Roles:
         - !Ref CloudWatchCodeCommitEventRole
 
@@ -141,7 +140,8 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !GetAtt 'CodeCommitRepository.Arn' ] ] 
+          # - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !GetAtt 'CodeCommitRepository.Arn' ] ]
+          - !GetAtt 'CodeCommitRepository.Arn'
         detail:
           event:
             - referenceCreated
@@ -152,8 +152,7 @@ Resources:
             - !Ref CodeCommitRepositoryBranch
       Targets:
         -
-          Arn: 
-            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
+          Arn: !GetAtt Pipeline.Arn
           RoleArn: !GetAtt 'CloudWatchCodeCommitEventRole.Arn'
           Id: !Ref Pipeline
 
@@ -184,7 +183,7 @@ Resources:
           Effect: Allow
           Action:
             - 'codebuild:*'
-          Resource: !Join [ '', [ 'arn:aws:codebuild:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "project/", !Ref TestBuildDeploy ] ]
+          Resource: !GetAtt TestBuildDeploy.Arn
           Effect: Allow
           Action:
             - 'codecommit:GetBranch'
@@ -192,7 +191,7 @@ Resources:
             - 'codecommit:UploadArchive'
             - 'codecommit:GetUploadArchiveStatus'
             - 'codecommit:CancelUploadArchive'
-          Resource: !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref CodeCommitRepository ] ]
+          Resource: !GetAtt 'CodeCommitRepository.Arn'
           Effect: Allow
           Action:
             - 'cloudformation:ListChangeSets'
@@ -225,7 +224,7 @@ Resources:
             # based on service name and stage
             - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
             # Our merger lambda function
-            - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref MergeLambda ] ]
+            - !GetAtt MergeLambda.Arn
           Effect: Allow
           Action:
             - 'apigateway:GET'
@@ -251,7 +250,7 @@ Resources:
           # NOTE: The below is probably not true. Some permissions
           # require "conditions", and I am not sure how to define them yet.
           Resource: 
-            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline ] ]
+            - !GetAtt S3CodePipeline.Arn
             - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket ] ]
           Effect: Allow
           Action:
@@ -262,7 +261,9 @@ Resources:
             - 'iam:DeleteRolePolicy'
             - 'iam:DeleteRole'
           # Also not sure about this one
-          Resource: !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodeBuildRole ] ]
+          Resource: 
+            # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodeBuildRole ] ]
+            - !GetAtt CodeBuildRole.Arn
           Effect: Allow
           Action:
             - 'events:RemoveTargets'
@@ -356,7 +357,7 @@ Resources:
           Resource:
             # NOTE: The below is probably not true. Some permissions
             # require "conditions", and I am not sure how to define them yet.
-            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline, '/*' ] ]
+            - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
             - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket, '/*' ] ]
           Effect: Allow
           Action:
@@ -365,7 +366,7 @@ Resources:
             - codecommit:UploadArchive
             - codecommit:GetUploadArchiveStatus
             - codecommit:CancelUploadArchive
-          Resource: !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref CodeCommitRepository ] ]
+          Resource: !GetAtt CodeCommitRepository.Arn
           Effect: Allow
           Action:
             - lambda:InvokeFunction
@@ -376,7 +377,7 @@ Resources:
             # based on service name and stage
             - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
             # Our merger lambda function
-            - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref MergeLambda ] ]
+            - !GetAtt MergeLambda.Arn
           Effect: Allow
           Action:
             - secretsmanager:GetSecretValue
@@ -385,7 +386,7 @@ Resources:
           Effect: Allow
           Action:
             - codebuild:*
-          Resource: !Join [ '', [ 'arn:aws:codebuild:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "project/", !Ref TestBuildDeploy ] ]
+          Resource: !GetAtt TestBuildDeploy.Arn
       Roles:
         -  !Ref CodePipelineRole
   
@@ -419,13 +420,13 @@ Resources:
             Resource:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
-              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline, '/*' ] ]
+              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
             Action:
               - s3:GetBucketVersioning
             Resource:
-              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline ] ]
+              - !GetAtt S3CodePipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket ] ]
           - Effect: Allow
             Action:
@@ -434,12 +435,12 @@ Resources:
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
-            Resource: !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref CodeCommitRepository ] ]
+            Resource: !GetAtt CodeCommitRepository.Arn
           - Effect: Allow
             Action:
               - codebuild:StartBuild
               - codebuild:BatchGetBuilds
-            Resource: !Join [ '', [ 'arn:aws:codebuild:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':project/', !Ref TestBuildDeploy ] ]
+            Resource: !GetAtt TestBuildDeploy.Arn
           - Effect: Allow
             Action:
               - codepipeline:PutJobSuccessResult
@@ -451,7 +452,8 @@ Resources:
               - iam:PassRole
             Resource: 
               # Also not sure about this one
-              - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePipelineLambdaRole ] ]
+              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePipelineLambdaRole ] ]
+              - !GetAtt CodePipelineLambdaRole.Arn
           - Effect: Allow
             Action:
               - cloudformation:*
@@ -515,7 +517,7 @@ Resources:
         Location: !Ref S3CodePipeline
         Type: S3
       RestartExecutionOnUpdate: true
-      RoleArn: !Join [ "", ["arn:aws:iam::", !Ref "AWS::AccountId", ":role/", !Ref CodePipelineRole  ] ]
+      RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
 
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
