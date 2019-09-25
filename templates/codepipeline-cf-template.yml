@@ -198,7 +198,7 @@ Resources:
             - 'cloudformation:DescribeStackResource'
             - 'cloudformation:DescribeStackEvents'
             - 'cloudformation:UpdateStack'
-          Resource: !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/", !Ref 'AWS::StackName' , "/*"  ] ]
+          Resource: !Join [ '', [ 'arn:aws:cloudformation:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/", !Ref 'AWS::StackName' , "/*"  ] ]
           Effect: Allow
           Action:
             - 'lambda:AddPermission'
@@ -348,8 +348,8 @@ Resources:
           Resource:
             # NOTE: The below is probably not true. Some permissions
             # require "conditions", and I am not sure how to define them yet.
-            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline ] ]
-            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket ] ]
+            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline, '/*' ] ]
+            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket, '/*' ] ]
           Effect: Allow
           Action:
             - codecommit:GetBranch
@@ -403,35 +403,60 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Resource: "*"
-            Effect: Allow
+          - Effect: Allow
             Action:
               - s3:PutObject
               - s3:GetObject
               - s3:GetObjectVersion
-              - s3:GetBucketVersioning
-          - Resource: "*"
-            Effect: Allow
+            Resource:
+              # NOTE: The below is probably not true. Some permissions
+              # require "conditions", and I am not sure how to define them yet.
+              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket, '/*' ] ]
+          - Effect: Allow
             Action:
-              - lambda:*
+              - s3:GetBucketVersioning
+            Resource:
+              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref S3CodePipeline ] ]
+              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket ] ]
+          - Effect: Allow
+            Action:
               - codecommit:GetBranch
               - codecommit:GetCommit
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
+            Resource: !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref CodeCommitRepository ] ]
+          - Effect: Allow
+            Action:
               - codebuild:StartBuild
               - codebuild:BatchGetBuilds
-              - cloudformation:*
-              - iam:PassRole
+            Resource: !Join [ '', [ 'arn:aws:codebuild:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':project/', !Ref TestBuildDeploy ] ]
+          - Effect: Allow
+            Action:
               - codepipeline:PutJobSuccessResult
               - codepipeline:PutJobFailureResult
-              - lambda:Listfunctions
-          - Resource: "*"
-            Effect: Allow
+              - lambda:*
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: 
+              # Also not sure about this one
+              - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePipelineLambdaRole ] ]
+          - Effect: Allow
+            Action:
+              - cloudformation:*
+            Resource: !Join [ '', [ 'arn:aws:cloudformation:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/", !Ref 'AWS::StackName' , "/*"  ] ]
+          - Effect: Allow
             Action:
               - logs:CreateLogGroup
+            Resource: !Join [ '', [ 'arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/*' ] ]
+          - Effect: Allow
+            Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
+            Resource: !Join [ '', [ 'arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/*:log-stream:*' ] ]
       Roles:
         -  !Ref CodePipelineLambdaRole
   
