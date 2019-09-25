@@ -127,7 +127,7 @@ Resources:
         Statement:
           Effect: Allow
           Action: codepipeline:StartPipelineExecution
-          Resource: !GetAtt Pipeline.Arn
+          Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
       Roles:
         - !Ref CloudWatchCodeCommitEventRole
 
@@ -152,7 +152,7 @@ Resources:
             - !Ref CodeCommitRepositoryBranch
       Targets:
         -
-          Arn: !GetAtt Pipeline.Arn
+          Arn: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
           RoleArn: !GetAtt 'CloudWatchCodeCommitEventRole.Arn'
           Id: !Ref Pipeline
 
@@ -251,7 +251,9 @@ Resources:
           # require "conditions", and I am not sure how to define them yet.
           Resource: 
             - !GetAtt S3CodePipeline.Arn
-            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket ] ]
+            - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
+            - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+            - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           Effect: Allow
           Action:
             - 'iam:PassRole'
@@ -268,7 +270,7 @@ Resources:
           Action:
             - 'events:RemoveTargets'
             - 'events:DeleteRule'
-          Resource: !Join [ '', [ 'arn', !Ref 'AWS::Partition', ':events:', !Ref 'AWS::Region', ':' !Ref 'AWS::AccountId', ':rule/', !Ref CloudWatchCodeCommitEventRule ] ]
+          Resource: !Join [ '', [ 'arn', !Ref 'AWS::Partition', ':events:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':rule/', !Ref CloudWatchCodeCommitEventRule ] ]
           Effect: Allow
           Action:
             - 'ssm:PutParameter'
@@ -358,7 +360,7 @@ Resources:
             # NOTE: The below is probably not true. Some permissions
             # require "conditions", and I am not sure how to define them yet.
             - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
-            - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket, '/*' ] ]
+            - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           Effect: Allow
           Action:
             - codecommit:GetBranch
@@ -421,13 +423,13 @@ Resources:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
               - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
-              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
             Action:
               - s3:GetBucketVersioning
             Resource:
               - !GetAtt S3CodePipeline.Arn
-              - !Join [ '', [ 'arn:aws:s3:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref HelperBucket ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
           - Effect: Allow
             Action:
               - codecommit:GetBranch
