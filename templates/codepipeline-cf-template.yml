@@ -222,7 +222,7 @@ Resources:
               # by the serverless framework, based on the assumption
               # that serverless frameworks creates function names
               # based on service name and stage
-              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*-" ] ]
+              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "-*" ] ]
               # Our merger lambda function
               - !GetAtt MergeLambda.Arn
           - Effect: Allow
@@ -458,13 +458,6 @@ Resources:
               - 'cloudformation:DescribeStackResource'
               - 'cloudformation:DescribeStackEvents'
               - 'cloudformation:UpdateStack'
-              - 'cloudformation:ListStacks'
-              - 'cloudformation:GetTemplateSummary'
-              - 'cloudformation:PreviewStackUpdate'
-              - 'cloudformation:ValidateTemplate'
-              - 'cloudformation:CreateUploadBucket'
-              - 'cloudformation:DescribeAccountLimits'
-              - 'cloudformation:DescribeChangeSet'
             Resource: 
               - !Join [ '', [ 'arn:aws:cloudformation:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/", !Ref 'AWS::StackName' , "/*"  ] ]
           - Effect: Allow
@@ -472,6 +465,12 @@ Resources:
               - logs:CreateLogGroup
               - logs:CreateLogStream
               - logs:PutLogEvents
+              - 'cloudformation:ListStacks'
+              - 'cloudformation:GetTemplateSummary'
+              - 'cloudformation:ValidateTemplate'
+              - 'cloudformation:CreateUploadBucket'
+              - 'cloudformation:DescribeAccountLimits'
+              - 'cloudformation:DescribeChangeSet'
             Resource: "*"
       Roles:
         -  !Ref CodePipelineLambdaRole
