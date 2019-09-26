@@ -374,7 +374,7 @@ Resources:
           - Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
-            Resource: !Join [ '', [ 'arn:aws:secretsmanager:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "secret", ':', !Ref Environment, '/codepipeline/github' ] ]
+            Resource: !Join [ '', [ 'arn:aws:secretsmanager:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "secret", ':', !Ref Environment, '/codepipeline/github*' ] ]
           - Effect: Allow
             Action:
               - codebuild:*
