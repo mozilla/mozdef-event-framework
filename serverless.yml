@@ -8,6 +8,7 @@ plugins:
 # Removing the serverless-stack-output plugin, as I do not think
 # we need it, but I may be wrong
   - serverless-prune-plugin
+  - serverless-pseudo-parameters
 custom:
   authorizer:
     validate_token:
@@ -47,7 +48,7 @@ provider:
         - sqs:GetQueueAttributes
         - sqs:ListQueues
       Resource: 
-        - "arn:aws:sqs:*:*:${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
