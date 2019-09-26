@@ -253,8 +253,10 @@ Resources:
             Resource: 
               - !GetAtt S3CodePipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket' ] ]
               - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket', '/*' ] ]
           - Effect: Allow
             Action:
               - 'iam:PassRole'
