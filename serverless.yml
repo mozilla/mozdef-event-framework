@@ -32,7 +32,7 @@ custom:
     resource_name: ${env:RESOURCE_NAME}
     api_method: POST
     api_path: ${env:API_PATH}
-    authToken: ${env:SERVICE}/${env:STAGE}/${env:RESOURCE_NAME}/auth_token
+    authToken: ${env:SERVICE}/${env:STAGE}/auth_token
     project: 'mozdef-event-framework'
 prune:
   automatic: true
@@ -49,8 +49,8 @@ provider:
     lambda: true
   tags:
     Project: ${self:custom.cfg.project}
-  stackName: ${self:custom.cfg.resource_name}-${self:provider.stage}
-  apiName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}
+  stackName: ${self:service}-${self:provider.stage}
+  apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -58,7 +58,7 @@ provider:
         - sqs:GetQueueAttributes
         - sqs:ListQueues
       Resource: 
-        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
@@ -114,11 +114,11 @@ resources:
     RestApi:
       Type: 'AWS::ApiGateway::RestApi'
       Properties:
-        Name: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}-apigw
+        Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}
+        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
         RedrivePolicy:
@@ -130,5 +130,5 @@ resources:
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}-DLQ
+        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-DLQ
         MessageRetentionPeriod: 1209600
