@@ -57,7 +57,7 @@ Parameters:
   GitHubRepository:
     Type: String
     # Defaulting to our public PoC repo
-    Default: mozilla/mozdef-event-framework-template/master
+    Default: mozilla/mozdef-event-framework/master
     Description:  Github repository to be used as a source, in the form of "owner/repository/branch".
 
   ConfigDirectory:
