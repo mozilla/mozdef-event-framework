@@ -7,7 +7,6 @@ service: ${env:SERVICE}
 plugins:
 # Removing the serverless-stack-output plugin, as I do not think
 # we need it, but I may be wrong
-  - serverless-pseudo-parameters
   - serverless-prune-plugin
 custom:
   authorizer:

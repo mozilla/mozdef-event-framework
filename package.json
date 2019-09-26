@@ -1,5 +1,5 @@
 {
-  "name": "zoom2mozdef-event-framework",
+  "name": "mozdef-event-framework",
   "version": "0.0.1",
   "description": "MozDef event framework PoC using AWS + Serverless framework",
   "main": "index.js",
@@ -8,12 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mozilla/zoom2mozdef-event-framework.git"
+    "url": "git+https://github.com/mozilla/mozdef-event-framework.git"
   },
   "author": "",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/mozilla/zoom2mozdef-event-framework/issues"
+    "url": "https://github.com/mozilla/mozdef-event-framework/issues"
   },
-  "homepage": "https://github.com/mozilla/zoom2mozdef-event-framework#readme"
+  "homepage": "https://github.com/mozilla/mozdef-event-framework#readme",
+  "devDependencies": {
+    "serverless-prune-plugin": "^1.4.1"
+  }
 }
