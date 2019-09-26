@@ -3,6 +3,16 @@
 # This way we would not need a custom vars file for configuration
 
 # Default values for env variables are not supported by serverless
+# Giving example values for each as comment:
+#
+# SERVICE=zoom_event_consumer
+# RESOURCE_NAME=zoom
+# API_PATH=/zoom (or zoom)
+# STAGE=dev
+#
+# With these sample values, the TOKEN value becomes:
+# "/mozdef-event-framework/zoom_event_consumer/dev/zoom/auth_token"
+
 service: ${env:SERVICE}
 plugins:
 # Removing the serverless-stack-output plugin, as I do not think
