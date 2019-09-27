@@ -29,16 +29,6 @@ def lambda_handler(event, context):
                 'body': json.dumps('Bad Request')
         }
 
-    # The below part is specific to Zoom event validation
-    #
-    # request_body = json.loads(aws_event['body'])
-    # if 'event' not in zoom_event or 'payload' not in zoom_event:
-    #     logger.error("AWS event does not contain Zoom event data.")
-    #     return {
-    #         'statusCode': 400,
-    #         'body': json.dumps('Bad Request')
-    #     }
-
     returnDict['summary'] = '{}_event'.format(service)
     returnDict['source'] = 'api_aws_lambda'
     returnDict['category'] = service
@@ -52,6 +42,8 @@ def lambda_handler(event, context):
 
     queueURL = os.getenv('SQS_URL')
     sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
+    logger.info("Event added to the resource queue.")
+
     return {
         'statusCode': 200,
         'body': json.dumps('Event received')
