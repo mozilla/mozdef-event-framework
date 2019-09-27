@@ -5,13 +5,12 @@
 # Default values for env variables are not supported by serverless
 # Giving example values for each as comment:
 #
-# SERVICE=zoom_event_consumer
-# RESOURCE_NAME=zoom
+# SERVICE=zoom
 # API_PATH=/zoom (or zoom)
 # STAGE=dev
 #
 # With these sample values, the TOKEN value becomes:
-# "/mozdef-event-framework/zoom_event_consumer/dev/zoom/auth_token"
+# "/mozdef-event-framework/zoom/dev/auth_token"
 
 service: ${env:SERVICE}
 plugins:
@@ -29,10 +28,9 @@ custom:
   cfg:
     # Taking some values from build script as environment
     # variables so they remain generic
-    resource_name: ${env:RESOURCE_NAME}
     api_method: POST
     api_path: ${env:API_PATH}
-    authToken: ${env:SERVICE}/${env:STAGE}/auth_token
+    authToken: ${self:service}/${env:STAGE}/auth_token
     project: 'mozdef-event-framework'
 prune:
   automatic: true
@@ -75,9 +73,8 @@ provider:
   # so can refer to them from within code
   environment:
     REGION: '#{AWS::Region}'
-    SERVICE: '${env:SERVICE}'
+    SERVICE: '${self:service}'
     STAGE: '${env:STAGE}'
-    RESOURCE_NAME: '${env:RESOURCE_NAME}'
     TOKEN: "/${self:custom.cfg.project}/${self:custom.cfg.authToken}"
     # Adding resource queue URL as global environment variable
     # We could also store this in SSM
@@ -101,7 +98,7 @@ functions:
     handler: functions/authorizer.validate_token
   event_handler:
     handler: functions/handler.lambda_handler
-    description: Lambda for handling events from ${env:RESOURCE_NAME} resource.
+    description: Lambda for handling events from ${self:service} resource.
     events:
       - http:
           path: ${self:custom.cfg.api_path}
