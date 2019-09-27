@@ -218,13 +218,13 @@ Resources:
               - 'lambda:UpdateAlias'
               - 'lambda:UpdateFunctionCode'
               - 'lambda:UpdateFunctionConfiguration'
+              - 'lambda:GetFunction'
             Resource:
               # Giving permissions on the lambda functions created 
               # by the serverless framework, based on the assumption
               # that serverless frameworks creates function names
               # based on service name and stage
-              # TODO: Remove the dash before the star in the end
-              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "-*" ] ]
+              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
               # Our merger lambda function
               - !GetAtt MergeLambda.Arn
           - Effect: Allow
@@ -270,7 +270,7 @@ Resources:
               - 'iam:DeleteRole'
             # Also not sure about this one
             Resource: 
-              - !Join [ '', [ 'arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref Service, '-', !Ref Environment, '-', !Ref 'AWS::Region', '-*' ] ]
+              - !Join [ '', [ 'arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref Service, '-', !Ref Environment, '-', !Ref 'AWS::Region', '*' ] ]
               - !GetAtt CodeBuildRole.Arn
           - Effect: Allow
             Action:
@@ -373,7 +373,7 @@ Resources:
               # by the serverless framework, based on the assumption
               # that serverless frameworks creates function names
               # based on service name and stage
-              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "-*" ] ]
+              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
               # Our merger lambda function
               - !GetAtt MergeLambda.Arn
           - Effect: Allow
