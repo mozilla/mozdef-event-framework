@@ -240,7 +240,9 @@ Resources:
             # gateway resources in a region for a single account), 
             # but I could not find how to restrict it even further
             # Resource: !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', '::', "/restapis/*" ] ]
-            Resource: !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', '::', "/restapis*" ] ]
+            Resource: 
+              - !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', '::', "/restapis*" ] ]
+              - !Join [ '', [ 'arn:aws:apigateway:' , !Ref 'AWS::Region', '::', '/tags/arn:aws:apigateway/', !Ref 'AWS::Region', '::', "/restapis/*/stages/", !Ref Environment ]
           - Effect: Allow
             Action:
               - 's3:CreateBucket'
