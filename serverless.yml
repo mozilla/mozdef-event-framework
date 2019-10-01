@@ -32,9 +32,11 @@ custom:
     api_path: ${env:API_PATH}
     authToken: ${self:service}/${env:STAGE}/auth_token
     project: 'mozdef-event-framework'
-prune:
-  automatic: true
-  number: 5
+    keep: 5
+  # Keeping the last 5 versions of our Lambda functions
+  prune:
+    automatic: true
+    number: ${self:custom.cfg.keep}
 
 provider:
   name: aws
