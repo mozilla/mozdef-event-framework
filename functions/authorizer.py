@@ -5,7 +5,7 @@ import os
 
 REGION = os.getenv('REGION', 'us-west-2')
 ssm = boto3.client('ssm', region_name=REGION)
-service_token = os.getenv('token_param')
+service_token = os.getenv('TOKEN')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
