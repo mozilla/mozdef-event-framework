@@ -36,6 +36,11 @@ Parameters:
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
 
+  ServiceTag:
+    Description: To tag resources created in the pipeline, specify a tag value. The resources would be tagged as "value-dev/stage/prod".
+    Type: String
+    Default: MozDef-EF
+
   CodePipelineBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name.
     Type: String
@@ -70,10 +75,11 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: "Stack Configuration"
+          default: "Pipeline Configuration"
         Parameters:
-          - Environment
           - Service
+          - ServiceTag
+          - Environment
           - CodePipelineBucketPrefix
           - HelperBucket
       - Label:
@@ -100,6 +106,9 @@ Resources:
           # the skeleton/template files in the Codecommit repo 
           # (this does not have to change)
           Key: !Join [ "", [ "template-ef-config.zip" ]]
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
 
   CloudWatchCodeCommitEventRole:
     Type: "AWS::IAM::Role"
@@ -492,6 +501,9 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
   
   MergeLambda:
     Type: AWS::Lambda::Function
@@ -508,6 +520,9 @@ Resources:
       Handler: "merge.handler"
       Runtime: "nodejs10.x"
       MemorySize: 128
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
 
   TestBuildDeploy:
     Type: "AWS::CodeBuild::Project"
@@ -525,6 +540,9 @@ Resources:
         Image: aws/codebuild/standard:2.0
       Artifacts:
         Type: CODEPIPELINE
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
 
   # CodePipeline with its stages:
   Pipeline:
@@ -537,7 +555,6 @@ Resources:
       RestartExecutionOnUpdate: true
       RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
-
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
         - Name: Source
           Actions:
@@ -571,7 +588,6 @@ Resources:
                 OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
-
         # Stage 2: Merge the Sources into one Artifact
         # This merges the App and SecureConfig artifacts
         # See https://dzone.com/articles/running-aws-lambda-functions-in-aws-codepipeline-u
