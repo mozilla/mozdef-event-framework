@@ -22,12 +22,18 @@ def lambda_handler(event, context):
     # See if submitted POST body is a valid JSON and has
     #  a "payload" since this is common in webhook data
     try:
-        json.loads(api_event['body']) and 'payload' in api_event['body']
+        json.loads(api_event['body'])
     except Exception as e:
         logger.error("Cannot parse API event: {}, context: {}, exception: ".format(
             str(api_event['body']),
             context.function_name, e)
         )
+        return {
+                'statusCode': 400,
+                'body': json.dumps('Bad Request')
+        }
+    if 'payload' not in json.loads(api_event['body']).keys():
+        logger.error("Expecting a payload for the event, but not found.")
         return {
                 'statusCode': 400,
                 'body': json.dumps('Bad Request')
