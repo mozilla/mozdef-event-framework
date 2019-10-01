@@ -113,7 +113,7 @@ Resources:
             Effect: "Allow"
             Principal:
               Service: "events.amazonaws.com"
-            Action: "sts:AssumeRole"
+            Action: 'sts:AssumeRole'
       Path: /
   
   CloudwatchCodeCommitEventPolicy:
@@ -126,7 +126,7 @@ Resources:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
-            Action: codepipeline:StartPipelineExecution
+            Action: 'codepipeline:StartPipelineExecution'
             Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
       Roles:
         - !Ref CloudWatchCodeCommitEventRole
@@ -351,14 +351,14 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
             Resource: "*"
           - Effect: Allow
             Action:
-              - s3:putObject
-              - s3:getObject
+              - 's3:putObject'
+              - 's3:getObject'
             Resource:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
@@ -366,15 +366,15 @@ Resources:
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
             Action:
-              - codecommit:GetBranch
-              - codecommit:GetCommit
-              - codecommit:UploadArchive
-              - codecommit:GetUploadArchiveStatus
-              - codecommit:CancelUploadArchive
+              - 'codecommit:GetBranch'
+              - 'codecommit:GetCommit'
+              - 'codecommit:UploadArchive'
+              - 'codecommit:GetUploadArchiveStatus'
+              - 'codecommit:CancelUploadArchive'
             Resource: !GetAtt CodeCommitRepository.Arn
           - Effect: Allow
             Action:
-              - lambda:InvokeFunction
+              - 'lambda:InvokeFunction'
             Resource:
               # Giving permissions on the lambda functions created 
               # by the serverless framework, based on the assumption
@@ -385,11 +385,11 @@ Resources:
               - !GetAtt MergeLambda.Arn
           - Effect: Allow
             Action:
-              - secretsmanager:GetSecretValue
+              - 'secretsmanager:GetSecretValue'
             Resource: !Join [ '', [ 'arn:aws:secretsmanager:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "secret", ':', !Ref Environment, '/codepipeline/github*' ] ]
           - Effect: Allow
             Action:
-              - codebuild:*
+              - 'codebuild:*'
             Resource: !GetAtt TestBuildDeploy.Arn
       Roles:
         -  !Ref CodePipelineRole
@@ -418,9 +418,9 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - s3:PutObject
-              - s3:GetObject
-              - s3:GetObjectVersion
+              - 's3:PutObject'
+              - 's3:GetObject'
+              - 's3:GetObjectVersion'
             Resource:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
@@ -434,26 +434,26 @@ Resources:
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
           - Effect: Allow
             Action:
-              - codecommit:GetBranch
-              - codecommit:GetCommit
-              - codecommit:UploadArchive
-              - codecommit:GetUploadArchiveStatus
-              - codecommit:CancelUploadArchive
+              - 'codecommit:GetBranch'
+              - 'codecommit:GetCommit'
+              - 'codecommit:UploadArchive'
+              - 'codecommit:GetUploadArchiveStatus'
+              - 'codecommit:CancelUploadArchive'
             Resource: !GetAtt CodeCommitRepository.Arn
           - Effect: Allow
             Action:
-              - codebuild:StartBuild
-              - codebuild:BatchGetBuilds
+              - 'codebuild:StartBuild'
+              - 'codebuild:BatchGetBuilds'
             Resource: !GetAtt TestBuildDeploy.Arn
           - Effect: Allow
             Action:
-              - codepipeline:PutJobSuccessResult
-              - codepipeline:PutJobFailureResult
-              - lambda:*
+              - 'codepipeline:PutJobSuccessResult'
+              - 'codepipeline:PutJobFailureResult'
+              - 'lambda:*'
             Resource: "*"
           - Effect: Allow
             Action:
-              - iam:PassRole
+              - 'iam:PassRole'
             Resource: 
               # Also not sure about this one
               # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePipelineLambdaRole ] ]
@@ -475,9 +475,9 @@ Resources:
               - !Join [ '', [ 'arn:aws:cloudformation:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/", !Ref 'AWS::StackName' , "/*"  ] ]
           - Effect: Allow
             Action:
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
               - 'cloudformation:ListStacks'
               - 'cloudformation:GetTemplateSummary'
               - 'cloudformation:ValidateTemplate'
