@@ -336,10 +336,11 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          Effect: "Allow"
-          Principal:
-            Service: "codepipeline.amazonaws.com"
-          Action: "sts:AssumeRole"
+          -  Effect: "Allow"
+             Principal:
+               Service: "codepipeline.amazonaws.com"
+             Action: 
+               - 'sts:AssumeRole'
 
   CodePipelinePolicy:
     Type: "AWS::IAM::Policy"
@@ -357,8 +358,8 @@ Resources:
             Resource: "*"
           - Effect: Allow
             Action:
-              - 's3:putObject'
-              - 's3:getObject'
+              - 's3:PutObject'
+              - 's3:GetObject'
             Resource:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
