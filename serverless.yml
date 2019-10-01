@@ -3,12 +3,21 @@
 # This way we would not need a custom vars file for configuration
 
 # Default values for env variables are not supported by serverless
+# Giving example values for each as comment:
+#
+# SERVICE=zoom
+# API_PATH=/zoom (or zoom)
+# STAGE=dev
+#
+# With these sample values, the TOKEN value becomes:
+# "/mozdef-event-framework/zoom/dev/auth_token"
+
 service: ${env:SERVICE}
 plugins:
 # Removing the serverless-stack-output plugin, as I do not think
 # we need it, but I may be wrong
-  - serverless-pseudo-parameters
   - serverless-prune-plugin
+  - serverless-pseudo-parameters
 custom:
   authorizer:
     validate_token:
@@ -19,14 +28,15 @@ custom:
   cfg:
     # Taking some values from build script as environment
     # variables so they remain generic
-    resource_name: ${env:RESOURCE_NAME}
     api_method: POST
     api_path: ${env:API_PATH}
-    authToken: ${env:SERVICE}/${env:STAGE}/${env:RESOURCE_NAME}/auth_token
+    authToken: ${self:service}/${env:STAGE}/auth_token
     project: 'mozdef-event-framework'
-prune:
-  automatic: true
-  number: 5
+    keep: 5
+  # Keeping the last 5 versions of our Lambda functions
+  prune:
+    automatic: true
+    number: ${self:custom.cfg.keep}
 
 provider:
   name: aws
@@ -39,8 +49,8 @@ provider:
     lambda: true
   tags:
     Project: ${self:custom.cfg.project}
-  stackName: ${self:custom.cfg.resource_name}-${self:provider.stage}
-  apiName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}
+  stackName: ${self:service}-${self:provider.stage}
+  apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -48,7 +58,7 @@ provider:
         - sqs:GetQueueAttributes
         - sqs:ListQueues
       Resource: 
-        - "arn:aws:sqs:*:*:${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
@@ -65,9 +75,8 @@ provider:
   # so can refer to them from within code
   environment:
     REGION: '#{AWS::Region}'
-    SERVICE: '${env:SERVICE}'
+    SERVICE: '${self:service}'
     STAGE: '${env:STAGE}'
-    RESOURCE_NAME: '${env:RESOURCE_NAME}'
     TOKEN: "/${self:custom.cfg.project}/${self:custom.cfg.authToken}"
     # Adding resource queue URL as global environment variable
     # We could also store this in SSM
@@ -91,7 +100,7 @@ functions:
     handler: functions/authorizer.validate_token
   event_handler:
     handler: functions/handler.lambda_handler
-    description: Lambda for handling events from ${env:RESOURCE_NAME} resource.
+    description: Lambda for handling events from ${self:service} resource.
     events:
       - http:
           path: ${self:custom.cfg.api_path}
@@ -104,11 +113,11 @@ resources:
     RestApi:
       Type: 'AWS::ApiGateway::RestApi'
       Properties:
-        Name: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}-apigw
+        Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}
+        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
         RedrivePolicy:
@@ -120,5 +129,5 @@ resources:
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.resource_name}-${self:custom.cfg.project}-${self:provider.stage}-DLQ
+        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-DLQ
         MessageRetentionPeriod: 1209600
