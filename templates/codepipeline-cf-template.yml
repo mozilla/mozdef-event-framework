@@ -140,7 +140,6 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          # - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !GetAtt 'CodeCommitRepository.Arn' ] ]
           - !GetAtt 'CodeCommitRepository.Arn'
         detail:
           event:
@@ -211,6 +210,7 @@ Resources:
             Action:
               - 'lambda:AddPermission'
               - 'lambda:CreateAlias'
+              - 'lambda:ListAliases'
               - 'lambda:DeleteFunction'
               - 'lambda:InvokeFunction'
               - 'lambda:PublishVersion'
@@ -239,10 +239,10 @@ Resources:
             # Note: This is still not ideal (giving access to all API
             # gateway resources in a region for a single account), 
             # but I could not find how to restrict it even further
-            # Resource: !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', '::', "/restapis/*" ] ]
             Resource: 
               - !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', '::', "/restapis*" ] ]
-              - !Join [ '', [ 'arn:aws:apigateway:' , !Ref 'AWS::Region', '::', '/tags/arn:aws:apigateway/', !Ref 'AWS::Region', '::', "/restapis/*/stages/", !Ref Environment ]
+              # This is ugly but URL-encoding seems to be required for this
+              - !Join [ '', [ 'arn:aws:apigateway:' , !Ref 'AWS::Region', '::', '/tags/arn%3Aaws%3Aapigateway%3A', !Ref 'AWS::Region', '%3A%3A%2F', "restapis%2F*" ] ]
           - Effect: Allow
             Action:
               - 's3:CreateBucket'
