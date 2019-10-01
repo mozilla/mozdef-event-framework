@@ -52,13 +52,12 @@ Parameters:
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
   
-  # The below is required to create a Github webhook via CloudFormation
   # Removed personal access token parameter as it is accessed from 
   # AWS Secrets Manager
   GitHubRepository:
     Type: String
     # Defaulting to our public PoC repo
-    Default: mozilla/mozdef-event-framework-template/master
+    Default: mozilla/mozdef-event-framework/master
     Description:  Github repository to be used as a source, in the form of "owner/repository/branch".
 
   ConfigDirectory:
@@ -107,6 +106,7 @@ Resources:
     Properties:
       RoleName:
         'Fn::Join': [ "", ["CloudWatchCodeCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      # I think this is OK
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -121,12 +121,13 @@ Resources:
     Properties:
       PolicyName:
         'Fn::Join': [ "", ["CloudwatchCodeCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      # This is already restricted
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          Effect: Allow
-          Action: codepipeline:StartPipelineExecution
-          Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
+          - Effect: Allow
+            Action: codepipeline:StartPipelineExecution
+            Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
       Roles:
         - !Ref CloudWatchCodeCommitEventRole
 
@@ -139,7 +140,7 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !GetAtt 'CodeCommitRepository.Arn' ] ] 
+          - !GetAtt 'CodeCommitRepository.Arn'
         detail:
           event:
             - referenceCreated
@@ -150,8 +151,7 @@ Resources:
             - !Ref CodeCommitRepositoryBranch
       Targets:
         -
-          Arn: 
-            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
+          Arn: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
           RoleArn: !GetAtt 'CloudWatchCodeCommitEventRole.Arn'
           Id: !Ref Pipeline
 
@@ -174,77 +174,157 @@ Resources:
     Properties:
       PolicyName:
         'Fn::Join': [ "", ["CodeBuildPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      # This is one of the most tricky ones, we may have
+      # to break the permissions down per resource
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          Effect: Allow
-          Action:
-            - 'logs:CreateLogGroup'
-            - 'logs:CreateLogStream'
-            - 'logs:PutLogEvents'
-            - 'logs:DescribeLogGroups'
-            - 'logs:FilterLogEvents'
-            - 'logs:DescribeLogStreams'
-            - 'logs:DeleteLogGroup'
-            - 'codebuild:*'
-            - 'codecommit:GetBranch'
-            - 'codecommit:GetCommit'
-            - 'codecommit:UploadArchive'
-            - 'codecommit:GetUploadArchiveStatus'
-            - 'codecommit:CancelUploadArchive'
-            - 'cloudformation:List*'
-            - 'cloudformation:Get*'
-            - 'cloudformation:PreviewStackUpdate'
-            - 'cloudformation:ValidateTemplate'
-            - 'cloudformation:CreateStack'
-            - 'cloudformation:CreateUploadBucket'
-            - 'cloudformation:DeleteStack'
-            - 'cloudformation:Describe*'
-            - 'cloudformation:UpdateStack'
-            - 'lambda:Get*'
-            - 'lambda:List*'
-            - 'lambda:CreateFunction'
-            - 'lambda:AddPermission'
-            - 'lambda:CreateAlias'
-            - 'lambda:DeleteFunction'
-            - 'lambda:InvokeFunction'
-            - 'lambda:PublishVersion'
-            - 'lambda:RemovePermission'
-            - 'lambda:Update*'
-            - 'lambda:PublishLayerVersion'
-            - 'apigateway:GET'
-            - 'apigateway:POST'
-            - 'apigateway:PUT'
-            - 'apigateway:DELETE'
-            - 'apigateway:PATCH'
-            - 's3:CreateBucket'
-            - 's3:DeleteBucket'
-            - 's3:ListBucket'
-            - 's3:ListBucketVersions'
-            - 's3:PutObject'
-            - 's3:GetObject'
-            - 's3:DeleteObject'
-            - 's3:PutEncryptionConfiguration'
-            - 's3:GetEncryptionConfiguration'
-            - 'iam:PassRole'
-            - 'iam:GetRole'
-            - 'iam:CreateRole'
-            - 'iam:PutRolePolicy'
-            - 'iam:DeleteRolePolicy'
-            - 'iam:DeleteRole'
-            - 'cloudwatch:GetMetricStatistics'
-            - 'events:Put*'
-            - 'events:Remove*'
-            - 'events:Delete*'
-            - 'ssm:PutParameter'
-            - 'ssm:GetParameter'
-            - 'ssm:GetParametersByPath'
-            - 'ssm:AddTagsToResource'
-            - 'sqs:CreateQueue'
-            - 'sqs:SendMessage'
-            - 'sqs:GetQueueAttributes'
-            - 'sqs:ListQueues'
-          Resource: "*"
+          - Effect: Allow
+            Action:
+              - 'codebuild:*'
+            Resource: !GetAtt TestBuildDeploy.Arn
+          - Effect: Allow
+            Action:
+              - 'codecommit:GetBranch'
+              - 'codecommit:GetCommit'
+              - 'codecommit:UploadArchive'
+              - 'codecommit:GetUploadArchiveStatus'
+              - 'codecommit:CancelUploadArchive'
+            Resource: !GetAtt 'CodeCommitRepository.Arn'
+          - Effect: Allow
+            Action:
+              - 'cloudformation:ListChangeSets'
+              - 'cloudformation:ListStackResources'
+              - 'cloudformation:GetStackPolicy'
+              - 'cloudformation:GetTemplate'
+              - 'cloudformation:CreateStack'
+              - 'cloudformation:DeleteStack'
+              - 'cloudformation:DescribeStacks'
+              - 'cloudformation:DescribeStackResources'
+              - 'cloudformation:DescribeStackResource'
+              - 'cloudformation:DescribeStackEvents'
+              - 'cloudformation:UpdateStack'
+            # Changing resource so a serverless stack can be deployed  
+            Resource: !Join [ '', [ 'arn:aws:cloudformation:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/*"  ] ]
+          - Effect: Allow
+            Action:
+              - 'lambda:AddPermission'
+              - 'lambda:CreateAlias'
+              - 'lambda:ListAliases'
+              - 'lambda:DeleteFunction'
+              - 'lambda:InvokeFunction'
+              - 'lambda:PublishVersion'
+              - 'lambda:RemovePermission'
+              - 'lambda:UpdateAlias'
+              - 'lambda:UpdateFunctionCode'
+              - 'lambda:UpdateFunctionConfiguration'
+              - 'lambda:GetFunction'
+              - 'lambda:GetFunctionConfiguration'
+              - 'lambda:ListVersionsByFunction'
+            Resource:
+              # Giving permissions on the lambda functions created 
+              # by the serverless framework, based on the assumption
+              # that serverless frameworks creates function names
+              # based on service name and stage
+              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
+              # Our merger lambda function
+              - !GetAtt MergeLambda.Arn
+          - Effect: Allow
+            Action:
+              - 'apigateway:GET'
+              - 'apigateway:POST'
+              - 'apigateway:PUT'
+              - 'apigateway:DELETE'
+              - 'apigateway:PATCH'
+            # Note: This is still not ideal (giving access to all API
+            # gateway resources in a region for a single account), 
+            # but I could not find how to restrict it even further
+            Resource: 
+              - !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', '::', "/restapis*" ] ]
+              # This is ugly but URL-encoding seems to be required for this
+              - !Join [ '', [ 'arn:aws:apigateway:' , !Ref 'AWS::Region', '::', '/tags/arn%3Aaws%3Aapigateway%3A', !Ref 'AWS::Region', '%3A%3A%2F', "restapis%2F*" ] ]
+          - Effect: Allow
+            Action:
+              - 's3:CreateBucket'
+              - 's3:DeleteBucket'
+              - 's3:ListBucket'
+              - 's3:ListBucketVersions'
+              - 's3:PutObject'
+              - 's3:GetObject'
+              - 's3:DeleteObject'
+              - 's3:PutEncryptionConfiguration'
+              - 's3:GetEncryptionConfiguration'
+              - 's3:GetBucketLocation'
+            # NOTE: The below is probably not true. Some permissions
+            # require "conditions", and I am not sure how to define them yet.
+            Resource: 
+              - !GetAtt S3CodePipeline.Arn
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*' ] ]
+              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*', '/*' ] ]
+          - Effect: Allow
+            Action:
+              - 'iam:PassRole'
+              - 'iam:GetRole'
+              - 'iam:CreateRole'
+              - 'iam:PutRolePolicy'
+              - 'iam:DeleteRolePolicy'
+              - 'iam:DeleteRole'
+            # Also not sure about this one
+            Resource: 
+              - !Join [ '', [ 'arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref Service, '-', !Ref Environment, '-', !Ref 'AWS::Region', '*' ] ]
+              - !GetAtt CodeBuildRole.Arn
+          - Effect: Allow
+            Action:
+              - 'events:RemoveTargets'
+              - 'events:DeleteRule'
+            Resource: !Join [ '', [ 'arn:aws:', 'events:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':rule/', !Ref CloudWatchCommitEventRule ] ]
+          - Effect: Allow
+            Action:
+              - 'ssm:PutParameter'
+              - 'ssm:GetParameter'
+              - 'ssm:GetParametersByPath'
+            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/*' ] ]
+          - Effect: Allow
+            Action:
+              - 'ssm:AddTagsToResource'
+            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':document/*' ] ]
+          - Effect: Allow
+            Action:
+              - 'sqs:CreateQueue'
+              - 'sqs:SendMessage'
+              - 'sqs:GetQueueAttributes'
+            Resource: !Join [ '', [ 'arn:aws:sqs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':*' ] ]
+            # Seems like there are some permissions that are 
+            # only applicable to "*" resource, maybe
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:DeleteLogGroup'
+              - 'logs:DescribeLogGroups'
+              - 'logs:FilterLogEvents'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+              - 'logs:DescribeLogStreams'
+              - 'cloudformation:ListStacks'
+              - 'cloudformation:GetTemplateSummary'
+              - 'cloudformation:ValidateTemplate'
+              - 'cloudformation:CreateUploadBucket'
+              - 'cloudformation:DescribeAccountLimits'
+              - 'cloudformation:DescribeChangeSet'
+              - 'lambda:CreateFunction'
+              - 'lambda:PublishLayerVersion'
+              - 'lambda:ListTags'
+              - 'lambda:TagResource'
+              - 'lambda:UntagResource'
+              - 'cloudwatch:GetMetricStatistics'
+              - 'events:PutEvents'
+              - 'events:PutRule'
+              - 'events:PutTargets'
+              - 'sqs:ListQueues'
+            Resource: "*"
       Roles:
         -  !Ref CodeBuildRole
 
@@ -269,24 +349,48 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          Effect: Allow
-          Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - s3:putObject
-            - s3:getObject
-            - codebuild:*
-            - codecommit:GetBranch
-            - codecommit:GetCommit
-            - codecommit:UploadArchive
-            - codecommit:GetUploadArchiveStatus
-            - codecommit:CancelUploadArchive
-            - lambda:InvokeFunction
-            - secretsmanager:GetSecretValue
-            - kms:Decrypt
-          Resource:
-            - "*"
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - s3:putObject
+              - s3:getObject
+            Resource:
+              # NOTE: The below is probably not true. Some permissions
+              # require "conditions", and I am not sure how to define them yet.
+              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
+          - Effect: Allow
+            Action:
+              - codecommit:GetBranch
+              - codecommit:GetCommit
+              - codecommit:UploadArchive
+              - codecommit:GetUploadArchiveStatus
+              - codecommit:CancelUploadArchive
+            Resource: !GetAtt CodeCommitRepository.Arn
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              # Giving permissions on the lambda functions created 
+              # by the serverless framework, based on the assumption
+              # that serverless frameworks creates function names
+              # based on service name and stage
+              - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
+              # Our merger lambda function
+              - !GetAtt MergeLambda.Arn
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: !Join [ '', [ 'arn:aws:secretsmanager:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "secret", ':', !Ref Environment, '/codepipeline/github*' ] ]
+          - Effect: Allow
+            Action:
+              - codebuild:*
+            Resource: !GetAtt TestBuildDeploy.Arn
       Roles:
         -  !Ref CodePipelineRole
   
@@ -312,35 +416,75 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Resource: "*"
-            Effect: Allow
+          - Effect: Allow
             Action:
               - s3:PutObject
               - s3:GetObject
               - s3:GetObjectVersion
-              - s3:GetBucketVersioning
-          - Resource: "*"
-            Effect: Allow
+            Resource:
+              # NOTE: The below is probably not true. Some permissions
+              # require "conditions", and I am not sure how to define them yet.
+              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
+          - Effect: Allow
             Action:
-              - lambda:*
+              - s3:GetBucketVersioning
+            Resource:
+              - !GetAtt S3CodePipeline.Arn
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
+          - Effect: Allow
+            Action:
               - codecommit:GetBranch
               - codecommit:GetCommit
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
+            Resource: !GetAtt CodeCommitRepository.Arn
+          - Effect: Allow
+            Action:
               - codebuild:StartBuild
               - codebuild:BatchGetBuilds
-              - cloudformation:*
-              - iam:PassRole
+            Resource: !GetAtt TestBuildDeploy.Arn
+          - Effect: Allow
+            Action:
               - codepipeline:PutJobSuccessResult
               - codepipeline:PutJobFailureResult
-              - lambda:Listfunctions
-          - Resource: "*"
-            Effect: Allow
+              - lambda:*
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: 
+              # Also not sure about this one
+              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePipelineLambdaRole ] ]
+              - !GetAtt CodePipelineLambdaRole.Arn
+          - Effect: Allow
+            Action:
+              - 'cloudformation:ListChangeSets'
+              - 'cloudformation:ListStackResources'
+              - 'cloudformation:GetStackPolicy'
+              - 'cloudformation:GetTemplate'
+              - 'cloudformation:CreateStack'
+              - 'cloudformation:DeleteStack'
+              - 'cloudformation:DescribeStacks'
+              - 'cloudformation:DescribeStackResources'
+              - 'cloudformation:DescribeStackResource'
+              - 'cloudformation:DescribeStackEvents'
+              - 'cloudformation:UpdateStack'
+            Resource: 
+              - !Join [ '', [ 'arn:aws:cloudformation:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "stack/", !Ref 'AWS::StackName' , "/*"  ] ]
+          - Effect: Allow
             Action:
               - logs:CreateLogGroup
               - logs:CreateLogStream
               - logs:PutLogEvents
+              - 'cloudformation:ListStacks'
+              - 'cloudformation:GetTemplateSummary'
+              - 'cloudformation:ValidateTemplate'
+              - 'cloudformation:CreateUploadBucket'
+              - 'cloudformation:DescribeAccountLimits'
+              - 'cloudformation:DescribeChangeSet'
+            Resource: "*"
       Roles:
         -  !Ref CodePipelineLambdaRole
   
@@ -391,7 +535,7 @@ Resources:
         Location: !Ref S3CodePipeline
         Type: S3
       RestartExecutionOnUpdate: true
-      RoleArn: !Join [ "", ["arn:aws:iam::", !Ref "AWS::AccountId", ":role/", !Ref CodePipelineRole  ] ]
+      RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
 
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
