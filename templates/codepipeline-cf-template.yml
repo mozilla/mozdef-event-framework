@@ -489,7 +489,8 @@ Resources:
         -  !Ref CodePipelineLambdaRole
   
   S3CodePipeline:
-    Type: "AWS::S3::Bucket"
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
       BucketName: !Join [ "", [!Ref CodePipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
   
