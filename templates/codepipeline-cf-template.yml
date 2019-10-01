@@ -257,10 +257,10 @@ Resources:
             # NOTE: The below is probably not true. Some permissions
             # require "conditions", and I am not sure how to define them yet.
             Resource: 
-              - !GetAtt S3CodePipeline.Arn
+              - !GetAtt S3Pipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*' ] ]
-              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+              - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*', '/*' ] ]
           - Effect: Allow
@@ -361,7 +361,7 @@ Resources:
             Resource:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
-              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+              - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
             Action:
@@ -423,13 +423,13 @@ Resources:
             Resource:
               # NOTE: The below is probably not true. Some permissions
               # require "conditions", and I am not sure how to define them yet.
-              - !Join [ '', [ !GetAtt S3CodePipeline.Arn, '/*' ] ]
+              - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
             Action:
               - s3:GetBucketVersioning
             Resource:
-              - !GetAtt S3CodePipeline.Arn
+              - !GetAtt S3Pipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
           - Effect: Allow
             Action:
