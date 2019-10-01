@@ -15,15 +15,19 @@ def lambda_handler(event, context):
     # print(json.dumps(event))
     # This parsing can and will be improved in the future
     logger.info("{} service initialized.".format(service))
-    aws_event = event
+    api_event = event
     returnDict = dict()
     returnDict['details'] = {}
 
-    # See if submitted POST body is a valid JSON
+    # See if submitted POST body is a valid JSON and has
+    #  a "payload" since this is common in webhook data
     try:
-        request_body = json.loads(aws_event['body'])
+        json.loads(api_event['body']) and 'payload' in api_event['body']
     except Exception as e:
-        logger.error("Cannot parse event: {}, context: {}, exception: ".format(str(request_body), context.function_name, e))
+        logger.error("Cannot parse API event: {}, context: {}, exception: ".format(
+            str(api_event['body']),
+            context.function_name, e)
+        )
         return {
                 'statusCode': 400,
                 'body': json.dumps('Bad Request')
@@ -38,7 +42,7 @@ def lambda_handler(event, context):
     returnDict['processname'] = service
     returnDict['processid'] = 'none'
     returnDict['severity'] = 'INFO'
-    returnDict['details'] = json.loads(aws_event['body'])
+    returnDict['details'] = json.loads(api_event['body'])
 
     queueURL = os.getenv('SQS_URL')
     sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
