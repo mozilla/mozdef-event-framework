@@ -12,7 +12,6 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
-    # print(json.dumps(event))
     # This parsing can and will be improved in the future
     logger.info("{} service initialized.".format(service))
     api_event = event
@@ -38,6 +37,7 @@ def lambda_handler(event, context):
                 'statusCode': 400,
                 'body': json.dumps('Bad Request')
         }
+    
     returnDict = {
         'hostname': '{}_host'.format(service),
         'processname': service,
@@ -52,17 +52,6 @@ def lambda_handler(event, context):
         ],
         'details': message
     }
-
-    # returnDict['summary'] = '{}_event'.format(service)
-    # returnDict['source'] = 'api_aws_lambda'
-    # returnDict['category'] = service
-    # returnDict['eventsource'] = service + '_api'
-    # returnDict['hostname'] = '{}_host'.format(service)
-    # returnDict['tags'] = [ service ]
-    # returnDict['processname'] = service
-    # returnDict['processid'] = 'none'
-    # returnDict['severity'] = 'INFO'
-    # returnDict['details'] = message
 
     queueURL = os.getenv('SQS_URL')
     sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
