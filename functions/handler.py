@@ -18,6 +18,8 @@ def lambda_handler(event, context):
     api_event = event
     returnDict = dict()
     returnDict['details'] = {}
+    # Tags need to be list
+    returnDict['tags'] = []
 
     # See if submitted POST body is a valid JSON and has
     #  a "payload" since this is common in webhook data
@@ -44,7 +46,7 @@ def lambda_handler(event, context):
     returnDict['category'] = service
     returnDict['eventsource'] = service + '_api'
     returnDict['hostname'] = '{}_host'.format(service)
-    returnDict['tags'] = service
+    returnDict['tags'].append(service)
     returnDict['processname'] = service
     returnDict['processid'] = 'none'
     returnDict['severity'] = 'INFO'
