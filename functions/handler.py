@@ -53,7 +53,7 @@ def lambda_handler(event, context):
     returnDict['details'] = json.loads(api_event['body'])
 
     queueURL = os.getenv('SQS_URL')
-    sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
+    sqs.send_message(QueueUrl=queueURL, MessageBody=returnDict)
     logger.info("Event added to the resource queue.")
 
     return {
