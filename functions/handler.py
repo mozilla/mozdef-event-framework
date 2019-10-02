@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     try:
         message = json.loads(api_event['body'])
     except Exception as e:
-        logger.error("Cannot parse API event: {}, context: {}, exception: ".format(
+        logger.error("Cannot parse API event: {}, context: {}, exception: {}".format(
             str(api_event['body']),
             context.function_name, e)
         )
