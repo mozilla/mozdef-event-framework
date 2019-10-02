@@ -103,7 +103,7 @@ Resources:
           Key: !Join [ "", [ "template-ef-config.zip" ]]
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # CLOUD WATCH COMMIT EVENT ROLE
   CWCommitEventRole:
@@ -510,7 +510,7 @@ Resources:
       BucketName: !Join [ "", [!Ref PLBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # LAMBDA CREATED TO MERGE INPUT ARTIFACTS  
   MergeLambda:
@@ -530,7 +530,7 @@ Resources:
       MemorySize: 128
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE CODEBUILD DEPLOYMENT
   TestBuildDeploy:
@@ -551,7 +551,7 @@ Resources:
         Type: CODEPIPELINE
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [!Ref ServiceTag, "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE STAGE DEFINITIONS
   EFPipeline:
