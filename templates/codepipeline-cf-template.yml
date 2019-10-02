@@ -142,13 +142,13 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          - !GetAtt 'CCRepository.Arn'
+          - !GetAtt 'CCRepo.Arn'
         detail:
           event:
             - referenceCreated
             - referenceUpdated
           repositoryName:
-            - !GetAtt 'CCRepository.Name'
+            - !GetAtt 'CCRepo.Name'
           referenceName:
             - !Ref CCRepoBranch
       Targets:
@@ -195,7 +195,7 @@ Resources:
               - 'codecommit:UploadArchive'
               - 'codecommit:GetUploadArchiveStatus'
               - 'codecommit:CancelUploadArchive'
-            Resource: !GetAtt 'CCRepository.Arn'
+            Resource: !GetAtt 'CCRepo.Arn'
           - Effect: Allow
             Action:
               - 'cloudformation:ListChangeSets'
@@ -390,7 +390,7 @@ Resources:
               - 'codecommit:UploadArchive'
               - 'codecommit:GetUploadArchiveStatus'
               - 'codecommit:CancelUploadArchive'
-            Resource: !GetAtt CCRepository.Arn
+            Resource: !GetAtt CCRepo.Arn
           - Effect: Allow
             Action:
               - 'lambda:InvokeFunction'
@@ -460,7 +460,7 @@ Resources:
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
-            Resource: !GetAtt CCRepository.Arn
+            Resource: !GetAtt CCRepo.Arn
           - Effect: Allow
             Action:
               - 'codebuild:StartBuild'
@@ -560,7 +560,7 @@ Resources:
         Location: !Ref S3Pipeline
         Type: S3
       RestartExecutionOnUpdate: true
-      RoleArn: !GetAtt CodePLRole.Arn
+      RoleArn: !GetAtt PLRole.Arn
       Stages:
 
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
@@ -575,7 +575,7 @@ Resources:
                 Version: 1
               Configuration:
                 BranchName: !Ref CCRepoBranch
-                RepositoryName: !GetAtt 'CCRepository.Name'
+                RepositoryName: !GetAtt 'CCRepo.Name'
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: ConfigSourceOutput
@@ -640,23 +640,23 @@ Outputs:
     Value: !Ref EFPipeline
   Environment:
     Value: !Ref Environment
-  CodecommitRepo:
+  CodecommitRepository:
     Value: !GetAtt 'CCRepo.Name'
   CodecommitBranch:
     Value: !Ref CCRepoBranch
-  GithubRepo:
+  GithubRepository:
     Value: !Ref GHRepo
-  CBRole:
+  CodeBuildRole:
     Value: !Ref CBRole
-  CBPolicy:
+  CodeBuildPolicy:
     Value: !Ref CBPolicy
-  PLRole:
+  PipelineRole:
     Value: !Ref PLRole
-  PLLambdaRole:
+  PipelineLambdaRole:
     Value: !Ref PLLambdaRole
-  PLPolicy:
+  PipelinePolicy:
     Value: !Ref PLPolicy
-  PLLambdaPolicy:
+  PipelineLambdaPolicy:
     Value: !Ref PLLambdaPolicy
-  S3Pipeline:
+  S3PipelineBucket:
     Value: !Ref S3Pipeline
