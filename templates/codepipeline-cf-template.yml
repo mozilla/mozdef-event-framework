@@ -477,7 +477,7 @@ Resources:
               - 'iam:PassRole'
             Resource: 
               # Also not sure about this one
-              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePLLambdaRole ] ]
+              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref PLLambdaRole ] ]
               - !GetAtt PLLambdaRole.Arn
           - Effect: Allow
             Action:
