@@ -36,7 +36,7 @@ Parameters:
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
 
-  PipelineBucketPrefix:
+  PLBucketPrefix:
     Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name.
     Type: String
     Default: mozdef-ef-utility-bucket
@@ -46,7 +46,7 @@ Parameters:
     Type: String
     Default: mozdef-ef-helper-bucket
 
-  CodeCommitRepositoryBranch:
+  CCRepoBranch:
     Description: The name of the branch for the CodeCommit repo.
     Type: String
     Default: master
@@ -54,13 +54,13 @@ Parameters:
   
   # Removed personal access token parameter as it is accessed from 
   # AWS Secrets Manager
-  GitHubRepository:
+  GHRepo:
     Type: String
     # Defaulting to our public PoC repo
     Default: mozilla/mozdef-event-framework/master
     Description:  Github repository to be used as a source, in the form of "owner/repository/branch".
 
-  ConfigDirectory:
+  ConfDir:
     Type: String
     Default: config
     Description: Directory name for private configuration files for the merger lambda function.
@@ -74,21 +74,22 @@ Metadata:
         Parameters:
           - Environment
           - Service
-          - PipelineBucketPrefix
+          - PLBucketPrefix
           - HelperBucket
       - Label:
           default: "GitHub Configuration"
         Parameters:
-          - GitHubRepository
+          - GHRepo
       - Label:
           default: "CodeCommit Configuration"
         Parameters:
-          - CodeCommitRepositoryBranch
-          - ConfigDirectory
+          - CCRepoBranch
+          - ConfDir
 
 Resources:
-  
-  CodeCommitRepository:
+
+  # CODE COMMIT REPO  
+  CCRepo:
     Type: AWS::CodeCommit::Repository
     Properties: 
       RepositoryDescription: CodeCommit repository to hold configuration files for the external source
@@ -101,11 +102,12 @@ Resources:
           # (this does not have to change)
           Key: !Join [ "", [ "template-ef-config.zip" ]]
 
-  CloudWatchCommitEventRole:
+  # CLOUD WATCH COMMIT EVENT ROLE
+  CWCommitEventRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["CloudWatchCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["CWCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -114,22 +116,24 @@ Resources:
               Service: "events.amazonaws.com"
             Action: "sts:AssumeRole"
       Path: /
-  
-  CloudwatchCommitEventPolicy:
+
+  # CLOUD WATCH COMMIT EVENT POLICY
+  CWCommitEventPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["CloudwatchCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["CWCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action: codepipeline:StartPipelineExecution
-            Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
+            Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref EFPipeline] ]
       Roles:
-        - !Ref CloudWatchCommitEventRole
+        - !Ref CWCommitEventRole
 
-  CloudWatchCommitEventRule:
+  # CLOUD WATCH COMMIT EVENT RULE
+  CWCommitEventRule:
     Type: AWS::Events::Rule
     Properties:
       EventPattern:
@@ -138,27 +142,28 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          - !GetAtt 'CodeCommitRepository.Arn'
+          - !GetAtt 'CCRepository.Arn'
         detail:
           event:
             - referenceCreated
             - referenceUpdated
           repositoryName:
-            - !GetAtt 'CodeCommitRepository.Name'
+            - !GetAtt 'CCRepository.Name'
           referenceName:
-            - !Ref CodeCommitRepositoryBranch
+            - !Ref CCRepoBranch
       Targets:
         -
           Arn: 
-            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref Pipeline] ]
-          RoleArn: !GetAtt 'CloudWatchCommitEventRole.Arn'
-          Id: !Ref Pipeline
+            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref EFPipeline] ]
+          RoleArn: !GetAtt 'CWCommitEventRole.Arn'
+          Id: !Ref EFPipeline
 
-  CodeBuildRole:
+  # CODEBUILD ROLE
+  CBRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["CodeBuildRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["CBRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -167,12 +172,13 @@ Resources:
             Service: "codebuild.amazonaws.com"
           Action: "sts:AssumeRole"
 
+  # CODEBUILD POLICY
   # This can be restricted more
-  CodeBuildPolicy:
+  CBPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["CodeBuildPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["CBPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       # This is one of the most tricky ones, we may have
       # to break the permissions down per resource
       PolicyDocument:
@@ -189,7 +195,7 @@ Resources:
               - 'codecommit:UploadArchive'
               - 'codecommit:GetUploadArchiveStatus'
               - 'codecommit:CancelUploadArchive'
-            Resource: !GetAtt 'CodeCommitRepository.Arn'
+            Resource: !GetAtt 'CCRepository.Arn'
           - Effect: Allow
             Action:
               - 'cloudformation:ListChangeSets'
@@ -274,12 +280,12 @@ Resources:
             # Also not sure about this one
             Resource: 
               - !Join [ '', [ 'arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref Service, '-', !Ref Environment, '-', !Ref 'AWS::Region', '*' ] ]
-              - !GetAtt CodeBuildRole.Arn
+              - !GetAtt CBRole.Arn
           - Effect: Allow
             Action:
               - 'events:RemoveTargets'
               - 'events:DeleteRule'
-            Resource: !Join [ '', [ 'arn:aws:', 'events:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':rule/', !Ref CloudWatchCommitEventRule ] ]
+            Resource: !Join [ '', [ 'arn:aws:', 'events:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':rule/', !Ref CWCommitEventRule ] ]
           - Effect: Allow
             Action:
               - 'ssm:PutParameter'
@@ -325,13 +331,14 @@ Resources:
               - 'sqs:ListQueues'
             Resource: "*"
       Roles:
-        -  !Ref CodeBuildRole
+        -  !Ref CBRole
 
-  PipelineRole:
+  # PIPELINE ROLE
+  PLRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["PipelineRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PLRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -340,11 +347,12 @@ Resources:
             Service: "codepipeline.amazonaws.com"
           Action: "sts:AssumeRole"
 
-  PipelinePolicy:
+  # PIPELINE POLICY
+  PLPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["PipelinePolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PLPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -370,7 +378,7 @@ Resources:
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
-            Resource: !GetAtt CodeCommitRepository.Arn
+            Resource: !GetAtt CCRepository.Arn
           - Effect: Allow
             Action:
               - lambda:InvokeFunction
@@ -391,13 +399,14 @@ Resources:
               - codebuild:*
             Resource: !GetAtt TestBuildDeploy.Arn
       Roles:
-        -  !Ref PipelineRole
-  
-  PipelineLambdaRole:
+        -  !Ref PLRole
+
+  # PIPELINE LAMBDA ROLE  
+  PLLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName:
-        'Fn::Join': [ "", ["PipelineLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PLLambdaRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Path: /
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -407,11 +416,12 @@ Resources:
             Service: "lambda.amazonaws.com"
           Action: "sts:AssumeRole"
 
-  PipelineLambdaPolicy:
+  # PIPELINE LAMBDA POLICY
+  PLLambdaPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName:
-        'Fn::Join': [ "", ["PipelineLambdaPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["PLLambdaPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -438,7 +448,7 @@ Resources:
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
-            Resource: !GetAtt CodeCommitRepository.Arn
+            Resource: !GetAtt CCRepository.Arn
           - Effect: Allow
             Action:
               - codebuild:StartBuild
@@ -455,8 +465,8 @@ Resources:
               - iam:PassRole
             Resource: 
               # Also not sure about this one
-              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePipelineLambdaRole ] ]
-              - !GetAtt CodePipelineLambdaRole.Arn
+              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref CodePLLambdaRole ] ]
+              - !GetAtt PLLambdaRole.Arn
           - Effect: Allow
             Action:
               - 'cloudformation:ListChangeSets'
@@ -485,39 +495,42 @@ Resources:
               - 'cloudformation:DescribeChangeSet'
             Resource: "*"
       Roles:
-        -  !Ref PipelineLambdaRole
-  
+        -  !Ref PLLambdaRole
+
+  # S3 PIPELINE BUCKET  
   S3Pipeline:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Join [ "", [!Ref PipelineBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-  
+      BucketName: !Join [ "", [!Ref PLBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+
+  # LAMBDA CREATED TO MERGE INPUT ARTIFACTS  
   MergeLambda:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName:
-        'Fn::Join': [ "", ["PipelineMergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+        'Fn::Join': [ "", ["MergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Code:
         # Using the HelperBucket parameter here
         S3Bucket: !Join [ "", [!Ref HelperBucket ]]
         S3Key: merge.zip
-      Role: !GetAtt 'PipelineLambdaRole.Arn'
+      Role: !GetAtt 'PLLambdaRole.Arn'
       Description: "Lambda Function to merge artifacts in CodePipeline"
       Timeout: 30
       Handler: "merge.handler"
       Runtime: "nodejs10.x"
       MemorySize: 128
 
+  # CODEPIPELINE CODEBUILD DEPLOYMENT
   TestBuildDeploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Name: !Join ["", ["Test-Build",  "-", !Ref 'AWS::StackName'] ]
       Description: Demo of CodeBuild with CodeDeploy pipeline.
-      ServiceRole: !Ref CodeBuildRole
+      ServiceRole: !Ref CBRole
       TimeoutInMinutes: 5
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Join [ "", [!Ref 'ConfigDirectory', "/", "buildspec", "-", !Ref 'Environment', ".yml"]]
+        BuildSpec: !Join [ "", [!Ref 'ConfDir', "/", "buildspec", "-", !Ref 'Environment', ".yml"]]
       Environment:
         Type: "LINUX_CONTAINER"
         ComputeType: BUILD_GENERAL1_SMALL
@@ -525,16 +538,16 @@ Resources:
       Artifacts:
         Type: CODEPIPELINE
 
-  # CodePipeline with its stages:
-  Pipeline:
+  # CODEPIPELINE STAGE DEFINITIONS
+  EFPipeline:
     Type: "AWS::CodePipeline::Pipeline"
     Properties:
-      Name: !Join [ "", ["MozDef-Pipeline", "-", !Ref 'AWS::StackName'] ]
+      Name: !Join [ "", ["EFPipeline", "-", !Ref 'AWS::StackName'] ]
       ArtifactStore:
         Location: !Ref S3Pipeline
         Type: S3
       RestartExecutionOnUpdate: true
-      RoleArn: !GetAtt CodePipelineRole.Arn
+      RoleArn: !GetAtt CodePLRole.Arn
       Stages:
 
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
@@ -548,8 +561,8 @@ Resources:
                 Provider: CodeCommit
                 Version: 1
               Configuration:
-                BranchName: !Ref CodeCommitRepositoryBranch
-                RepositoryName: !GetAtt 'CodeCommitRepository.Name'
+                BranchName: !Ref CCRepoBranch
+                RepositoryName: !GetAtt 'CCRepository.Name'
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: ConfigSourceOutput
@@ -561,9 +574,9 @@ Resources:
                 Provider: GitHub
                 Version: 1
               Configuration:
-                Owner: !Select [0, !Split [ "/" , !Ref GitHubRepository ]]
-                Repo: !Select [1, !Split [ "/" , !Ref GitHubRepository ]]
-                Branch: !Select [2, !Split [ "/" , !Ref GitHubRepository ]]
+                Owner: !Select [0, !Split [ "/" , !Ref GHRepo ]]
+                Repo: !Select [1, !Split [ "/" , !Ref GHRepo ]]
+                Branch: !Select [2, !Split [ "/" , !Ref GHRepo ]]
                 # Since we are not using a webhook, we need to poll
                 PollForSourceChanges: true
                 # Obtaining from Secrets Manager
@@ -584,7 +597,7 @@ Resources:
                 Provider: Lambda
               Configuration:
                 FunctionName: !Ref MergeLambda
-                UserParameters: !Ref ConfigDirectory
+                UserParameters: !Ref ConfDir
               InputArtifacts:
                 - Name: CodeSourceOutput
                 - Name: ConfigSourceOutput
@@ -611,26 +624,26 @@ Resources:
 
 Outputs:
   CodeBuild:
-    Value: !Ref Pipeline
+    Value: !Ref EFPipeline
   Environment:
     Value: !Ref Environment
   CodecommitRepo:
-    Value: !GetAtt 'CodeCommitRepository.Name'
+    Value: !GetAtt 'CCRepo.Name'
   CodecommitBranch:
-    Value: !Ref CodeCommitRepositoryBranch
+    Value: !Ref CCRepoBranch
   GithubRepo:
-    Value: !Ref GitHubRepository
-  CodeBuildRole:
-    Value: !Ref CodeBuildRole
-  CodeBuildPolicy:
-    Value: !Ref CodeBuildPolicy
-  PipelineRole:
-    Value: !Ref PipelineRole
-  PipelineLambdaRole:
-    Value: !Ref PipelineLambdaRole
-  PipelinePolicy:
-    Value: !Ref PipelinePolicy
-  PipelineLambdaPolicy:
-    Value: !Ref PipelineLambdaPolicy
+    Value: !Ref GHRepo
+  CBRole:
+    Value: !Ref CBRole
+  CBPolicy:
+    Value: !Ref CBPolicy
+  PLRole:
+    Value: !Ref PLRole
+  PLLambdaRole:
+    Value: !Ref PLLambdaRole
+  PLPolicy:
+    Value: !Ref PLPolicy
+  PLLambdaPolicy:
+    Value: !Ref PLLambdaPolicy
   S3Pipeline:
     Value: !Ref S3Pipeline
