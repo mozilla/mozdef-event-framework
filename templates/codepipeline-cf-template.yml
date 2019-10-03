@@ -505,7 +505,14 @@ Resources:
   # S3 PIPELINE BUCKET  
   S3Pipeline:
     Type: "AWS::S3::Bucket"
-    DeletionPolicy: Retain
+    # I feel like we actually don't need to retain this.
+    # This is an S3 bucket which does not need to be existing
+    # at the time of CI pipeline creation - HelperBucket is.
+    # If we ever need to delete the pipeline stack, with retain,
+    # this bucket remains, then when creating a new pipeline
+    # stack, it will fail because it will complain that an 
+    # S3 bucket with the same name already exists.
+    # DeletionPolicy: Retain
     Properties:
       BucketName: !Join [ "", [!Ref PLBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
       Tags:
