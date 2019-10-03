@@ -29,7 +29,8 @@ To Deploy this framework you will need the following:
 This allows us to keep track of the various event sources, what environment they are used in, and keep the same var across all event sources that will contain different values.
 
 1. An AWS Account with the ability to use all of the AWS services previously mentioned.
-2. A CodeCommit repository that contains your buildspec and deploy script. 
+2. A CodeCommit repository that contains your buildspec and deploy script.
+Please note the env: variables that must be filled out, these can essentially be whatever you want them to be.
     __Example of a Buildspec:__
     ```
     version: 0.2 
