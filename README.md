@@ -4,11 +4,20 @@ A PoC using AWS + Serverless framework
 
 This is a work in progess which will eventually be used as a template for external event sources.
 
-The idea behind this work was to create a repeatable process for introducing new event sources to MozDef without having to specially craft it every time. While this is new and we haven't onboarded many sources yet, it is expected the function library may grow, and with it we will introduce further changes to this framework as it becomes more mature. For example, being able to handle SSO, JWT, or other methods of authorizing event sources are in our interest to support, as well as the ability to reach out and pull down data from Rest API's using those methods of authorization. With the introduction of this framework we should be able to have a repeatable CI/CD pipeline, and be able to add to the library many functions to handle various types of connectivity and data retrieval without much additional work.
+The idea behind this work was to create a repeatable process for introducing new event sources to MozDef without having to specially craft it every time. While this is new and we haven't onboarded many sources yet, it is expected the function library may grow, and with it we will introduce further changes to this framework as it becomes more mature. 
+
+For example, being able to handle SSO, JWT, or other methods of authorizing event sources are in our interest to support, as well as the ability to reach out and pull down data from Rest API's using those methods of authorization. With the introduction of this framework we should be able to have a repeatable CI/CD pipeline, and be able to add to the library many functions to handle various types of connectivity and data retrieval without much additional work.
 ___
 ## Framework Components:
 
-__Cloudformation:__ Cloudformation will create the CI/CD components utilizing __CodePipeline__, __CodeCommit__, __CodeBuild__, __s3__, __CloudWatch__, and __GitHub__.
+__Cloudformation:__ Cloudformation will create the CI/CD components utilizing:
+- __CodePipeline__
+- __CodeCommit__
+- __CodeBuild__
+- __s3__
+- __CloudWatch__
+- __GitHub__.
+
 The intended behavior is to pull the framework from GitHub, and the custom configuration for a specific event source from it's CodeCommit repository. The Cloudformation template has the potential to be separately deployed for various event sources, while the only difference will be the event source's CodeCommit repository that contains the custom configuration data. This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data. This structure presents the ability to maintain secret data, and preserve it's confidentiality.
 
 __Serverless:__ The Serverless framework is utilized to deploy the actual application that will handle the event source data. This framework creates the following resources:
@@ -24,13 +33,20 @@ We plan to include testing modules in this framework as well.
 To Deploy this framework you will need the following:
 
 1. You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure:
-```"/<Project_name>/<event_source_name>/<environemnt>/<authorizer_token_var>/"```
+
+`/<Project_name>/<event_source_name>/<environemnt>/<authorizer_token_var>/`
+
 This allows us to keep track of the various event sources, what environment they are used in, and keep the same var across all event sources that will contain different values.
+
 2. An AWS Account with the ability to use all of the AWS services previously mentioned.
+
 3. A CodeCommit repository that contains your buildspec and deploy script.
+
 Please note the env: variables that must be filled out, these can essentially be whatever you want them to be.
-    __Example of a Buildspec:__
-    ___
+___
+
+__Example of a Buildspec:__
+
     ```
     version: 0.2 
     
@@ -60,9 +76,10 @@ Please note the env: variables that must be filled out, these can essentially be
         # Invoke the deploy script here 
         - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
         - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION ```
-    
-    __Example of the deploy script__
-    ___
+___    
+
+__Example of the deploy script__
+
     ```#!/bin/bash 
     
     # This is deploy script template. Feel free modify per service/resource. 
@@ -106,4 +123,4 @@ Please note the env: variables that must be filled out, these can essentially be
     instruction   
     exit 1   
     fi  ```
-4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entire OK by us!
+4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK by us!
