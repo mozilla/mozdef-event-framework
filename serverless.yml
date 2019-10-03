@@ -60,6 +60,8 @@ provider:
         - sqs:SendMessage
         - sqs:GetQueueAttributes
         - sqs:ListQueues
+        - sqs:DeleteQueue
+        - sqs:TagQueue
       Resource: 
         - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
     - Effect: Allow
