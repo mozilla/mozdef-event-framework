@@ -101,9 +101,9 @@ package:
     - tests/**
 
 functions:
-  custom_authorizer: 
+  customAuthorizer: 
     handler: functions/authorizer.validate_token
-  event_handler:
+  eventHandler:
     handler: functions/handler.lambda_handler
     description: Lambda for handling events from ${self:service} resource.
     events:
@@ -115,13 +115,6 @@ functions:
 
 resources:
   Resources:
-    # RestApi:
-    #   Type: 'AWS::ApiGateway::RestApi'
-    #   Properties:
-    #     Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
-    #     Tags:
-    #     - Key: "Project"
-    #       Value: ${self:custom.cfg.project}-${self:provider.stage}
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
