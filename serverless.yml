@@ -51,7 +51,7 @@ provider:
     apiGateway: true
     lambda: true
   stackTags:
-    Project: ${self:custom.cfg.project}
+    Project: ${self:custom.cfg.project}-${self:provider.stage}
   stackName: ${self:service}-${self:provider.stage}
   apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
   iamRoleStatements:
@@ -119,7 +119,7 @@ resources:
         Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
         Tags:
         - Key: "Project"
-          Value: ${self:custom.cfg.project}
+          Value: ${self:custom.cfg.project}-${self:provider.stage}
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
@@ -134,7 +134,7 @@ resources:
           maxReceiveCount: 10
         Tags:
         - Key: "Project"
-          Value: ${self:custom.cfg.project}
+          Value: ${self:custom.cfg.project}-${self:provider.stage}
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -142,4 +142,4 @@ resources:
         MessageRetentionPeriod: 1209600
         Tags:
         - Key: "Project"
-          Value: ${self:custom.cfg.project}
+          Value: ${self:custom.cfg.project}-${self:provider.stage}
