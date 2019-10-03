@@ -115,13 +115,13 @@ functions:
 
 resources:
   Resources:
-    RestApi:
-      Type: 'AWS::ApiGateway::RestApi'
-      Properties:
-        Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
-        Tags:
-        - Key: "Project"
-          Value: ${self:custom.cfg.project}-${self:provider.stage}
+    # RestApi:
+    #   Type: 'AWS::ApiGateway::RestApi'
+    #   Properties:
+    #     Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
+    #     Tags:
+    #     - Key: "Project"
+    #       Value: ${self:custom.cfg.project}-${self:provider.stage}
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
