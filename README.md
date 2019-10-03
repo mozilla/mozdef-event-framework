@@ -25,11 +25,9 @@ To Deploy this framework you will need the following:
 
 1. You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure:
 ```"/<Project_name>/<event_source_name>/<environemnt>/<authorizer_token_var>/"```
-
 This allows us to keep track of the various event sources, what environment they are used in, and keep the same var across all event sources that will contain different values.
-
-1. An AWS Account with the ability to use all of the AWS services previously mentioned.
-2. A CodeCommit repository that contains your buildspec and deploy script.
+2. An AWS Account with the ability to use all of the AWS services previously mentioned.
+3. A CodeCommit repository that contains your buildspec and deploy script.
 Please note the env: variables that must be filled out, these can essentially be whatever you want them to be.
     __Example of a Buildspec:__
     ```
@@ -61,9 +59,9 @@ Please note the env: variables that must be filled out, these can essentially be
         # Invoke the deploy script here 
         - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
         - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION ```
-
+    
     __Example of the deploy script__
-
+    
     ```#!/bin/bash 
     
     # This is deploy script template. Feel free modify per service/resource. 
@@ -108,4 +106,4 @@ Please note the env: variables that must be filled out, these can essentially be
     exit 1   
     fi  ```
 
-3. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entire OK by us!
+4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entire OK by us!
