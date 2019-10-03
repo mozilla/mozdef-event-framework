@@ -127,7 +127,7 @@ ___
     fi
 ```
 4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entire OK by us!
-5. An S3 bucket to hold the merge.zip code and your zipped CodeCommit code for your specific event source, mark this bucket private (not public)
+5. An S3 bucket to hold the merge.zip code and your zipped CodeCommit code for your specific event source, mark this bucket private (not public), the CF template will create the CodeCommit Repo for you with your code.
 
 ## RUN IT
 Upload the cloudformation template, fill in the vars according to your design for the initial parameters unless you intend to use the defaults, and wait for it to complete!
