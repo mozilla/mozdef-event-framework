@@ -47,7 +47,7 @@ ___
 
 __Example of a Buildspec:__
 
-    ```
+```
     version: 0.2 
     
     env:  
@@ -75,15 +75,17 @@ __Example of a Buildspec:__
         commands: 
         # Invoke the deploy script here 
         - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
-        - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION ```
+        - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION 
+```
+
 ___    
 
-__Example of the deploy script__
+**Example of the deploy script**
 
-    ```#!/bin/bash 
+```#!/bin/bash 
     
     # This is deploy script template. Feel free modify per service/resource. 
-
+    
     instruction()   
     {   
     echo "-----------------------------------------------"   
@@ -122,5 +124,6 @@ __Example of the deploy script__
     else   
     instruction   
     exit 1   
-    fi  ```
-4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK by us!
+    fi
+```
+4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entire OK by us!
