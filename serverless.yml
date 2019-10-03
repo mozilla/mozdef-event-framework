@@ -31,7 +31,10 @@ custom:
     api_method: POST
     api_path: ${env:API_PATH}
     authToken: ${self:service}/${env:STAGE}/auth_token
-    project: 'mozdef-event-framework'
+    # Reading project name from an environment variable
+    # assumed to come from buildspec as well. This will
+    # be applied as a tag for resources created by serverless
+    project: ${env:PROJECT}
     keep: 5
   # Keeping the last 5 versions of our Lambda functions
   prune:
@@ -47,8 +50,8 @@ provider:
   tracing:
     apiGateway: true
     lambda: true
-  tags:
-    Project: ${self:custom.cfg.project}
+  stackTags:
+    Project: ${self:custom.cfg.project}-${self:provider.stage}
   stackName: ${self:service}-${self:provider.stage}
   apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
   iamRoleStatements:
@@ -114,6 +117,9 @@ resources:
       Type: 'AWS::ApiGateway::RestApi'
       Properties:
         Name: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-apigw
+        Tags:
+        - Key: "Project"
+          Value: ${self:custom.cfg.project}-${self:provider.stage}
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
@@ -126,8 +132,14 @@ resources:
             - DeadLetterQueue
             - Arn
           maxReceiveCount: 10
+        Tags:
+        - Key: "Project"
+          Value: ${self:custom.cfg.project}-${self:provider.stage}
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-DLQ
         MessageRetentionPeriod: 1209600
+        Tags:
+        - Key: "Project"
+          Value: ${self:custom.cfg.project}-${self:provider.stage}

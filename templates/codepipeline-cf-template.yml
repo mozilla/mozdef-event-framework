@@ -52,8 +52,8 @@ Parameters:
     Default: master
     ConstraintDescription: "Can contain only ASCII characters."
   
-  # Removed personal access token parameter as it is accessed from 
-  # AWS Secrets Manager
+  # Removed personal access token parameter as 
+  # it is accessed from AWS Secrets Manager
   GHRepo:
     Type: String
     # Defaulting to our public PoC repo
@@ -70,10 +70,10 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: "Stack Configuration"
+          default: "Pipeline Configuration"
         Parameters:
-          - Environment
           - Service
+          - Environment
           - PLBucketPrefix
           - HelperBucket
       - Label:
@@ -101,6 +101,9 @@ Resources:
           # the skeleton/template files in the Codecommit repo 
           # (this does not have to change)
           Key: !Join [ "", [ "template-ef-config.zip" ]]
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # CLOUD WATCH COMMIT EVENT ROLE
   CWCommitEventRole:
@@ -179,8 +182,6 @@ Resources:
     Properties:
       PolicyName:
         'Fn::Join': [ "", ["CBPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      # This is one of the most tricky ones, we may have
-      # to break the permissions down per resource
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -260,8 +261,6 @@ Resources:
               - 's3:PutEncryptionConfiguration'
               - 's3:GetEncryptionConfiguration'
               - 's3:GetBucketLocation'
-            # NOTE: The below is probably not true. Some permissions
-            # require "conditions", and I am not sure how to define them yet.
             Resource: 
               - !GetAtt S3Pipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
@@ -377,8 +376,6 @@ Resources:
               - 's3:GetEncryptionConfiguration'
               - 's3:GetBucketLocation'
             Resource:
-              # NOTE: The below is probably not true. Some permissions
-              # require "conditions", and I am not sure how to define them yet.
               - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
@@ -443,8 +440,6 @@ Resources:
               - 's3:GetObject'
               - 's3:GetObjectVersion'
             Resource:
-              # NOTE: The below is probably not true. Some permissions
-              # require "conditions", and I am not sure how to define them yet.
               - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
           - Effect: Allow
@@ -476,8 +471,6 @@ Resources:
             Action:
               - 'iam:PassRole'
             Resource: 
-              # Also not sure about this one
-              # - !Join [ '', [ 'arn:aws:iam:', !Ref 'AWS::AccountId', ':role/', !Ref PLLambdaRole ] ]
               - !GetAtt PLLambdaRole.Arn
           - Effect: Allow
             Action:
@@ -515,6 +508,9 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       BucketName: !Join [ "", [!Ref PLBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # LAMBDA CREATED TO MERGE INPUT ARTIFACTS  
   MergeLambda:
@@ -532,6 +528,9 @@ Resources:
       Handler: "merge.handler"
       Runtime: "nodejs10.x"
       MemorySize: 128
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE CODEBUILD DEPLOYMENT
   TestBuildDeploy:
@@ -550,6 +549,9 @@ Resources:
         Image: aws/codebuild/standard:2.0
       Artifacts:
         Type: CODEPIPELINE
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [!Ref MozDef-EF, "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE STAGE DEFINITIONS
   EFPipeline:
@@ -562,7 +564,6 @@ Resources:
       RestartExecutionOnUpdate: true
       RoleArn: !GetAtt PLRole.Arn
       Stages:
-
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
         - Name: Source
           Actions:
@@ -596,7 +597,6 @@ Resources:
                 OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
-
         # Stage 2: Merge the Sources into one Artifact
         # This merges the App and SecureConfig artifacts
         # See https://dzone.com/articles/running-aws-lambda-functions-in-aws-codepipeline-u
