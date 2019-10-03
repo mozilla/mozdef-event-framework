@@ -30,7 +30,7 @@ __Serverless:__ The Serverless framework is utilized to deploy the actual applic
 
 We plan to include testing modules in this framework as well.
 
-To Deploy this framework you will need the following:
+To Deploy this framework you will need the following established:
 
 1. You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure:
 
@@ -127,3 +127,6 @@ ___
     fi
 ```
 4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entire OK by us!
+
+## RUN IT
+Upload the cloudformation template, fill in the vars according to your design for the initial parameters unless you intend to use the defaults, and wait for it to complete!
