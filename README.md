@@ -8,7 +8,7 @@ The idea behind this work was to create a repeatable process for introducing new
 
 For example, being able to handle SSO, JWT, or other methods of authorizing event sources are in our interest to support, as well as the ability to reach out and pull down data from Rest API's using those methods of authorization. With the introduction of this framework we should be able to have a repeatable CI/CD pipeline, and be able to add to the library many functions to handle various types of connectivity and data retrieval without much additional work.
 ___
-## Framework Components:
+## Framework Components
 
 __Cloudformation:__ Cloudformation will create the CI/CD components utilizing:
 - __CodePipeline__
@@ -34,15 +34,15 @@ To deploy this framework you will need the following established:
 
 1. You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure:
 
-`/<Project_name>/<event_source_name>/<environemnt>/<authorizer_token_var>/`
+   `/<Project_name>/<event_source_name>/<environemnt>/<authorizer_token_var>/`
 
-This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
+   This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
 
 2. An AWS Account with the ability to use all of the AWS services previously mentioned.
 
 3. A CodeCommit repository that contains your buildspec and deploy script.
 
-Please note the env: variables that must be filled out, these can essentially be whatever you want them to be.
+   Please note the env: variables that must be filled out, these can essentially be whatever you want them to be.
 ___
 
 __Example of a Buildspec:__
@@ -131,7 +131,7 @@ fi
 4. The GitHub Framework Repo which contains the initial Cloudformation template, this will automatically create your CI/CD pipeline and build out the serverless application as a part of that. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK for us!
 5. An S3 bucket to hold the merger lambda code (merge.zip) and your zipped CodeCommit repository for your specific event source, mark this bucket private (not public), the CF template will create the CodeCommit Repo for you with your code. This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
 
-## RUN IT
+## Run It!
 Upload the cloudformation template, fill in the CloudFormation parameters and environment variables according to your design, unless you intend to use the defaults, and wait for it to complete!
 To run multiple deployments (e.g if you have multiple event sources you would like to consume), you'll need to rename the cloudformation template each time you upload it for a new deployment.
 
