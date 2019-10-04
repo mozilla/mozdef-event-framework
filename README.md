@@ -18,10 +18,10 @@ __Cloudformation:__ Cloudformation will create the CI/CD components utilizing:
 - __CloudWatch__
 - __GitHub__.
 
-The intended behavior is to pull the framework from GitHub, and the custom configuration for a specific event source from its CodeCommit repository. The Cloudformation template has the potential to be separately deployed for various event sources, while the only difference will be the event source's CodeCommit repository that contains the custom configuration data for that event source. This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data. This structure presents the ability to maintain secret data, and preserve it's confidentiality.
+The intended behavior is to pull the framework from GitHub, and the custom configuration for a specific event source from its CodeCommit repository. The Cloudformation template has the potential to be separately deployed for various event sources, while the only difference will be the event source's CodeCommit repository that contains the custom configuration data for that event source. This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data. 
 
 __Serverless:__ The Serverless framework is utilized to deploy the actual application that will handle the event source data. This framework creates the following resources:
- - A custom authorizer for webhook based APIs that use a header token.
+ - A custom authorizer for webhook based APIs that use an Authorization header.
  - An API Gateway for receiving post events using the authorizer.
  - Custom configuration variables that are populated by the `buildspec.yml` located in each event source configuration's CodeCommit repository.
  - A lambda event handler that will validate to some degree the event to be processed by MozDef. At some point we may extend functionality here to fully process the event by another lambda.
