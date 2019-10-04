@@ -21,7 +21,7 @@ plugins:
 custom:
   authorizer:
     validate_token:
-      name: custom_authorizer
+      name: customAuthorizer
       type: token
       identitySource: method.request.header.Authorization
       identityValidationExpression: '.*'
