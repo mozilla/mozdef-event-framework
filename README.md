@@ -134,3 +134,5 @@ fi
 ## RUN IT
 Upload the cloudformation template, fill in the CloudFormation parameters and environment variables according to your design, unless you intend to use the defaults, and wait for it to complete!
 To run multiple deployments (e.g if you have multiple event sources you would like to consume), you'll need to rename the cloudformation template each time you upload it for a new deployment.
+
+For convenience, you may run the CloudFormation template with an AWS account that has administrative rights. This should be fine, as dedicated IAM roles associated with the resources are created by both the Cloudformation template and the Serverless framework. You can fine tune permissions for these roles within the Cloudformation template and/or serverless yaml configuration file (serverless.yml).
