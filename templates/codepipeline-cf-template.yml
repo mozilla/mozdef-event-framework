@@ -41,29 +41,31 @@ Parameters:
     Type: String
     Default: mozdef-ef-utility-bucket
 
-  HelperBucket:
-    Description: An EXISTING bucket which holds the merger lambda function code and codecommit code.
-    Type: String
-    Default: mozdef-ef-helper-bucket
-
-  CCRepoBranch:
-    Description: The name of the branch for the CodeCommit repo.
-    Type: String
-    Default: master
-    ConstraintDescription: "Can contain only ASCII characters."
-  
   # Removed personal access token parameter as 
   # it is accessed from AWS Secrets Manager
   GHRepo:
     Type: String
-    # Defaulting to our public PoC repo
-    Default: mozilla/mozdef-event-framework/master
-    Description:  Github repository to be used as a source, in the form of "owner/repository/branch".
+    Description:  A public or private Github repository to be used as the source, in the form of "owner/repository/branch".
 
-  ConfDir:
+  CCRepo:
     Type: String
-    Default: config
-    Description: Directory name for private configuration files for the merger lambda function.
+    Description:  A CodeCommit repository to be used as the source.
+
+  # HelperBucket:
+  #   Description: An EXISTING bucket which holds the merger lambda function code and codecommit code.
+  #   Type: String
+  #   Default: mozdef-ef-helper-bucket
+  #
+  # CCRepoBranch:
+  #   Description: The name of the branch for the CodeCommit repo.
+  #   Type: String
+  #   Default: master
+  #   ConstraintDescription: "Can contain only ASCII characters."
+  #
+  # ConfDir:
+  #   Type: String
+  #   Default: config
+  #   Description: Directory name for private configuration files for the merger lambda function.
 
 # This helps grouping similar parameters together when deploying via AWS Console
 Metadata:
@@ -75,91 +77,92 @@ Metadata:
           - Service
           - Environment
           - PLBucketPrefix
-          - HelperBucket
+          # - HelperBucket
       - Label:
           default: "GitHub Configuration"
         Parameters:
           - GHRepo
-      - Label:
-          default: "CodeCommit Configuration"
-        Parameters:
-          - CCRepoBranch
-          - ConfDir
+      # - Label:
+      #     default: "CodeCommit Configuration"
+      #   Parameters:
+      #     - CCRepoBranch
+      #     - ConfDir
 
 Resources:
 
-  # CODE COMMIT REPO  
-  CCRepo:
-    Type: AWS::CodeCommit::Repository
-    Properties: 
-      RepositoryDescription: CodeCommit repository to hold configuration files for the external source
-      RepositoryName: !Join [ "", [ !Ref Service, "-ef-config" ]]
-      Code:
-        S3:
-          Bucket: !Join [ "", [!Ref HelperBucket ]]
-          # Hardcoding the name of the zip file containing
-          # the skeleton/template files in the Codecommit repo 
-          # (this does not have to change)
-          Key: !Join [ "", [ "template-ef-config.zip" ]]
-      Tags:
-        - Key: "Project"
-          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
+  # CODE COMMIT REPO
+  # Commenting out
+  # CCRepo:
+  #   Type: AWS::CodeCommit::Repository
+  #   Properties: 
+  #     RepositoryDescription: CodeCommit repository to hold configuration files for the external source
+  #     RepositoryName: !Join [ "", [ !Ref Service, "-ef-config" ]]
+  #     Code:
+  #       S3:
+  #         Bucket: !Join [ "", [!Ref HelperBucket ]]
+  #         # Hardcoding the name of the zip file containing
+  #         # the skeleton/template files in the Codecommit repo 
+  #         # (this does not have to change)
+  #         Key: !Join [ "", [ "template-ef-config.zip" ]]
+  #     Tags:
+  #       - Key: "Project"
+  #         Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
 
   # CLOUD WATCH COMMIT EVENT ROLE
-  CWCommitEventRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName:
-        'Fn::Join': [ "", ["CWCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-            Effect: "Allow"
-            Principal:
-              Service: "events.amazonaws.com"
-            Action: 'sts:AssumeRole'
-      Path: /
+  # CWCommitEventRole:
+  #   Type: "AWS::IAM::Role"
+  #   Properties:
+  #     RoleName:
+  #       'Fn::Join': [ "", ["CWCommitEventRole", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #           Effect: "Allow"
+  #           Principal:
+  #             Service: "events.amazonaws.com"
+  #           Action: 'sts:AssumeRole'
+  #     Path: /
 
   # CLOUD WATCH COMMIT EVENT POLICY
-  CWCommitEventPolicy:
-    Type: "AWS::IAM::Policy"
-    Properties:
-      PolicyName:
-        'Fn::Join': [ "", ["CWCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action: codepipeline:StartPipelineExecution
-            Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref EFPipeline] ]
-      Roles:
-        - !Ref CWCommitEventRole
+  # CWCommitEventPolicy:
+  #   Type: "AWS::IAM::Policy"
+  #   Properties:
+  #     PolicyName:
+  #       'Fn::Join': [ "", ["CWCommitEventPolicy", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: Allow
+  #           Action: codepipeline:StartPipelineExecution
+  #           Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref EFPipeline] ]
+  #     Roles:
+  #       - !Ref CWCommitEventRole
 
   # CLOUD WATCH COMMIT EVENT RULE
-  CWCommitEventRule:
-    Type: AWS::Events::Rule
-    Properties:
-      EventPattern:
-        source: 
-          - aws.codecommit
-        detail-type: 
-          - "CodeCommit Repository State Change"
-        resources: 
-          - !GetAtt 'CCRepo.Arn'
-        detail:
-          event:
-            - referenceCreated
-            - referenceUpdated
-          repositoryName:
-            - !GetAtt 'CCRepo.Name'
-          referenceName:
-            - !Ref CCRepoBranch
-      Targets:
-        -
-          Arn: 
-            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref EFPipeline] ]
-          RoleArn: !GetAtt 'CWCommitEventRole.Arn'
-          Id: !Ref EFPipeline
+  # CWCommitEventRule:
+  #   Type: AWS::Events::Rule
+  #   Properties:
+  #     EventPattern:
+  #       source: 
+  #         - aws.codecommit
+  #       detail-type: 
+  #         - "CodeCommit Repository State Change"
+  #       resources: 
+  #         - !GetAtt 'CCRepo.Arn'
+  #       detail:
+  #         event:
+  #           - referenceCreated
+  #           - referenceUpdated
+  #         repositoryName:
+  #           - !GetAtt 'CCRepo.Name'
+  #         referenceName:
+  #           - !Ref CCRepoBranch
+  #     Targets:
+  #       -
+  #         Arn: 
+  #           !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref EFPipeline] ]
+  #         RoleArn: !GetAtt 'CWCommitEventRole.Arn'
+  #         Id: !Ref EFPipeline
 
   # CODEBUILD ROLE
   CBRole:
@@ -513,24 +516,24 @@ Resources:
           Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
 
   # LAMBDA CREATED TO MERGE INPUT ARTIFACTS  
-  MergeLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName:
-        'Fn::Join': [ "", ["MergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
-      Code:
-        # Using the HelperBucket parameter here
-        S3Bucket: !Join [ "", [!Ref HelperBucket ]]
-        S3Key: merge.zip
-      Role: !GetAtt 'PLLambdaRole.Arn'
-      Description: "Lambda Function to merge artifacts in CodePipeline"
-      Timeout: 30
-      Handler: "merge.handler"
-      Runtime: "nodejs10.x"
-      MemorySize: 128
-      Tags:
-        - Key: "Project"
-          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
+  # MergeLambda:
+  #   Type: AWS::Lambda::Function
+  #   Properties:
+  #     FunctionName:
+  #       'Fn::Join': [ "", ["MergeLambda", "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+  #     Code:
+  #       # Using the HelperBucket parameter here
+  #       S3Bucket: !Join [ "", [!Ref HelperBucket ]]
+  #       S3Key: merge.zip
+  #     Role: !GetAtt 'PLLambdaRole.Arn'
+  #     Description: "Lambda Function to merge artifacts in CodePipeline"
+  #     Timeout: 30
+  #     Handler: "merge.handler"
+  #     Runtime: "nodejs10.x"
+  #     MemorySize: 128
+  #     Tags:
+  #       - Key: "Project"
+  #         Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE CODEBUILD DEPLOYMENT
   TestBuildDeploy:
@@ -567,27 +570,36 @@ Resources:
         # Stage 1:  Get the source from CodeCommit, and then from the Github repo
         - Name: Source
           Actions:
-            - Name: ConfigSource
-              RunOrder: 1
-              ActionTypeId:
-                Category: Source
-                Owner: AWS
-                Provider: CodeCommit
-                Version: 1
-              Configuration:
-                BranchName: !Ref CCRepoBranch
-                RepositoryName: !GetAtt 'CCRepo.Name'
-                PollForSourceChanges: false
-              OutputArtifacts:
-                - Name: ConfigSourceOutput
+            # - Name: ConfigSource
+            #   RunOrder: 1
+            #   ActionTypeId:
+            #     Category: Source
+            #     Owner: AWS
+            #     Provider: CodeCommit
+            #     Version: 1
+            #   Configuration:
+            #     BranchName: !Ref CCRepoBranch
+            #     RepositoryName: !GetAtt 'CCRepo.Name'
+            #     PollForSourceChanges: false
+            #   OutputArtifacts:
+            #     - Name: ConfigSourceOutput
             - Name: CodeSource
               RunOrder: 1
               ActionTypeId:
                 Category: Source
+                # If you'd like to use CodeCommit as the source repository,
+                # uncomment below, and comment out Github provider
+                # Owner: ThirdParty
+                # Provider: GitHub
                 Owner: ThirdParty
                 Provider: GitHub
                 Version: 1
               Configuration:
+                # If you'd like to use CodeCommit as the source repository,
+                # uncomment below, and comment out Github specific lines
+                # BranchName: !Ref CCRepoBranch
+                # RepositoryName: !GetAtt 'CCRepo.Name'
+                # PollForSourceChanges: false
                 Owner: !Select [0, !Split [ "/" , !Ref GHRepo ]]
                 Repo: !Select [1, !Split [ "/" , !Ref GHRepo ]]
                 Branch: !Select [2, !Split [ "/" , !Ref GHRepo ]]
@@ -597,32 +609,33 @@ Resources:
                 OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
+        # With a single source repository, we do not need a merge function
         # Stage 2: Merge the Sources into one Artifact
         # This merges the App and SecureConfig artifacts
         # See https://dzone.com/articles/running-aws-lambda-functions-in-aws-codepipeline-u
-        - Name: Merge
-          Actions:
-            - Name: Merge-App-and-Config
-              ActionTypeId:
-                Category: Invoke
-                Owner: AWS
-                Version: 1
-                Provider: Lambda
-              Configuration:
-                FunctionName: !Ref MergeLambda
-                UserParameters: !Ref ConfDir
-              InputArtifacts:
-                - Name: CodeSourceOutput
-                - Name: ConfigSourceOutput
-              OutputArtifacts:
-                - Name: Build-Ready
-              RunOrder: 2
+        # - Name: Merge
+        #   Actions:
+        #     - Name: Merge-App-and-Config
+        #       ActionTypeId:
+        #         Category: Invoke
+        #         Owner: AWS
+        #         Version: 1
+        #         Provider: Lambda
+        #       Configuration:
+        #         FunctionName: !Ref MergeLambda
+        #         UserParameters: !Ref ConfDir
+        #       InputArtifacts:
+        #         - Name: CodeSourceOutput
+        #         - Name: ConfigSourceOutput
+        #       OutputArtifacts:
+        #         - Name: Build-Ready
+        #       RunOrder: 2
   
-        # Stage 3:  Build using Serverless Framework
+        # Stage 2:  Build using Serverless Framework
         - Name: TestBuildDeploy
           Actions:
             - Name: !Join [ "", ["TestBuildDeploy",  "-", !Ref 'AWS::StackName'] ]
-              RunOrder: 3
+              RunOrder: 2
               InputArtifacts:
                 - Name: Build-Ready
               ActionTypeId:
@@ -640,10 +653,6 @@ Outputs:
     Value: !Ref EFPipeline
   Environment:
     Value: !Ref Environment
-  CodecommitRepository:
-    Value: !GetAtt 'CCRepo.Name'
-  CodecommitBranch:
-    Value: !Ref CCRepoBranch
   GithubRepository:
     Value: !Ref GHRepo
   CodeBuildRole:
@@ -652,11 +661,15 @@ Outputs:
     Value: !Ref CBPolicy
   PipelineRole:
     Value: !Ref PLRole
-  PipelineLambdaRole:
-    Value: !Ref PLLambdaRole
   PipelinePolicy:
     Value: !Ref PLPolicy
-  PipelineLambdaPolicy:
-    Value: !Ref PLLambdaPolicy
   S3PipelineBucket:
     Value: !Ref S3Pipeline
+  # CodecommitRepository:
+  #   Value: !GetAtt 'CCRepo.Name'
+  # CodecommitBranch:
+  #   Value: !Ref CCRepoBranch
+  # PipelineLambdaRole:
+  #   Value: !Ref PLLambdaRole
+  # PipelineLambdaPolicy:
+  #   Value: !Ref PLLambdaPolicy
