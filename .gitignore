@@ -31,7 +31,6 @@ Pipfile*
 node_modules
 package-lock.json
 .vscode/
-config/
 
 # Sphinx stuff
 _build
