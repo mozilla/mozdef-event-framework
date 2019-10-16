@@ -37,12 +37,10 @@ def lambda_handler(event, context):
                 'statusCode': 400,
                 'body': json.dumps('Bad Request')
         }
-    
+
     returnDict = {
         'hostname': '{}_host'.format(service),
         'processname': service,
-        'processid': 'none',
-        'severity': 'INFO',
         'summary': '{}_event'.format(service),
         'category': service,
         'source': 'api_aws_lambda',
