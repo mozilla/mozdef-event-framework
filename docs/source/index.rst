@@ -1,7 +1,20 @@
-# MozDef Event Framework
+.. MozDef Event Framework documentation master file, created by
+   sphinx-quickstart on Wed Oct 16 17:32:50 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-A PoC using AWS + Serverless framework
+Welcome to MozDef Event Framework's documentation!
+==================================================
 
-This is a work in progess which will eventually be used as a template for external event sources.
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-The idea behind this work was to create a repeatable process for introducing new event sources to MozDef without having to specially craft it every time. While this is new and we haven't onboarded many sources yet, it is expected the function library may grow, and with it we will introduce further changes to this framework as it becomes more mature. 
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
