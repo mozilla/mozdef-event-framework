@@ -471,7 +471,7 @@ Resources:
       TimeoutInMinutes: 5
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Join [ "", [!Ref 'ConfDir', "/", "buildspec", "-", !Ref 'Environment', ".yml"]]
+        BuildSpec: !Join [ "", ["config/buildspec", "-", !Ref 'Environment', ".yml"]]
       Environment:
         Type: "LINUX_CONTAINER"
         ComputeType: BUILD_GENERAL1_SMALL
