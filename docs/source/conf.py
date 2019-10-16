@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'MozDef Event Framework'
-copyright = '2019, Caglar Ulucenk, Alicia Smith'
-author = 'Caglar Ulucenk, Alicia Smith'
+copyright = '2019, Alicia Smith, Caglar Ulucenk'
+author = 'Alicia Smith, Caglar Ulucenk'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
