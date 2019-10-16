@@ -15,6 +15,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+Pipfile*
 
 # Serverless directories
 .serverless
@@ -30,7 +31,6 @@ var/
 node_modules
 package-lock.json
 .vscode/
-config/
 
 # Sphinx stuff
 _build
