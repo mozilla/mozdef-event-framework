@@ -1,8 +1,10 @@
-MozDef Event Framework documentation
-====================================
+.. MozDef Event Framework documentation master file, created by
+   sphinx-quickstart on Wed Oct 16 18:10:00 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-Overview
-========
+MozDef Event Framework Documentation
+====================================
 
 .. toctree::
    :maxdepth: 2
