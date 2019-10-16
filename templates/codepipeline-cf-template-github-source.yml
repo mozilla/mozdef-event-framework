@@ -20,7 +20,7 @@
 
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: 'This solution allows you to create a AWS Codepipline for deploying a serverless application with AWS CodeBuild triggered by a CodeCommit or Github repo commit. The setup of this solution is fully automated via a CloudFormation template.'
+Description: 'This solution allows you to create a AWS Codepipline for deploying a serverless application with AWS CodeBuild triggered by a Github repo commit. The setup of this solution is fully automated via a CloudFormation template.'
 
 Parameters:
   Environment:
@@ -60,7 +60,7 @@ Metadata:
           - Environment
           - PLBucketPrefix
       - Label:
-          default: "GitHub Configuration"
+          default: "Source (GitHub) Configuration"
         Parameters:
           - GHRepo
 
@@ -81,7 +81,6 @@ Resources:
           Action: "sts:AssumeRole"
 
   # CODEBUILD POLICY
-  # TODO: Remove codecommit specific permissions
   CBPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
@@ -94,14 +93,6 @@ Resources:
             Action:
               - 'codebuild:*'
             Resource: !GetAtt TestBuildDeploy.Arn
-          - Effect: Allow
-            Action:
-              - 'codecommit:GetBranch'
-              - 'codecommit:GetCommit'
-              - 'codecommit:UploadArchive'
-              - 'codecommit:GetUploadArchiveStatus'
-              - 'codecommit:CancelUploadArchive'
-            Resource: !GetAtt 'CCRepo.Arn'
           - Effect: Allow
             Action:
               - 'cloudformation:ListChangeSets'
@@ -185,11 +176,6 @@ Resources:
               - !GetAtt CBRole.Arn
           - Effect: Allow
             Action:
-              - 'events:RemoveTargets'
-              - 'events:DeleteRule'
-            Resource: !Join [ '', [ 'arn:aws:', 'events:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':rule/', !Ref CWCommitEventRule ] ]
-          - Effect: Allow
-            Action:
               - 'ssm:PutParameter'
               - 'ssm:GetParameter'
               - 'ssm:GetParametersByPath'
@@ -251,7 +237,6 @@ Resources:
                - 'sts:AssumeRole'
 
   # PIPELINE POLICY
-  # TODO: Remove codecommit specific permissions
   PLPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
@@ -265,7 +250,6 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-              - 'codecommit:ListRepositories'
             Resource: "*"
           - Effect: Allow
             Action:
@@ -281,16 +265,6 @@ Resources:
               - 's3:GetBucketLocation'
             Resource:
               - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
-          - Effect: Allow
-            Action:
-              - 'codecommit:GetBranch'
-              - 'codecommit:GetCommit'
-              - 'codecommit:ListBranches'
-              - 'codecommit:ListTagsForResource'
-              - 'codecommit:UploadArchive'
-              - 'codecommit:GetUploadArchiveStatus'
-              - 'codecommit:CancelUploadArchive'
-            Resource: !GetAtt CCRepo.Arn
           - Effect: Allow
             Action:
               - 'lambda:InvokeFunction'
@@ -329,7 +303,6 @@ Resources:
           Action: "sts:AssumeRole"
 
   # PIPELINE LAMBDA POLICY
-  # TODO: Remove codecommit specific permissions
   PLLambdaPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
@@ -350,14 +323,6 @@ Resources:
               - s3:GetBucketVersioning
             Resource:
               - !GetAtt S3Pipeline.Arn
-          - Effect: Allow
-            Action:
-              - codecommit:GetBranch
-              - codecommit:GetCommit
-              - codecommit:UploadArchive
-              - codecommit:GetUploadArchiveStatus
-              - codecommit:CancelUploadArchive
-            Resource: !GetAtt CCRepo.Arn
           - Effect: Allow
             Action:
               - 'codebuild:StartBuild'
