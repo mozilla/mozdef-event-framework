@@ -129,8 +129,6 @@ Resources:
               # that serverless frameworks creates function names
               # based on service name and stage
               - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
-              # Our merger lambda function
-              - !GetAtt MergeLambda.Arn
           - Effect: Allow
             Action:
               - 'apigateway:GET'
@@ -274,8 +272,6 @@ Resources:
               # that serverless frameworks creates function names
               # based on service name and stage
               - !Join [ '', [ 'arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "function", ':', !Ref Service, "-", !Ref Environment, "*" ] ]
-              # Our merger lambda function
-              - !GetAtt MergeLambda.Arn
           - Effect: Allow
             Action:
               - 'secretsmanager:GetSecretValue'
@@ -438,7 +434,7 @@ Resources:
             - Name: !Join [ "", ["TestBuildDeploy",  "-", !Ref 'AWS::StackName'] ]
               RunOrder: 2
               InputArtifacts:
-                - Name: Build-Ready
+                - Name: CodeSourceOutput
               ActionTypeId:
                 Category: Build
                 Owner: AWS
