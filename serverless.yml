@@ -64,6 +64,8 @@ provider:
         - sqs:TagQueue
       Resource: 
         - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}-TQ"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}-DLQ"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
@@ -104,7 +106,7 @@ functions:
   customAuthorizer: 
     handler: functions/authorizer.validate_token
   eventHandler:
-    handler: functions/handler.lambda_handler
+    handler: functions/handler.event_handler
     description: Lambda for handling events from ${self:service} resource.
     events:
       - http:
@@ -112,7 +114,14 @@ functions:
           method: ${self:custom.cfg.api_method}
           cors: true
           authorizer: ${self:custom.authorizer.validate_token}
-
+  schemaValidator:
+    handler: functions/handler.validate_event
+    description: Lambda for validating events from ${self:service} resource.
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [ TransientQueue, Arn ]
+          batchSize: 1
 resources:
   Resources:
     ResourceQueue:    
@@ -130,6 +139,19 @@ resources:
         Tags:
         - Key: "Project"
           Value: ${self:custom.cfg.project}-${self:provider.stage}
+    TransientQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-TQ
+        VisibilityTimeout: 60
+        MessageRetentionPeriod: 604800
+        # We should probably make this queue use the DLQ instead
+        # RedrivePolicy:
+        #   deadLetterTargetArn:
+        #     "Fn::GetAtt":
+        #       - ReceiverDeadLetterQueue
+        #       - Arn
+        #   maxReceiveCount: 2
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
