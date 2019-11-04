@@ -89,6 +89,8 @@ provider:
     # We could also store this in SSM
     SQS_URL:
       Ref: ResourceQueue
+    TQ_URL:
+      Ref: TransientQueue
 
 package:
   # This is to keep the package to be uploaded as small as possible in size
