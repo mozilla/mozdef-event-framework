@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Zoom Meeting object",
+    "type": "object",
+    "properties": {
+        "id": {
+          "description": "Meeting ID - also known as the meeting number.",
+          "type": "integer"
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Unique Meeting ID. Each meeting instance will generate its own meeting UUID."
+        },
+        "host_id": {
+          "type": "string",
+          "description": "ID of the user who is set as the host of the meeting."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Meeting Topic"
+        },
+        "type": {
+          "description": "Meeting Types:<br> `1` - Instant Meeting<br> `2` - Scheduled Meeting<br> `3` - Recurring Meeting with no fixed time.<br> `8` - Recurring Meeting with a fixed time. ",
+          "type": "integer"
+        },
+        "start_time": {
+          "type": "string",
+          "description": "Meeting start time.",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "Timezone to format the meeting start time."
+        },
+        "duration": {
+          "description": "Meeting duration.",
+          "type": "integer"
+        },
+        "occurrences": { "$ref": "occurences.json" },
+        "participant": { "$ref": "participant.json" }
+      }
+}

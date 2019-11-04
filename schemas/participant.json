@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Zoom Participant object",
+    "description": "Participant object that contains information about the participant.",
+    "type": "object",
+    "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "Unique Participant Identifier. This is unique for each meeting participant and is valid only for that meeting."
+        },
+        "user_name": {
+          "type": "string",
+          "description": "Participant's name."
+        },
+        "id": {
+          "type": "string",
+          "description": "User Id of the participant. Same as the User Id used in the [Users API](https://marketplace.zoom.us/docs/api-reference/zoom-api/users/usercreate) if participant joined the meeting by logging in. "
+        },
+        "sharing_details": {
+          "type": "object",
+          "description": "Sharing details object contains information about the screenshare. ",
+          "properties": {
+            "content": {
+              "type": "string",
+              "description": "The type of content that was shared.",
+              "enum": [
+                "application",
+                "whiteboard",
+                "desktop"
+              ]
+            },
+            "link_source": {
+              "type": "string",
+              "description": "Represents the method of sharing for dropbox integration.",
+              "enum": [
+                "deep_link",
+                "in_meeting"
+              ]
+            },
+            "file_link": {
+              "type": "string",
+              "description": "The link using which the file was shared via dropbox integration."
+            },
+            "date_time": {
+              "type": "string",
+              "format": "date-time",
+              "description": "The date and time during which the screenshare happened."
+            }
+          }
+        }
+      }
+}
