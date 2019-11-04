@@ -11,7 +11,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def lambda_handler(event, context):
+def event_handler(event, context):
     # This parsing can and will be improved in the future
     logger.info("{} service initialized.".format(service))
     api_event = event
@@ -38,22 +38,38 @@ def lambda_handler(event, context):
                 'body': json.dumps('Bad Request')
         }
 
-    returnDict = {
-        'hostname': '{}_host'.format(service),
-        'processname': service,
-        'summary': '{}_event'.format(service),
-        'category': service,
-        'source': 'api_aws_lambda',
-        'eventsource': service + '_api',
-        'tags': [
-            service
-        ],
-        'details': message
+    # Add to the transient queue here
+    transient_queue = os.getenv('TQ_URL')
+    sqs.send_message(QueueUrl=transient_queue, MessageBody=json.dumps(message))
+    logger.info("Event added to the transient queue.")
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Event received')
     }
 
-    queueURL = os.getenv('SQS_URL')
-    sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
-    logger.info("Event added to the resource queue.")
+def validate_event(event, context):
+    # This lambda is triggered with an event 
+    # on the transient SQS queue
+    for record, keys in event.items():
+        for item in keys:
+            if "body" in item:
+                message = item['body']
+                # TODO: Need to perform schema validation here
+                returnDict = {
+                    'hostname': '{}_host'.format(service),
+                    'processname': service,
+                    'summary': '{}_event'.format(service),
+                    'category': service,
+                    'source': 'api_aws_lambda',
+                    'eventsource': service + '_api',
+                    'tags': [
+                        service
+                    ],
+                    'details': message
+                }
+                queueURL = os.getenv('SQS_URL')
+                sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
+                logger.info("Event added to the resource queue.")
 
     return {
         'statusCode': 200,
