@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Integration settings",
+    "type": "object",
+    "properties": {
+        "google_calendar": {
+          "type": "boolean",
+          "description": "Enable meetings to be scheduled using Google Calendar.\""
+        },
+        "google_drive": {
+          "type": "boolean",
+          "description": "Enable users who join a meeting from their mobile device to share content from their Google Drive."
+        },
+        "dropbox": {
+          "type": "boolean",
+          "description": "Enable users who join a meeting from their mobile device to share content from their Dropbox account."
+        },
+        "box": {
+          "type": "boolean",
+          "description": "Enable users who join a meeting from their mobile device to share content from their Box account."
+        },
+        "microsoft_one_drive": {
+          "type": "boolean",
+          "description": "Enable users who join a meeting from their mobile device to share content from their Microsoft OneDrive account."
+        },
+        "kubi": {
+          "type": "boolean",
+          "description": "Enable users to control a connected Kubi device from within a Zoom meeting."
+        }
+      }
+}

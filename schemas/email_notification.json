@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Email Notification settings object.",
+    "type": "object",
+    "properties": {
+        "cloud_recording_avaliable_reminder": {
+          "type": "boolean",
+          "description": "Notify host when cloud recording is available."
+        },
+        "jbh_reminder": {
+          "type": "boolean",
+          "description": "Notify the host when participants join the meeting before them."
+        },
+        "cancel_meeting_reminder": {
+          "type": "boolean",
+          "description": "Notify the host and participants when a meeting is cancelled."
+        },
+        "low_host_count_reminder": {
+          "type": "boolean",
+          "description": "Notify user when host licenses are running low."
+        },
+        "alternative_host_reminder": {
+          "type": "boolean",
+          "description": "Notify when an alternative host is set or removed from a meeting."
+        }
+      }
+}

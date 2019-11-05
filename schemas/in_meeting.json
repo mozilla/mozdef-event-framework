@@ -1,0 +1,155 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "In Meeting object.",
+    "type": "object",
+    "properties": {
+        "e2e_encryption": {
+          "type": "boolean",
+          "description": "Requirement for meetings to be encrypted using AES."
+        },
+        "chat": {
+          "type": "boolean",
+          "description": "Enable chat between meeting participants."
+        },
+        "private_chat": {
+          "type": "boolean",
+          "description": "Enable private chat message between meeting participants."
+        },
+        "auto_saving_chat": {
+          "type": "boolean",
+          "description": "Save all in-meeting chats automatically."
+        },
+        "file_transfer": {
+          "type": "boolean",
+          "description": "Enable file sharing via in-meeting chat."
+        },
+        "feedback": {
+          "type": "boolean",
+          "description": "Feedback enabled for users to provide meeting feedback."
+        },
+        "post_meeting_feedback": {
+          "type": "boolean",
+          "description": "A thumbs up or down survey enabled at the end of a meeting."
+        },
+        "co_host": {
+          "type": "boolean",
+          "description": "Setting for host to add co-hosts."
+        },
+        "polling": {
+          "type": "boolean",
+          "description": "Polls added to the meeting controls."
+        },
+        "attendee_on_hold": {
+          "type": "boolean",
+          "description": "Allow hosts to temporarily remove an attendee from a meeting."
+        },
+        "show_meeting_control_toolbar": {
+          "type": "boolean",
+          "description": "Always show the meeting control bar."
+        },
+        "allow_show_zoom_windows": {
+          "type": "boolean",
+          "description": "Show the Zoom desktop application when sharing access."
+        },
+        "annotation": {
+          "type": "boolean",
+          "description": "Allow participants to use annotation tools to add information to shared screens."
+        },
+        "whiteboard": {
+          "type": "boolean",
+          "description": "Allow participants to share a whiteboard that includes annotation tools."
+        },
+        "webinar_question_answer": {
+          "type": "boolean",
+          "description": "Allow Q&A in a webinar."
+        },
+        "anonymous_question_answer": {
+          "type": "boolean",
+          "description": "Allow an anonymous Q&A during a webinar."
+        },
+        "breakout_room": {
+          "type": "boolean",
+          "description": "Allow host to split meeting participants into separate, smaller rooms."
+        },
+        "closed_caption": {
+          "type": "boolean",
+          "description": "Enable a host to add closed captions."
+        },
+        "far_end_camera_control": {
+          "type": "boolean",
+          "description": "Another user enabled to take control of camera during a meeting."
+        },
+        "group_hd": {
+          "type": "boolean",
+          "description": "Enable higher quality video for host and participants."
+        },
+        "virtual_background": {
+          "type": "boolean",
+          "description": "Enable users to change their background."
+        },
+        "watermark": {
+          "type": "boolean",
+          "description": "Add watermark when viewing a shared screen."
+        },
+        "alert_guest_join": {
+          "type": "boolean",
+          "description": "Alert when a guest joins a meeting."
+        },
+        "auto_answer": {
+          "type": "boolean",
+          "description": "Enable users to see and add contacts to the \\\"auto-answer group\\\" in the chat contact list. Any call from members of this group will automatically be answered."
+        },
+        "p2p_connetion": {
+          "type": "boolean",
+          "description": "Peer to peer connection while only two people are in a meeting."
+        },
+        "p2p_ports": {
+          "type": "boolean",
+          "description": "Peer to peer listening ports range."
+        },
+        "ports_range": {
+          "type": "string",
+          "description": "The listening ports range, separated by a comma (ex 55,56). The ports range must be between 1 to 65535."
+        },
+        "sending_default_email_invites": {
+          "type": "boolean",
+          "description": "Only show the default email when sending email invites."
+        },
+        "use_html_format_email": {
+          "type": "boolean",
+          "description": "Use HTML formatted email for the Outlook plugin."
+        },
+        "dscp_marking": {
+          "type": "boolean",
+          "description": "DSCP marking."
+        },
+        "dscp_audio": {
+          "type": "integer",
+          "description": "DSCP audio"
+        },
+        "dscp_video": {
+          "type": "integer",
+          "description": "DSCP video"
+        },
+        "stereo_audio": {
+          "type": "boolean",
+          "description": "Allow users to select stereo audio in their client settings."
+        },
+        "original_audio": {
+          "type": "boolean",
+          "description": "Allow users to select original sound in their client settings."
+        },
+        "screen_sharing": {
+          "type": "boolean",
+          "description": "Allow screen sharing."
+        },
+        "remote_control": {
+          "type": "boolean",
+          "description": "Allow users to request remote control."
+        },
+        "attention_tracking": {
+          "type": "boolean",
+          "description": "Allows the host to see an indicator in the participant panel if a meeting or webinar attendee does not have Zoom in focus while screen sharing."
+        }
+      }
+}

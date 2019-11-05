@@ -1,0 +1,63 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Recording Settings Object",
+    "type": "object",
+    "properties": {
+        "local_recording": {
+          "type": "boolean",
+          "description": "Allow hosts and participants to record the meeting using a local file."
+        },
+        "cloud_recording": {
+          "type": "boolean",
+          "description": "Allow hosts to record and save the meeting in the cloud."
+        },
+        "record_speaker_view": {
+          "type": "boolean",
+          "description": "Record the active speaker with a shared screen."
+        },
+        "record_gallery_view": {
+          "type": "boolean",
+          "description": "Record the gallery view with a shared screen."
+        },
+        "record_audio_file": {
+          "type": "boolean",
+          "description": "Record an audio only file."
+        },
+        "save_chat_text": {
+          "type": "boolean",
+          "description": "Save the chat text from the meeting."
+        },
+        "show_timestamp": {
+          "type": "boolean",
+          "description": "Add a timestamp to the recording."
+        },
+        "recording_audio_transcript": {
+          "type": "boolean",
+          "description": "Automatically transcribe the audio of the meeting or webinar to the cloud."
+        },
+        "auto_recording": {
+          "type": "string",
+          "description": "Automatic recording:<br>`local` - Record on local.<br>`cloud` -  Record on cloud.<br>`none` - Disabled."
+        },
+        "cloud_recording_download": {
+          "type": "boolean",
+          "description": "Enable cloud recording downloads"
+        },
+        "cloud_recording_download_host": {
+          "type": "boolean",
+          "description": "Only the host can download cloud recordings."
+        },
+        "account_user_access_recording": {
+          "type": "boolean",
+          "description": "Cloud recordings are only accessible to account members. People outside of your organization cannot open links that provide access to cloud recordings."
+        },
+        "auto_delete_cmr": {
+          "type": "boolean",
+          "description": "Allow Zoom to permanantly delete recordings automatically after a specified number of days."
+        },
+        "auto_delete_cmr_days": {
+          "type": "integer",
+          "description": "When `auto_delete_cmr` function is 'true' this value will set the number of days before the auto deletion of cloud recordings."
+        }
+      }
+}

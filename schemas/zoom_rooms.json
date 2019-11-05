@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Zoom Rooms settings object",
+    "type": "object",
+    "properties": {
+        "upcoming_meeting_alert": {
+          "type": "boolean",
+          "description": "Upcoming meeting alert."
+        },
+        "start_airplay_manually": {
+          "type": "boolean",
+          "description": "Start AirPlay service manually."
+        },
+        "weekly_system_restart": {
+          "type": "boolean",
+          "description": "Weekly system restart."
+        },
+        "list_meetings_with_calendar": {
+          "type": "boolean",
+          "description": "Display meeting list with calendar integration."
+        },
+        "zr_post_meeting_feedback": {
+          "type": "boolean",
+          "description": "Zoom Room post meeting feedback."
+        },
+        "ultrasonic": {
+          "type": "boolean",
+          "description": "Automatic direct sharing using  an ultrasonic proximity signal."
+        },
+        "force_private_meeting": {
+          "type": "boolean",
+          "description": "Transform all meetings to [private](https://support.zoom.us/hc/en-us/articles/115001051063-Zoom-Rooms-Private-Meetings)."
+        },
+        "hide_host_information": {
+          "type": "boolean",
+          "description": "Hide host and meeting ID from private meetings."
+        },
+        "cmr_for_instant_meeting": {
+          "type": "boolean",
+          "description": "Enable cloud recording for instant meetings."
+        },
+        "auto_start_stop_scheduled_meetings": {
+          "type": "boolean",
+          "description": "Set automatic start and stop for scheduled meetings."
+        }
+      }
+}

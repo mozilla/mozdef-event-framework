@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Feature",
+    "type": "object",
+    "properties": {
+        "meeting_capacity": {
+          "type": "integer",
+          "description": "Set the maximum number of participants a host can have in a single meeting."
+        }
+      }
+}

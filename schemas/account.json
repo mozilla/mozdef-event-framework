@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "The object that was changed. In this case, the `account` object.",
+    "type": "object",
+    "properties": {
+        "id": {
+          "type": "string",
+          "description": "Account ID (Unique Identifier) of the Sub Account."
+        },
+        "owner_id": {
+          "type": "string",
+          "description": "User ID (Unique Identifier) of the user who owns the Sub Account."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user who owns the Sub Account."
+        }
+      }
+}

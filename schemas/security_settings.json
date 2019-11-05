@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Security Settings Object",
+    "type": "object",
+    "properties": {
+        "admin_change_name_pic": {
+          "type": "boolean",
+          "description": "Provide only account administrators with privilege to change a user's username and picture."
+        },
+        "import_photos_from_devices": {
+          "type": "boolean",
+          "description": "Allow users to import photos from a photo library on a  device."
+        },
+        "hide_billing_info": {
+          "type": "boolean",
+          "description": "Hide billing information."
+        }
+      }
+}

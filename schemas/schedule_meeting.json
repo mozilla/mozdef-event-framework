@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schedule Meeting object.",
+    "type": "object",
+    "properties": {
+        "host_video": {
+          "type": "boolean",
+          "description": "Start meetings with the host video on. "
+        },
+        "participant_video": {
+          "type": "boolean",
+          "description": "Start meetings with the participant video on. "
+        },
+        "audio_type": {
+          "type": "string",
+          "description": "The audio type used to join the meeting."
+        },
+        "join_before_host": {
+          "type": "boolean",
+          "description": "Enable participants to join before host."
+        },
+        "enforce_login": {
+          "type": "boolean",
+          "description": "Enable only those users who are signed in to Zoom to join the meeting."
+        },
+        "enforce_login_with_domains": {
+          "type": "boolean",
+          "description": "Only users with a specific domain can join the meetings."
+        },
+        "enforce_login_domains": {
+          "type": "string",
+          "description": "Specify domains for users to sign in to and join the meeting."
+        },
+        "not_store_meeting_topic": {
+          "type": "boolean",
+          "description": "Display \"Zoom Meeting\" as the meeting topic."
+        },
+        "force_pmi_jbh_password": {
+          "type": "boolean",
+          "description": "Require password for Personal Meetings if attendees can join before host."
+        }
+      }
+}

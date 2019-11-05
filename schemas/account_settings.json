@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Account/Sub Account Settings Object. Represents which settings were enabled/disabled during the update.",
+    "type": "object",
+    "properties": {
+        "schedule_meting": { "$ref": "schedule_meeting.json" },
+        "in_meeting": { "$ref": "in_meeting.json" },
+        "email_notification": { "$ref": "email_notification.json" },
+        "zoom_rooms": { "$ref": "zoom_rooms.json" },
+        "security": { "$ref": "security_settings.json" },
+        "recording": { "$ref": "recording_settings.json" },
+        "telephony": { "$ref": "telephony_settings.json" },
+        "integration": { "$ref": "integration_settings.json" },
+        "feature": { "$ref": "feature.json" }
+      }
+}

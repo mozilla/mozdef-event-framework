@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Telephony settings object.",
+    "type": "object",
+    "properties": {
+        "third_party_audio": {
+          "type": "boolean",
+          "description": "Users can join the meeting using the existing third party audio configuration."
+        },
+        "audio_conference_info": {
+          "type": "string",
+          "description": "Third party audio conference information."
+        }
+      }
+}
