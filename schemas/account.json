@@ -14,6 +14,34 @@
         "email": {
           "type": "string",
           "description": "Email address of the user who owns the Sub Account."
-        }
+        },
+        "owner_email": {
+          "type": "string",
+          "description": "Email address of the user (owner) whose Sub Account was disassociated."
+        },
+        "account_name": {
+          "type": "string",
+          "description": "Updated account name."
+        },
+        "account_alias": {
+          "type": "string",
+          "description": "Updated account alias."
+        },
+        "account_support_name": {
+          "type": "string",
+          "description": "Updated name for account support."
+        },
+        "account_support_email": {
+          "type": "string",
+          "description": "Updated email address for account support."
+        },
+        "managed_domains": {
+          "type": "array",
+          "description": "Updated managed domains.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "settings": { "$ref": "account_settings.json" }
       }
 }

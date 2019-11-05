@@ -10,6 +10,10 @@
         "audio_conference_info": {
           "type": "string",
           "description": "Third party audio conference information."
+        },
+        "show_international_numbers_link": {
+          "type": "boolean",
+          "description": "Show the link for Zoom International Dial-in Numbers on email invitations.\n"
         }
       }
 }

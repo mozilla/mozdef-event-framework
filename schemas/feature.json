@@ -6,6 +6,22 @@
         "meeting_capacity": {
           "type": "integer",
           "description": "Set the maximum number of participants a host can have in a single meeting."
+        },
+        "large_meeting": {
+          "description": "Shows if large meeting feature is enabled for user or not.",
+          "type": "boolean"
+        },
+        "large_meeting_capacity": {
+          "type": "integer",
+          "description": "The number of meeting participants that are allowed on a per month or yearly basis depending on the [large meeting plan](https://marketplace.zoom.us/docs/api-reference/other-references/plans#largemeetingplans) that is enabled for the user of the account."
+        },
+        "webinar": {
+          "type": "boolean",
+          "description": "Indicates whether or not a webinar plan is enabled for the user."
+        },
+        "webinar_capacity": {
+          "type": "integer",
+          "description": "The number of meeting participants that are allowed on a per month or yearly basis depending on the [webinar plan](https://marketplace.zoom.us/docs/api-reference/other-references/plans#webinar-plans) that is enabled for the user of the account."
         }
       }
 }

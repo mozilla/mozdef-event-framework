@@ -19,29 +19,9 @@
           "type": "boolean",
           "description": "Save all in-meeting chats automatically."
         },
-        "file_transfer": {
-          "type": "boolean",
-          "description": "Enable file sharing via in-meeting chat."
-        },
-        "feedback": {
-          "type": "boolean",
-          "description": "Feedback enabled for users to provide meeting feedback."
-        },
         "post_meeting_feedback": {
           "type": "boolean",
           "description": "A thumbs up or down survey enabled at the end of a meeting."
-        },
-        "co_host": {
-          "type": "boolean",
-          "description": "Setting for host to add co-hosts."
-        },
-        "polling": {
-          "type": "boolean",
-          "description": "Polls added to the meeting controls."
-        },
-        "attendee_on_hold": {
-          "type": "boolean",
-          "description": "Allow hosts to temporarily remove an attendee from a meeting."
         },
         "show_meeting_control_toolbar": {
           "type": "boolean",
@@ -50,10 +30,6 @@
         "allow_show_zoom_windows": {
           "type": "boolean",
           "description": "Show the Zoom desktop application when sharing access."
-        },
-        "annotation": {
-          "type": "boolean",
-          "description": "Allow participants to use annotation tools to add information to shared screens."
         },
         "whiteboard": {
           "type": "boolean",
@@ -66,26 +42,6 @@
         "anonymous_question_answer": {
           "type": "boolean",
           "description": "Allow an anonymous Q&A during a webinar."
-        },
-        "breakout_room": {
-          "type": "boolean",
-          "description": "Allow host to split meeting participants into separate, smaller rooms."
-        },
-        "closed_caption": {
-          "type": "boolean",
-          "description": "Enable a host to add closed captions."
-        },
-        "far_end_camera_control": {
-          "type": "boolean",
-          "description": "Another user enabled to take control of camera during a meeting."
-        },
-        "group_hd": {
-          "type": "boolean",
-          "description": "Enable higher quality video for host and participants."
-        },
-        "virtual_background": {
-          "type": "boolean",
-          "description": "Enable users to change their background."
         },
         "watermark": {
           "type": "boolean",
@@ -143,13 +99,81 @@
           "type": "boolean",
           "description": "Allow screen sharing."
         },
+        "entry_exit_chime": {
+          "type": "string",
+          "description": "The sound that plays when participants join or leave the meeting:<br>\n`host`: When host joins or leaves a meeting.<br>`all`: When any participant joins or leaves a meeting.<br> `none`: Disable this setting to not play any sound."
+        },
+        "record_play_voice": {
+          "type": "boolean",
+          "description": "When a participant joins by telephone, record and play the participant's own voice."
+        },
+        "file_transfer": {
+          "description": "Setting to enable hosts and participants to send files through the in-meeting chat.",
+          "type": "boolean"
+        },
+        "feedback": {
+          "type": "boolean",
+          "description": "Enable option to send feedback to Zoom at the end of the meeting."
+        },
+        "co_host": {
+          "description": "Allow the host to add co-hosts.",
+          "type": "boolean"
+        },
+        "polling": {
+          "description": "Add polls to the meeting controls.",
+          "type": "boolean"
+        },
+        "attendee_on_hold": {
+          "description": "Allow host to put attendee on hold.",
+          "type": "boolean"
+        },
+        "annotation": {
+          "description": "Allow participants to use annotation tools.",
+          "type": "boolean"
+        },
         "remote_control": {
           "type": "boolean",
-          "description": "Allow users to request remote control."
+          "description": "Enable remote control during screensharing."
+        },
+        "non_verbal_feedback": {
+          "description": "Enable non-verbal feedback through screens.",
+          "type": "boolean"
+        },
+        "breakout_room": {
+          "type": "boolean",
+          "description": "Allow host to split meeting participants into separate breakout rooms."
+        },
+        "remote_support": {
+          "type": "boolean",
+          "description": "Allow host to provide 1:1 remote support to a participant."
+        },
+        "closed_caption": {
+          "type": "boolean",
+          "description": "Enable closed captions."
+        },
+        "group_hd": {
+          "type": "boolean",
+          "description": "Enable group HD video."
+        },
+        "virtual_background": {
+          "type": "boolean",
+          "description": "Enable virtual background."
+        },
+        "far_end_camera_control": {
+          "type": "boolean",
+          "description": "Allow another user to take control of the camera."
+        },
+        "share_dual_camera": {
+          "type": "boolean",
+          "description": "Share dual camera (deprecated)."
         },
         "attention_tracking": {
           "type": "boolean",
-          "description": "Allows the host to see an indicator in the participant panel if a meeting or webinar attendee does not have Zoom in focus while screen sharing."
+          "description": "Allow host to see if a participant does not have Zoom in focus during screen sharing."
+        },
+        "waiting_room": {
+          "type": "boolean",
+          "description": "Enable Waiting room - if enabled, attendees can only join after host approves."
         }
       }
 }

@@ -23,6 +23,13 @@
           "type": "string",
           "format": "date-time",
           "description": "The date and time during which the screenshare happened."
+        },
+        "source": {
+          "type": "string",
+          "description": "Source from which the file was shared. ",
+          "enum": [
+            "dropbox"
+          ]
         }
       }
 }

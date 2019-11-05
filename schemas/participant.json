@@ -15,37 +15,15 @@
           "type": "string",
           "description": "User Id of the participant. Same as the User Id used in the [Users API](https://marketplace.zoom.us/docs/api-reference/zoom-api/users/usercreate) if participant joined the meeting by logging in. "
         },
-        "sharing_details": {
-          "type": "object",
-          "description": "Sharing details object contains information about the screenshare. ",
-          "properties": {
-            "content": {
-              "type": "string",
-              "description": "The type of content that was shared.",
-              "enum": [
-                "application",
-                "whiteboard",
-                "desktop"
-              ]
-            },
-            "link_source": {
-              "type": "string",
-              "description": "Represents the method of sharing for dropbox integration.",
-              "enum": [
-                "deep_link",
-                "in_meeting"
-              ]
-            },
-            "file_link": {
-              "type": "string",
-              "description": "The link using which the file was shared via dropbox integration."
-            },
-            "date_time": {
-              "type": "string",
-              "format": "date-time",
-              "description": "The date and time during which the screenshare happened."
-            }
-          }
-        }
+        "join_time": {
+          "type": "string",
+          "description": "The time at which the participant joined the meeting."
+        },
+        "leave_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time at which the participant left the meeting."
+        },
+        "sharing_details": { "$ref": "sharing_details.json" }
       }
 }

@@ -11,6 +11,10 @@
           "type": "boolean",
           "description": "Start meetings with the participant video on. "
         },
+        "participants_video": {
+          "description": "Start meetings with participant video on.",
+          "type": "boolean"
+        },
         "audio_type": {
           "type": "string",
           "description": "The audio type used to join the meeting."
@@ -38,6 +42,10 @@
         "force_pmi_jbh_password": {
           "type": "boolean",
           "description": "Require password for Personal Meetings if attendees can join before host."
+        },
+        "pstn_password_protected": {
+          "type": "string",
+          "description": "Require password from participants before joining a meeting via [PSTN](https://support.zoom.us/hc/en-us/articles/204517069-Getting-Started-with-Personal-Audio-Conference)."
         }
       }
 }

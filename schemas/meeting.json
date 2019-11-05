@@ -36,7 +36,83 @@
           "description": "Meeting duration.",
           "type": "integer"
         },
+        "password": {
+          "type": "string",
+          "description": "Password used to join the meeting. "
+        },
+        "h323_password": {
+          "type": "string",
+          "description": "Password to join the meeting from H323 device. "
+        },
+        "pstn_password": {
+          "type": "string",
+          "description": "PSTN password to join the meeting."
+        },
+        "encrypted_password": {
+          "type": "string",
+          "description": "Encrypted password of the meeting."
+        },
+        "agenda": {
+          "type": "string",
+          "description": "Meeting Agenda."
+        },
+        "registration_url": {
+          "type": "string",
+          "description": "Registration URL for the meeting."
+        },
+        "issues": {
+          "type": "string",
+          "enum": [
+            "Unstable audio quality",
+            "Unstable video quality",
+            "Unstable screen share quality",
+            "High CPU occupation",
+            "Call Reconnection"
+          ],
+          "description": "Issues that occurred during the meeting."
+        },
+        "room_name": {
+          "type": "string",
+          "description": "Name of the Zoom Room."
+        },
+        "calendar_name": {
+          "type": "string",
+          "description": "Name of the Calendar."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address associated with the Zoom Room.",
+          "format": "email"
+        },
+        "issue": {
+          "type": "string",
+          "description": "Issues that occurred during the meeting. The value of the `issue` field could be one of the following:<br>\n* `Room Controller disconnected`<br>\n* `Room Controller connected`\n* `Selected camera has disconnected`\n* `Selected camera is reconnected`\n* `Selected microphone has disconnected`\n* `Selected microphone is reconnected`\n* `Selected speaker has disconnected`\n* `Selected speaker is reconnected`\n* `Zoom room is offline`\n* `Zoom room is online`\n* `No camera`\n* `No microphone`\n* `High CPU usage is detected`\n* `Low bandwidth network is detected`\n* `{name} battery is low`\n* `{name} battery is normal`\n* `{name} disconnected`\n* `{name} connected`\n* `{name} is not charging`\n\nPossible values for {name}: <br>\n* Zoom Rooms Computer \n* Controller\n* Scheduling Display"
+        },
         "occurrences": { "$ref": "occurences.json" },
-        "participant": { "$ref": "participant.json" }
+        "registrant": { "$ref": "registrant.json" },
+        "recurrence": { "$ref": "recurrence.json" },
+        "participant": { "$ref": "participant.json" },
+        "tracking_fields": {
+          "type": "array",
+          "description": "[Tracking fields.](https://support.zoom.us/hc/en-us/articles/115000293426-Scheduling-Tracking-Fields)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string",
+                "description": "Label for the tracking field."
+              },
+              "value": {
+                "type": "string",
+                "description": "Value for the field."
+              }
+            }
+          }
+        },
+        "settings": { "$ref": "meeting_settings.json" },
+        "join_url": {
+          "type": "string",
+          "description": "The url to join the meeting."
+        }
       }
 }

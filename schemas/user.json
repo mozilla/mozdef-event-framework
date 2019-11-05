@@ -7,6 +7,22 @@
           "type": "string",
           "description": "Unique Identifier for a user - User ID"
         },
+        "client_type": {
+          "type": "string",
+          "description": "The Client [type](https://support.zoom.us/hc/en-us/articles/207373866-Zoom-Installers) using which the user signed in.",
+          "enum": [
+            "Browser",
+            "mac",
+            "win",
+            "iphone",
+            "android"
+          ]
+        },
+        "date_time": {
+          "type": "string",
+          "description": "The date and time at which the user signed in.",
+          "format": "date-time"
+        },
         "first_name": {
           "type": "string",
           "description": "First name of the user"
@@ -23,6 +39,10 @@
         "type": {
           "type": "string",
           "description": "User type. <br> `1` - Basic<br>\n`2` - Pro<br> `3` - Corp"
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the [Zoom Client](https://support.zoom.us/hc/en-us/articles/207373866-Zoom-Installers). If the user signed in using their browser, the value of this field will be \"-\". "
         }
       }
 }

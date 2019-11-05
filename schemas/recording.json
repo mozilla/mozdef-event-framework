@@ -26,7 +26,10 @@
             1,
             2,
             3,
-            8
+            5,
+            6,
+            8,
+            9
           ]
         },
         "start_time": {
@@ -42,7 +45,26 @@
           "type": "integer",
           "description": "Scheduled duration of the meeting/webinar."
         },
-        "recording_file": { "$ref": "recoding_file.json" }
+        "share_url": {
+          "type": "string",
+          "description": "The URL of the recording using which approved users can view the recording."
+        },
+        "total_size": {
+          "description": "The total size of the recording in bytes.",
+          "type": "integer"
+        },
+        "recording_count": {
+          "description": "The number of recording files recovered.",
+          "type": "integer"
+        },
+        "recording_file": { "$ref": "recoding_file.json" },
+        "recording_files": { "$ref": "recoding_files.json" },
+        "host_email": {
+          "type": "string",
+          "description": "Email address of the host.",
+          "format": "email"
+        },
+        "occurrences": { "$ref": "occurrences.json" },
+        "registrant": { "$ref": "registrant.json" }
       }
-
 }
