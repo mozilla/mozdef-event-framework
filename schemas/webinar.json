@@ -1,0 +1,60 @@
+
+
+
+
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Webinar object",
+    "type": "object",
+    "properties": {
+        "id": {
+          "description": "Webinar ID - Unique identifier for a webinar.",
+          "type": "integer"
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Universally Unique Identifier for a Webinar Instance. Each webinar instance will generate its own Webinar UUID."
+        },
+        "host_id": {
+          "type": "string",
+          "description": "ID of the user who is set as the host of the Webinar."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Webinar Topic"
+        },
+        "type": {
+          "type": "string",
+          "description": "Webinar Types:<br> `5` - Webinar<br> `6` - Recurring Webinar without a fixed time<br> `9` - Recurring Webinar with a fixed time. "
+        },
+        "start_time": {
+          "type": "string",
+          "description": "Webinar start time."
+        },
+        "duration": {
+          "type": "string",
+          "description": "Meeting duration."
+        },
+        "participant": { "$ref": "participant.json" },
+        "timezone": {
+          "type": "string",
+          "description": "Timezone for the Webinar."
+        },
+        "password": {
+          "type": "string",
+          "description": "Webinar Password"
+        },
+        "agenda": {
+          "type": "string",
+          "description": "Webinar agenda."
+        },
+        "occurrences": { "$ref": "occurences.json" },
+        "recurrence": { "$ref": "recurrence.json" },
+        "settings": { "$ref": "webinar_settings.json" },
+        "registration_url": {
+          "type": "string",
+          "description": "Registration URL of the Webinar."
+        },
+        "registrant": { "$ref": "registrant.json" }
+    }
+}

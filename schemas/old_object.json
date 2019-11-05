@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Represents the object before it was updated.",
+    "type": "object",
+    "properties": {
+        "$changed_category": {
+          "type": "object",
+          "description": "The category that was changed",
+          "properties": {
+            "$changed_field_name": {
+              "type": [
+                "string",
+                "object",
+                "number",
+                "boolean",
+                "integer",
+                "array"
+              ],
+              "description": "The name of the field that was changed and its corresponding value."
+            }
+          }
+        }
+      }
+}

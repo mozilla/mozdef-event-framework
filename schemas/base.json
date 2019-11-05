@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "ZoomEventInputModel",
+    "description": "Base schema containing all types of Zoom events.",
+    "type": "object",
+    "properties": {
+        "event": {
+            "type": "string",
+            "description": "Name of the event. "
+          },
+        "payload": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                  "type": "string",
+                  "description": "The account ID of the meeting host (user who created the meeting). "
+                },
+                "operator": {
+                  "type": "string",
+                  "description": "The email address of the user who created the meeting.",
+                  "format": "email"
+                },
+                "operator_id": {
+                  "type": "string",
+                  "description": "The user ID of the operator who created the meeting."
+                },
+                "operation": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "single"
+                  ],
+                  "description": "`all"
+                },
+                "creation_type": {
+                  "type": "string",
+                  "description": "The method used to create the user. ",
+                  "enum": [
+                    "create",
+                    "ssoCreate",
+                    "autoCreate",
+                    "autoCreate2",
+                    "custCreate"
+                  ]
+                },
+                "time_stamp": {
+                  "type": "integer",
+                  "description": "Timestamp of the update in milliseconds."
+                },
+                "old_object": { "$ref": "old_object.json" },
+                "object": { "$ref": "meeting.json" },
+                "object": { "$ref": "recording.json" },
+                "object": { "$ref": "user.json" }
+              }
+
+        },
+        "operator_id": {
+          "type": "string",
+          "description": "The User ID of the operator who deactivated the user."
+        },
+        "operation": {
+          "type": "string",
+          "description": "This field will be returned only if an operation is performed such as when a user applies for a Vanity URL. "
+        }
+    },
+    "required": ["event", "payload"]
+}

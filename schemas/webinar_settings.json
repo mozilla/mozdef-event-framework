@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Webinar Settings",
+    "type": "object",
+    "properties": {
+        "host_video": {
+          "description": "Turn the video setting on for the host when the host joins the Webinar.",
+          "type": "boolean"
+        },
+        "panelists_video": {
+          "description": "Turn panelists' video on when they join the webinar.",
+          "type": "boolean"
+        },
+        "practice_session": {
+          "description": "Enable [practice session](https://support.zoom.us/hc/en-us/articles/206316975-Webinar-Practice-Session).",
+          "type": "boolean"
+        },
+        "approval_type": {
+          "description": "Approval type for the webinar registrants. <br>\n`0` - Automatically approve.<br> `1` - Manually approve. <br> `2` No registration required.",
+          "type": "integer"
+        },
+        "registration_type": {
+          "type": "integer",
+          "description": "Registration setting for recurring Webinars.\n<br>`1` - Attendees register once and can attend any of the occurrences.<br>`2` -  Attendees need to register for each occurrence to attend.<br>`3` -  Attendees register once and can choose one or more occurrences to attend."
+        },
+        "audio": {
+          "type": "string",
+          "description": "Determine how participants can join the audio portion of the meeting.<br>`both` - Both Telephony and VoIP.<br>`telephony` - Telephony only.<br>`voip` - VoIP only."
+        },
+        "auto_recording": {
+          "type": "string",
+          "description": "Automatic recording setting for the Webinar:<br>`local` - Record and store on the local device.<br>`cloud` -  Record and store on Cloud.<br>`none` - Automatic Recording Disabled."
+        },
+        "enforce_login": {
+          "type": "string",
+          "description": "Enable only signed in users to join this meeting."
+        }
+      }
+}
