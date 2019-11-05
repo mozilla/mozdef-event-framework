@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "User object",
+    "type": "object",
+    "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique Identifier for a user - User ID"
+        },
+        "first_name": {
+          "type": "string",
+          "description": "First name of the user"
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Last name of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user",
+          "format": "email"
+        },
+        "type": {
+          "type": "string",
+          "description": "User type. <br> `1` - Basic<br>\n`2` - Pro<br> `3` - Corp"
+        }
+      }
+}

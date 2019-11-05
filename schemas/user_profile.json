@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Updated user profile object. Only the field that is updated is returned along with the `id`.",
+    "type": "object",
+    "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique Identifier for a user - User ID"
+        },
+        "first_name": {
+          "type": "string",
+          "description": "First name of the user"
+        },
+        "last_name": {
+          "type": "string",
+          "description": "Last name of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user",
+          "format": "email"
+        },
+        "type": {
+          "type": "string",
+          "description": "User type. <br> `1` - Basic<br>\n`2` - Pro<br> `3` - Corp"
+        },
+        "phone_number": {
+          "type": "string",
+          "description": "User's phone number"
+        },
+        "company": {
+          "type": "string",
+          "description": "User's company."
+        },
+        "pmi": {
+          "type": "string",
+          "description": "User's personal meeting Id."
+        },
+        "use_pmi": {
+          "type": "boolean",
+          "description": "User's preference that indicates whether or not they want to use PMI for meetings."
+        },
+        "pic_url": {
+          "type": "string",
+          "description": "URL of the user's profile picture."
+        },
+        "vanity_name": {
+          "type": "string",
+          "description": "Name of the user's personal meeting room."
+        },
+        "host_key": {
+          "type": "string",
+          "description": "Host key",
+          "minLength": 6,
+          "maxLength": 10
+        },
+        "role": {
+          "type": "string",
+          "description": "User's [role](https://support.zoom.us/hc/en-us/articles/115001078646-Role-Based-Access-Control)."
+        },
+        "department": {
+          "type": "string",
+          "description": "User's department."
+        },
+        "settings": { "$ref": "user_profile_settings.json" }
+      }
+}

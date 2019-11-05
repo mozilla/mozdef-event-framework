@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Recording object",
+    "type": "object",
+    "properties": {
+        "id": {
+          "type": "string",
+          "description": "Cloud Recording ID"
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Universally Unique identifier for the recording instance."
+        },
+        "host_id": {
+          "type": "string",
+          "description": "ID of the user who is set as the host of the meeting/webinar."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Meeting/Webinar topic."
+        },
+        "type": {
+          "type": "integer",
+          "description": "Meeting Types:<br>`1` - Instant meeting.<br>`2` - Scheduled meeting.<br>`3` - Recurring meeting with no fixed time.<br>`8` - Recurring meeting with fixed time.\"",
+          "enum": [
+            1,
+            2,
+            3,
+            8
+          ]
+        },
+        "start_time": {
+          "type": "string",
+          "description": "Meeting/Webinar start time.",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "Timezone of the Meeting/Webinar."
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Scheduled duration of the meeting/webinar."
+        },
+        "recording_file": { "$ref": "recoding_file.json" }
+      }
+
+}

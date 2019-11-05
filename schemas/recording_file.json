@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Array of recording file objects recovered.",
+    "type": "object",
+    "properties": {
+        "recording_start": {
+          "type": "string",
+          "description": "The date and time at which the recording started.",
+          "format": "date-time"
+        },
+        "recording_end": {
+          "type": "string",
+          "description": "The date and time at which the recording ended.",
+          "format": "date-time"
+        }
+      }
+}
