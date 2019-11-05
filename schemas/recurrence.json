@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Recurrence object.",
+    "type": "object",
+    "properties": {
+        "type": {
+          "type": "integer",
+          "description": "Recurrence meeting types:<br>\n`1` - Daily <br>\n`2` - Weekly <br>\n`3` - Monthly",
+          "enum": [
+            1,
+            2,
+            3
+          ]
+        },
+        "repeat_interval": {
+          "type": "integer",
+          "description": "The interval at which the meeting should repeat. For a daily meeting, the maximum interval can be 90 days. For a weekly meeting, the maximum interval period is 12 weeks. For a monthly meeting, the maximum interval is 3 months."
+        },
+        "weekly_days": {
+          "type": "integer",
+          "description": "Days on which the meeting repeats. <br>\n`1` - Sunday<br>\n`2` - Monday<br>\n`3` - Tuesday<br>\n`4` - Wednesday<br>\n`5` - Thursday<br>\n`6` - Friday<br>\n`7` - Saturday"
+        },
+        "monthly_day": {
+          "type": "integer",
+          "description": "Day in the month the meeting is to be scheduled. The value ranges from 1 to 31."
+        },
+        "monthly_week_day": {
+          "description": "The day of the week on which a meeting recurs each month.<br>\n`1` - Sunday<br>\n`2` - Monday<br>\n`3` - Tuesday<br>\n`4` - Wednesday<br>\n`5` - Thursday<br>\n`6` - Friday<br>\n`7` - Saturday",
+          "type": "integer"
+        },
+        "end_times": {
+          "description": "Shows how many times a meeting has been scheduled to recur. The maximum number of times that a meeting can recur is 50.",
+          "default": 1,
+          "type": "integer"
+        },
+        "end_date_time": {
+          "type": "string",
+          "description": "The date and time until which the meeting recurs.",
+          "format": "date-time"
+        },
+        "monthly_week": {
+          "type": "integer",
+          "description": "The week on which a meeting recurs each month."
+        }
+      }
+}

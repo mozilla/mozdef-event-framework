@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Settings object. It represents which options were enabled or disabled during the meeting update.",
+    "type": "object",
+    "properties": {
+        "host_video": {
+          "type": "boolean",
+          "description": "Start the video with host video on.\n"
+        },
+        "participant_video": {
+          "type": "boolean",
+          "description": "Turn participant's video on when they join the meeting. Participants can change this during the meeting."
+        },
+        "join_before_host": {
+          "type": "boolean",
+          "description": "Allow participants to join the meeting before host arrives."
+        },
+        "mute_upon_entry": {
+          "type": "boolean",
+          "description": "Mute participants upon entry."
+        },
+        "audio": {
+          "type": "string",
+          "description": "The audio options for participants joining the meeting. <br>\n`telephony` - Telephony only.\n`voip` - VoIP only.<br>\n`both` - Both Telephony and VoIP."
+        },
+        "auto_recording": {
+          "type": "string",
+          "description": "Automatically record the meeting with either of the following options:<br>\n`local`: Record and save to the local device.<br> `cloud`: Record to the cloud.<br>\n`none`: Autorecording disabled.\n\n"
+        },
+        "use_pmi": {
+          "type": "boolean",
+          "description": "Use personal meeting ID."
+        },
+        "waiting_room": {
+          "type": "boolean",
+          "description": "Enable [waiting room](https://support.zoom.us/hc/en-us/articles/115000332726-Waiting-Room)."
+        },
+        "watermark": {
+          "type": "boolean",
+          "description": "Enable [watermark](https://support.zoom.us/hc/en-us/articles/209605273-Adding-a-Watermark)."
+        },
+        "enforce_login": {
+          "type": "boolean",
+          "description": "Only signed in users can join this meeting."
+        },
+        "enforce_login_domains": {
+          "type": "string",
+          "description": "Only signed in users with specified domain can join this meeting."
+        },
+        "approval_type": {
+          "type": "integer",
+          "description": "Approval type for meeting registrants.<br>`0`: Automatically approve.<br>`1`: Manually approve.<br>`2`: Registration not required."
+        },
+        "alternative_hosts": {
+          "type": "string",
+          "description": "Alternative hosts' emails or IDs: multiple values are separated by comma."
+        }
+      }
+}

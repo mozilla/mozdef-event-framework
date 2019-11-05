@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Updated settings object. Only the field that is updated is returned along with the `id`.",
+    "type": "object",
+    "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier (User Id) of the user whose settings are updated. "
+        },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "scheduled_meeting": { "$ref": "schedule_meeting.json" },
+            "in_meeting": { "$ref": "in_meeting.json" },
+            "email_notification": { "$ref": "email_notification.json" },
+            "recording": { "$ref": "recording_settings.json" },
+            "telephony": { "$ref": "telephony_settings.json" },
+            "feature": { "$ref": "feature.json" }
+          }
+        }
+      }
+}

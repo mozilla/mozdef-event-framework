@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "array",
+    "description": "Array of recording file objects recovered.",
+    "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique Identifier for Recording File. Recording File ID."
+          },
+          "meeting_id": {
+            "type": "string",
+            "description": "Unique Identifier of the meeting."
+          },
+          "recording_start": {
+            "type": "string",
+            "description": "The date and time at which recording started.",
+            "format": "date-time"
+          },
+          "recording_end": {
+            "type": "string",
+            "description": "The date and time at which recording ended."
+          },
+          "file_type": {
+            "type": "string",
+            "description": "The type of file."
+          },
+          "file_size": {
+            "type": "integer",
+            "description": "The size of the recording file in bytes."
+          },
+          "play_url": {
+            "type": "string",
+            "description": "The URL of the file using which it can be opened and played."
+          },
+          "download_url": {
+            "type": "string",
+            "description": "The URL using which the file can be downloaded."
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the recording. <br>`completed`: Recording has been completed."
+          },
+          "recording_type": {
+            "type": "string",
+            "description": "The type of the recording."
+          }
+        }
+      }
+}
