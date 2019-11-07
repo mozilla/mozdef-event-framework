@@ -69,9 +69,9 @@ def test_generate_policy():
     assert type(allow_response['policyDocument']) is dict
     assert allow_response['policyDocument']['Version'] == '2012-10-17'
     assert type(allow_response['policyDocument']['Statement']) is list
-    assert allow_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
-    assert allow_response['policyDocument']['Statement']['Effect'] == 'Allow'
-    assert allow_response['policyDocument']['Statement']['Resource'] == test_resource
+    assert allow_response['policyDocument']['Statement'][0]['Action'] == 'execute-api:Invoke'
+    assert allow_response['policyDocument']['Statement'][0]['Effect'] == 'Allow'
+    assert allow_response['policyDocument']['Statement'][0]['Resource'] == test_resource
 
     deny_response = authorizer.generate_policy(
         test_principalId,
@@ -84,9 +84,9 @@ def test_generate_policy():
     assert type(deny_response['policyDocument']) is dict
     assert deny_response['policyDocument']['Version'] == '2012-10-17'
     assert type(deny_response['policyDocument']['Statement']) is list
-    assert deny_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
-    assert deny_response['policyDocument']['Statement']['Effect'] == 'Deny'
-    assert deny_response['policyDocument']['Statement']['Resource'] == test_resource
+    assert deny_response['policyDocument']['Statement'][0]['Action'] == 'execute-api:Invoke'
+    assert deny_response['policyDocument']['Statement'][0]['Effect'] == 'Deny'
+    assert deny_response['policyDocument']['Statement'][0]['Resource'] == test_resource
 
 def test_validate_token(ssm):
     ssm_client, tname, tvalue = ssm
@@ -105,9 +105,9 @@ def test_validate_token(ssm):
     assert type(allow_response['policyDocument']) is dict
     assert allow_response['policyDocument']['Version'] == '2012-10-17'
     assert type(allow_response['policyDocument']['Statement']) is list
-    assert allow_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
-    assert allow_response['policyDocument']['Statement']['Effect'] == 'Allow'
-    assert allow_response['policyDocument']['Statement']['Resource'] == valid_test_event['methodArn']
+    assert allow_response['policyDocument']['Statement'][0]['Action'] == 'execute-api:Invoke'
+    assert allow_response['policyDocument']['Statement'][0]['Effect'] == 'Allow'
+    assert allow_response['policyDocument']['Statement'][0]['Resource'] == valid_test_event['methodArn']
 
     invalid_test_event = {
         'type': "TOKEN",
@@ -120,9 +120,9 @@ def test_validate_token(ssm):
     assert type(deny_response['policyDocument']) is dict
     assert deny_response['policyDocument']['Version'] == '2012-10-17'
     assert type(deny_response['policyDocument']['Statement']) is list
-    assert deny_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
-    assert deny_response['policyDocument']['Statement']['Effect'] == 'Deny'
-    assert deny_response['policyDocument']['Statement']['Resource'] == invalid_test_event['methodArn']
+    assert deny_response['policyDocument']['Statement'][0]['Action'] == 'execute-api:Invoke'
+    assert deny_response['policyDocument']['Statement'][0]['Effect'] == 'Deny'
+    assert deny_response['policyDocument']['Statement'][0]['Resource'] == invalid_test_event['methodArn']
 
     incomplete_test_event = {
         "type":"TOKEN",
