@@ -27,10 +27,10 @@ def generate_policy(principalId, effect, resource):
     return authResponse
 
 
-def get_auth_token():
+def get_auth_token(ssm_client=ssm, token=service_token):
     try:
         logger.info("Obtaining auth token from SSM.")
-        response = ssm.get_parameter(Name=service_token, WithDecryption=True)
+        response = ssm.get_parameter(Name=token, WithDecryption=True)
         auth_token = response['Parameter']['Value']
         return auth_token
     except Exception as e:
@@ -38,9 +38,7 @@ def get_auth_token():
         return False
 
 
-def validate_token(event, context):
-    # print(json.dumps(event))
-
+def validate_token(event, context, ssm_client=ssm, token=service_token):
     if 'authorizationToken' not in event:
         logger.error("No authorization header received, denying access.")
         return {
@@ -48,13 +46,13 @@ def validate_token(event, context):
             'body': json.dumps('Unauthorized.')
         }
     else:
-        token = event['authorizationToken']
-        auth_token = get_auth_token()
+        request_token = event['authorizationToken']
+        auth_token = get_auth_token(ssm_client, token=token)
         if not auth_token:
             # Unable to fetch auth token from SSM for some reason, return "Deny"
             logger.error("Unable to retrieve auth token from SSM.")
             deny_response = generate_policy('webhook_service', 'Deny', event['methodArn'])
-        elif auth_token and str(token) == auth_token:
+        elif auth_token and str(request_token) == auth_token:
             # Correct authorization token, we should allow
             logger.info("Correct authorization token received, passing event to handler.")
             allow_response = generate_policy('webhook_service', 'Allow', event['methodArn'])
