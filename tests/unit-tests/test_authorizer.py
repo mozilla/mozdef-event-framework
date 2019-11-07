@@ -43,12 +43,12 @@ def test_get_auth_token_success(ssm):
 
 def test_get_auth_token_failure(ssm):
     ssm_client, tname, tvalue = ssm
-    invalid_token = "INVALID"
+    invalid_tvalue = "INVALID"
     # Local imports are also recommended as per moto
     # Ref: https://github.com/spulec/moto#what-about-those-pesky-imports
     from functions import authorizer
     # We have already created a test token, now attempt to retrieve it
-    auth_token = authorizer.get_auth_token(ssm_client, invalid_token)
+    auth_token = authorizer.get_auth_token(ssm_client, invalid_tvalue)
     assert auth_token is False
 
 def test_generate_policy():
@@ -56,7 +56,7 @@ def test_generate_policy():
     test_principalId = "test-principal"
     test_effect_allow = "Allow"
     test_effect_deny = "Deny"
-    test_resource = "arn:aws:test:::"
+    test_resource = "arn:aws:execute-api:test-region:test-account:test-resource"
 
     allow_response = authorizer.generate_policy(
         test_principalId,
@@ -85,11 +85,50 @@ def test_generate_policy():
     assert deny_response['policyDocument']['Version'] == '2012-10-17'
     assert type(deny_response['policyDocument']['Statement']) is list
     assert deny_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
-    assert deny_response['policyDocument']['Statement']['Effect'] == 'Allow'
+    assert deny_response['policyDocument']['Statement']['Effect'] == 'Deny'
     assert deny_response['policyDocument']['Statement']['Resource'] == test_resource
 
 def test_validate_token(ssm):
+    ssm_client, tname, tvalue = ssm
+    invalid_tvalue = "INVALID"
+    
+    valid_test_event = {
+        'type': "TOKEN",
+        'authorizationToken': tvalue,
+        'methodArn': "arn:aws:execute-api:test-region:test-account:test-resource"
+    }
+    from functions import authorizer
+    allow_response = authorizer.validate_token(valid_test_event, "", ssm_client, tname)
+    
+    assert type(allow_response) is dict
+    assert allow_response['principalId'] == 'webhook_service'
+    assert type(allow_response['policyDocument']) is dict
+    assert allow_response['policyDocument']['Version'] == '2012-10-17'
+    assert type(allow_response['policyDocument']['Statement']) is list
+    assert allow_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
+    assert allow_response['policyDocument']['Statement']['Effect'] == 'Allow'
+    assert allow_response['policyDocument']['Statement']['Resource'] == valid_test_event['methodArn']
 
+    invalid_test_event = {
+        'type': "TOKEN",
+        'authorizationToken': invalid_tvalue,
+        'methodArn': "arn:aws:execute-api:test-region:test-account:test-resource"
+    }
+    deny_response = authorizer.validate_token(invalid_test_event, "", ssm_client, tname)
+    assert type(deny_response) is dict
+    assert deny_response['principalId'] == 'webhook_service'
+    assert type(deny_response['policyDocument']) is dict
+    assert deny_response['policyDocument']['Version'] == '2012-10-17'
+    assert type(deny_response['policyDocument']['Statement']) is list
+    assert deny_response['policyDocument']['Statement']['Action'] == 'execute-api:Invoke'
+    assert deny_response['policyDocument']['Statement']['Effect'] == 'Deny'
+    assert deny_response['policyDocument']['Statement']['Resource'] == invalid_test_event['methodArn']
 
+    incomplete_test_event = {
+        "type":"TOKEN",
+        "methodArn":"arn:aws:execute-api:test-region:test-account:test-resource"
+    }
+    response_403 = authorizer.validate_token(incomplete_test_event, "", ssm_client, tname)
+    assert type(response_403) is dict
+    assert response_403['statusCode'] == 403
 
-    return True
