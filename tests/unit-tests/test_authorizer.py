@@ -2,7 +2,7 @@ import json
 import pytest
 import boto3
 import os
-from moto import mock_ssm, mock_cloudformation
+from moto import mock_ssm
 
 
 @pytest.fixture(scope='function')
