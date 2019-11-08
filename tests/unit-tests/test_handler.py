@@ -110,7 +110,10 @@ def test_lambda_handler(sqs):
     assert 'summary' in message_for_mozdef
     assert 'category' in message_for_mozdef
     assert 'details' in message_for_mozdef
-    assert message_for_mozdef['eventsource'] == 'default_api'
+    if os.getenv('SERVICE'):
+         assert message_for_mozdef['eventsource'] == '{}_api'.format(os.getenv('SERVICE'))
+    else:
+        assert message_for_mozdef['eventsource'] == 'default_api'
     assert message_for_mozdef['details'] == test_zoom_event
 
     invalid_api_event = test_api_event.copy()

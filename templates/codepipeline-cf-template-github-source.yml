@@ -155,6 +155,8 @@ Resources:
               - 's3:PutEncryptionConfiguration'
               - 's3:GetEncryptionConfiguration'
               - 's3:GetBucketLocation'
+              - 's3:PutBucketPolicy'
+              - 's3:DeleteBucketPolicy'
             Resource: 
               - !GetAtt S3Pipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*' ] ]
