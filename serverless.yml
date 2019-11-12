@@ -18,6 +18,7 @@ plugins:
 # we need it, but I may be wrong
   - serverless-prune-plugin
   - serverless-pseudo-parameters
+#  - serverless-python-requirements
 #  - serverless-plugin-tracing
 custom:
   authorizer:
@@ -41,6 +42,8 @@ custom:
   prune:
     automatic: true
     number: ${self:custom.cfg.keep}
+  # pythonRequirements:
+  #   dockerizePip: true
 
 provider:
   name: aws
@@ -49,8 +52,8 @@ provider:
   region: ${opt:region, 'us-west-2'}
   endpointType: REGIONAL
   tracing:
-    - apiGateway: true
-    - lambda: true
+    apiGateway: true
+    lambda: true
   stackTags:
     Project: ${self:custom.cfg.project}-${self:provider.stage}
   stackName: ${self:service}-${self:provider.stage}
