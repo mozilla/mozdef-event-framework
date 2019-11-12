@@ -18,6 +18,7 @@ plugins:
 # we need it, but I may be wrong
   - serverless-prune-plugin
   - serverless-pseudo-parameters
+  - serverless-plugin-tracing
 custom:
   authorizer:
     validate_token:
@@ -47,14 +48,18 @@ provider:
   stage: ${env:STAGE}
   region: ${opt:region, 'us-west-2'}
   endpointType: REGIONAL
-  tracing:
-    apiGateway: true
-    lambda: true
+  tracing: true
   stackTags:
     Project: ${self:custom.cfg.project}-${self:provider.stage}
   stackName: ${self:service}-${self:provider.stage}
   apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource:
+        - "*"
     - Effect: Allow
       Action:
         - sqs:SendMessage

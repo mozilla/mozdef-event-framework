@@ -2,6 +2,9 @@ import boto3
 import json
 import logging
 import os
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
+
 
 REGION = os.getenv('REGION', 'us-west-2')
 service = os.getenv('SERVICE', 'default')
@@ -9,6 +12,8 @@ sqs = boto3.client('sqs', region_name=REGION)
 ssm = boto3.client('ssm', region_name=REGION)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+patch_all()
 
 
 def lambda_handler(event, context, sqs_client = boto3.client('sqs', region_name=REGION), sqs_url=os.getenv('SQS_URL')):
