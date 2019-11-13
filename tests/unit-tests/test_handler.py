@@ -14,6 +14,10 @@ def aws_credentials():
     os.environ['AWS_SECURITY_TOKEN'] = 'testing'
     os.environ['AWS_SESSION_TOKEN'] = 'testing'
 
+    # Disable X-Ray for unit tests
+    from aws_xray_sdk import global_sdk_config
+    global_sdk_config.set_sdk_enabled(False)
+
 @pytest.fixture(scope='function')
 def sqs(aws_credentials):
     mock = mock_sqs()
