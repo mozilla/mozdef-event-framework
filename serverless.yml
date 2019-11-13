@@ -18,8 +18,6 @@ plugins:
 # we need it, but I may be wrong
   - serverless-prune-plugin
   - serverless-pseudo-parameters
-#  - serverless-python-requirements
-#  - serverless-plugin-tracing
 custom:
   authorizer:
     validate_token:
@@ -42,8 +40,6 @@ custom:
   prune:
     automatic: true
     number: ${self:custom.cfg.keep}
-  # pythonRequirements:
-  #   dockerizePip: true
 
 provider:
   name: aws
