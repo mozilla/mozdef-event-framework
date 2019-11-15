@@ -107,6 +107,9 @@ package:
     - tests/**
 
 functions:
+  shipLogsToSQS:
+    handler: functions/handler.logs_handler
+    description: Sends CloudWatch logs to an SQS queue for MozDef consumption.
   customAuthorizer: 
     handler: functions/authorizer.validate_token
   eventHandler:
@@ -121,6 +124,15 @@ functions:
 
 resources:
   Resources:
+    LambdaInvokePermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::Join:
+            - ""
+            - - "Ref" : "ShipLogsToSQSLambdaFunction"
+        Principal: logs.#{AWS::Region}.amazonaws.com
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
