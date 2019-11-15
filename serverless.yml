@@ -70,6 +70,7 @@ provider:
         - sqs:TagQueue
       Resource: 
         - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}-CWLogs"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
@@ -133,9 +134,19 @@ resources:
             - ""
             - - "Ref" : "ShipLogsToSQSLambdaFunction"
         Principal: logs.#{AWS::Region}.amazonaws.com
-    ResourceQueue:    
+    LogsQueue:
       Type: AWS::SQS::Queue
       Properties:
+        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-CWLogs
+        # The below values should be tuned
+        MessageRetentionPeriod: 1209600
+        VisibilityTimeout: 60
+        Tags:
+        - Key: "Project"
+          Value: ${self:custom.cfg.project}-${self:provider.stage}
+    ResourceQueue:
+      Type: AWS::SQS::Queue
+      Properties: 
         QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
