@@ -9,18 +9,18 @@ instruction()
   echo "env: eg. dev, staging, prod, ..."  
   echo "for example: ./deploy.sh deploy dev"  
   echo ""  
-  echo "to test: ./deploy.sh <int-test|acceptance-test>"  
-  echo "for example: ./deploy.sh acceptance-test"  
+  echo "to test: ./deploy.sh <int-test|unit-test>"  
+  echo "for example: ./deploy.sh unit-test"  
 } 
  
 if [ $# -eq 0 ]; then
   instruction  
   exit 1  
 elif [ "$1" = "int-test" ] && [ $# -eq 1 ]; then
-  pytest int-test  
+  python3 -m pytest ../tests/int-tests/
   
-elif [ "$1" = "acceptance-test" ] && [ $# -eq 1 ]; then
-  pytest acceptance-test  
+elif [ "$1" = "unit-test" ] && [ $# -eq 1 ]; then
+  python3 -m pytest ../tests/unit-tests/
   
 elif [ "$1" = "deploy" ] && [ $# -eq 3 ]; then
   STAGE=$2  

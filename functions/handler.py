@@ -11,7 +11,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context, sqs_client = boto3.client('sqs', region_name=REGION), sqs_url=os.getenv('SQS_URL')):
     # This parsing can and will be improved in the future
     logger.info("{} service initialized.".format(service))
     api_event = event
@@ -23,9 +23,8 @@ def lambda_handler(event, context):
     try:
         message = json.loads(api_event['body'])
     except Exception as e:
-        logger.error("Cannot parse API event: {}, context: {}, exception: {}".format(
-            str(api_event['body']),
-            context.function_name, e)
+        logger.error("Cannot parse API event: {}, exception: {}".format(
+            str(api_event['body']), e)
         )
         return {
                 'statusCode': 400,
@@ -51,8 +50,8 @@ def lambda_handler(event, context):
         'details': message
     }
 
-    queueURL = os.getenv('SQS_URL')
-    sqs.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
+    queueURL = sqs_url
+    sqs_client.send_message(QueueUrl=queueURL, MessageBody=json.dumps(returnDict))
     logger.info("Event added to the resource queue.")
 
     return {
