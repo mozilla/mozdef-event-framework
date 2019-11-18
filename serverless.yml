@@ -57,6 +57,12 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource:
+        - "*"
+    - Effect: Allow
+      Action:
         - sqs:SendMessage
         - sqs:GetQueueAttributes
         - sqs:ListQueues

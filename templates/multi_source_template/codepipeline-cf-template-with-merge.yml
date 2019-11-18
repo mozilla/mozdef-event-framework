@@ -334,6 +334,8 @@ Resources:
               - 'events:PutRule'
               - 'events:PutTargets'
               - 'sqs:ListQueues'
+              - 'xray:PutTraceSegments'
+              - 'xray:PutTelemetryRecords'
             Resource: "*"
       Roles:
         -  !Ref CBRole

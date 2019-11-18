@@ -14,6 +14,10 @@ def aws_credentials():
     os.environ['AWS_SECURITY_TOKEN'] = 'testing'
     os.environ['AWS_SESSION_TOKEN'] = 'testing'
 
+    # Disable X-Ray for unit tests
+    from aws_xray_sdk import global_sdk_config
+    global_sdk_config.set_sdk_enabled(False)
+
 @pytest.fixture(scope='function')
 def ssm(aws_credentials):
     mock = mock_ssm()
@@ -31,25 +35,6 @@ def ssm(aws_credentials):
 
     yield (ssm_client, token_name, token_value)
     mock.stop()
-
-def test_get_auth_token_success(ssm):
-    ssm_client, tname, tvalue = ssm
-    # Local imports are also recommended as per moto
-    # Ref: https://github.com/spulec/moto#what-about-those-pesky-imports
-    from functions import authorizer
-    # We have already created a test token, now attempt to retrieve it
-    auth_token = authorizer.get_auth_token(ssm_client, tname)
-    assert auth_token == tvalue
-
-def test_get_auth_token_failure(ssm):
-    ssm_client, tname, tvalue = ssm
-    invalid_tvalue = "INVALID"
-    # Local imports are also recommended as per moto
-    # Ref: https://github.com/spulec/moto#what-about-those-pesky-imports
-    from functions import authorizer
-    # We have already created a test token, now attempt to retrieve it
-    auth_token = authorizer.get_auth_token(ssm_client, invalid_tvalue)
-    assert auth_token is False
 
 def test_generate_policy():
     from functions import authorizer
@@ -88,7 +73,29 @@ def test_generate_policy():
     assert deny_response['policyDocument']['Statement'][0]['Effect'] == 'Deny'
     assert deny_response['policyDocument']['Statement'][0]['Resource'] == test_resource
 
+def test_get_auth_token_success(ssm):
+
+    ssm_client, tname, tvalue = ssm
+    # Local imports are also recommended as per moto
+    # Ref: https://github.com/spulec/moto#what-about-those-pesky-imports
+    from functions import authorizer
+    # We have already created a test token, now attempt to retrieve it
+    auth_token = authorizer.get_auth_token(ssm_client, tname)
+    assert auth_token == tvalue
+
+def test_get_auth_token_failure(ssm):
+
+    ssm_client, tname, tvalue = ssm
+    invalid_tvalue = "INVALID"
+    # Local imports are also recommended as per moto
+    # Ref: https://github.com/spulec/moto#what-about-those-pesky-imports
+    from functions import authorizer
+    # We have already created a test token, now attempt to retrieve it
+    auth_token = authorizer.get_auth_token(ssm_client, invalid_tvalue)
+    assert auth_token is False
+
 def test_validate_token(ssm):
+
     ssm_client, tname, tvalue = ssm
     invalid_tvalue = "INVALID"
     
