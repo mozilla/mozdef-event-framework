@@ -34,12 +34,19 @@ Architecture
 The following components make up this framework:
 
 
-   * CodePipeline
-   * CodeCommit
-   * CodeBuild
-   * s3
-   * CloudWatch
-   * GitHub.
+   * AWS API Gateway
+   * AWS Cloudformation
+   * AWS CloudWatch
+   * AWS CodePipeline
+   * AWS CodeCommit
+   * AWS CodeBuild
+   * AWS Lambda
+   * AWS S3
+   * AWS SQS
+   * AWS XRay
+   * GitHub
+   * Serverless framework
+
 
 
 Status
