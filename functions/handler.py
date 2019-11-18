@@ -71,9 +71,8 @@ def lambda_handler(event, context, sqs_client = boto3.client('sqs', region_name=
     }
 
 def logs_handler(event, context):
-    print(event)
+    # print(event)
     cw_data = event['awslogs']['data']
-    print(cw_data)
 
     compressed_payload = base64.b64decode(cw_data)
     uncompressed = gzip.decompress(compressed_payload)
@@ -89,13 +88,9 @@ def subscribe_to_logs_handler(event, context):
     print(event)
     # Need to wrap this in try - except
     logGroupName = event['detail']['requestParameters']['logGroupName']
-    # print(logGroupName)
+    print(logGroupName)
 
-    if prefix and prefix not in logGroupName:
-        pass
-        # logger.warning("ignoring the log group {}, because it does not match the prefix {}".format(logGroupName, prefix))
-    else:
-        print(logGroupName)
+    if prefix and prefix in logGroupName:
         subscribe(logGroupName)
         logger.info("Subscribed {} to {}".format(logGroupName, log_handler))
 
@@ -104,5 +99,5 @@ def subscribe(log_group_name):
        destinationArn=log_handler,
        logGroupName=log_group_name,
        filterName='ship-logs-to-SQS',
-       filterPattern='*',
+       filterPattern='',
     )
