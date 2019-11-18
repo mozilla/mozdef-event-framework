@@ -2,11 +2,11 @@ Overview
 ========
 
 Purpose
------
+-------
 It's easiest to describe The MozDef Event Framework as a set of micro-services you can use as to integrate event sources with the [Mozilla Enterprise Defense platfrorm](https://mozdef.readthedocs.io/en/latest/) (MozDef).
 
 Provides
-----
+--------
 
 Many sources are not wholly contained within the datacenter, there are SAAS and IAAS providers which may provide events that are external to the platform. This requires some architecing of a new pipeline to get those events into MozDef.
 Utilizing cloud based microservices can ensure efficiency and scalability and leads to less maintenance. We created a framework using cloudformation and serverless to build a pipeline that will allow placement of lambda scripts specific for an event source and provide co
