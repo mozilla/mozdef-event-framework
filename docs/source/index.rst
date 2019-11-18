@@ -9,6 +9,11 @@ MozDef Event Framework Documentation
 .. toctree::
    :maxdepth: 2
 
+   overview
+   introduction
+   installation
+   usage
+   deployment
    contributors
 
 
