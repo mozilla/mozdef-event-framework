@@ -10,8 +10,12 @@ from aws_xray_sdk.core import patch_all
 
 REGION = os.getenv('REGION', 'us-west-2')
 service = os.getenv('SERVICE', 'default')
+prefix = os.getenv('LOG_HANDLER_PREFIX', '/aws/lambda')
+log_handler = os.getenv('LOG_HANDLER_FUNCTION', 'default')
+log_handler_role = os.getenv('LOG_HANDLER_ROLE', 'IamRoleLambdaExecution')
 sqs = boto3.client('sqs', region_name=REGION)
 ssm = boto3.client('ssm', region_name=REGION)
+cw_logs = boto3.client('logs')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -80,3 +84,25 @@ def logs_handler(event, context):
     log_events = payload['logEvents']
     for log_event in log_events:
         print(log_event)
+
+def subscribe_to_logs_handler(event, context):
+    print(event)
+    # Need to wrap this in try - except
+    logGroupName = event['detail']['requestParameters']['logGroupName']
+    # print(logGroupName)
+
+    if prefix and prefix not in logGroupName:
+        pass
+        # logger.warning("ignoring the log group {}, because it does not match the prefix {}".format(logGroupName, prefix))
+    else:
+        print(logGroupName)
+        subscribe(logGroupName)
+        logger.info("Subscribed {} to {}".format(logGroupName, log_handler))
+
+def subscribe(log_group_name):
+    cw_logs.put_subscription_filter(
+       destinationArn=log_handler,
+       logGroupName=log_group_name,
+       filterName='ship-logs-to-SQS',
+       filterPattern='*',
+    )
