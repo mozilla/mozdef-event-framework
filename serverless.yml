@@ -118,12 +118,12 @@ package:
 
 functions:
   subscribeLogs:
-    handler: functions/handler.subscribe_to_logs_handler
+    handler: functions/log_handler.subscribe_to_log_handler
     description: Subscribe logs to "shipLogsToSQS" function.
     environment:
       LOG_HANDLER_FUNCTION: '#{ShipLogsToSQSLambdaFunction.Arn}'
-      LOG_HANDLER_PREFIX: "/aws/lambda/${self:service}-${env:STAGE}-eventHandler"
-      LOG_HANDLER_ROLE: '#{IamRoleLambdaExecution.Arn}'
+      # TODO: Need to find a way to exclude the logs of shipLogsToSQS lambda to itself
+      LOG_HANDLER_PREFIX: '/aws/lambda/${self:service}-${env:STAGE}'
     events:
       - cloudwatchEvent:
           event:
@@ -136,9 +136,8 @@ functions:
                 - logs.amazonaws.com
               eventName:
                 - CreateLogGroup
-                # - CreateLogStream
   shipLogsToSQS:
-    handler: functions/handler.logs_handler
+    handler: functions/log_handler.handler
     description: Sends CloudWatch logs to an SQS queue for MozDef consumption.
   customAuthorizer: 
     handler: functions/authorizer.validate_token
