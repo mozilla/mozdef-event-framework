@@ -53,16 +53,19 @@ Status
 
 The MozDef event framework is under development at this time.
 
-DONE
-----
+Roadmap
+-------
+
+Done
+****
 
    * Allows the use of Webhook API connectivity
    * Can pull configuration from one or more sources (Github/CodeCommit) during build by selecting the appropriate CF template
    * Utilizes ssm/keystore parameters to prevent exposure of secrets
    * CI/CD pipeline is implemented using AWS Codepipeline
 
-TODO
-----
+ToDo
+****
 
    * Implement Dead Letter Queue (DLQ) reprocessing functionality
    * Implement schema validation
