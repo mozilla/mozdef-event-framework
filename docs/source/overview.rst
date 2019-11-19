@@ -48,9 +48,22 @@ The following components make up this framework:
    * GitHub
    * Serverless framework
 
-
-
 Status
 ------
 
 The MozDef event framework is under development at this time.
+
+DONE
+----
+
+   * Allows the use of Webhook API connectivity
+   * Can pull configuration from one or more sources (Github/CodeCommit) during build
+   * Utilizes ssm/keystore parameters to prevent exposure of secrets
+   * CI/CD pipeline is implemented using AWS Codepipeline
+
+TODO
+----
+
+   * Implement Dead Letter Queue (DLQ) reprocessing functionality
+   * Implement schema validation
+   * Implement function library to allow choice between webhook API or rEST API connectivity
