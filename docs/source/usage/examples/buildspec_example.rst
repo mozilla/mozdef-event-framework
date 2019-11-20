@@ -1,6 +1,9 @@
 Buildspec Example
 =================
 
+buildspec.yml
+*************
+"""
 version: 0.2 
 
 env:  
@@ -30,3 +33,4 @@ phases:
       # Invoke the deploy script here 
       - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
       - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION::
+"""
