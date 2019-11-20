@@ -31,7 +31,7 @@ Technical
 * Offer micro services that enable rapid consumption of various event sources as needed.
 * Scalable, should be able to handle thousands of events per second, provide validation, and a means to reprocess events that fail validation by utilizing the CI/CD pipeline this framework builds.
 
-Architecture
+Components
 ------------
 The following components make up this framework:
 
@@ -71,3 +71,4 @@ ToDo
    * Implement Dead Letter Queue (DLQ) reprocessing functionality
    * Implement schema validation
    * Implement function library to allow choice between webhook API or rEST API connectivity
+   * Implement monitoring of the entire stack that is created by this framework

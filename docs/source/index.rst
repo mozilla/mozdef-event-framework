@@ -10,9 +10,11 @@ MozDef Event Framework Documentation
    :maxdepth: 2
 
    overview
-   introduction
+   architecture
    usage/installation
    usage/deployment
+   usage/examples/deploy_example
+   usage/examples/buildspec_example
    contributors
 
 
