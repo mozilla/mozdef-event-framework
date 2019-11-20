@@ -2,6 +2,9 @@ import logging
 import json
 import boto3
 import os
+import sys
+import socket
+import cis_logger    # Custom module
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch_all
 
@@ -9,11 +12,24 @@ from aws_xray_sdk.core import patch_all
 REGION = os.getenv('REGION', 'us-west-2')
 ssm = boto3.client('ssm', region_name=REGION)
 service_token = os.getenv('TOKEN')
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger()
+# logger.setLevel(logging.INFO)
 
 patch_all()
 
+
+def setup_logging():
+    logger = logging.getLogger()
+    for h in logger.handlers:
+        logger.removeHandler(h)
+    h = logging.StreamHandler(sys.stdout)
+    h.setFormatter(cis_logger.JsonFormatter(extra={"hostname": socket.gethostname()}))
+    logger.addHandler(h)
+    logger.setLevel(logging.INFO)
+
+    # Quiet botocore verbose logging...
+    logging.getLogger("botocore").setLevel(logging.WARNING)
+    return logger
 
 def generate_policy(principalId, effect, resource):
     authResponse = {}
@@ -33,6 +49,7 @@ def generate_policy(principalId, effect, resource):
 
 
 def get_auth_token(ssm_client=ssm, token=service_token):
+    logger = setup_logging()
     try:
         logger.info("Obtaining auth token from SSM.")
         response = ssm.get_parameter(Name=token, WithDecryption=True)
@@ -44,6 +61,7 @@ def get_auth_token(ssm_client=ssm, token=service_token):
 
 
 def validate_token(event, context, ssm_client=ssm, token=service_token):
+    logger = setup_logging()
     if 'authorizationToken' not in event:
         logger.error("No authorization header received, denying access.")
         return {

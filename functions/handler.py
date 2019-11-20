@@ -2,27 +2,39 @@ import boto3
 import json
 import logging
 import os
-import gzip
-import base64
+import sys
+import socket
+import cis_logger    # Custom module
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch_all
 
 
 REGION = os.getenv('REGION', 'us-west-2')
 service = os.getenv('SERVICE', 'default')
-prefix = os.getenv('LOG_HANDLER_PREFIX', '/aws/lambda')
-log_handler = os.getenv('LOG_HANDLER_FUNCTION', 'default')
-log_handler_role = os.getenv('LOG_HANDLER_ROLE', 'IamRoleLambdaExecution')
 sqs = boto3.client('sqs', region_name=REGION)
 ssm = boto3.client('ssm', region_name=REGION)
-cw_logs = boto3.client('logs')
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger()
+# logger.setLevel(logging.INFO)
 
 patch_all()
 
 
-def lambda_handler(event, context, sqs_client = boto3.client('sqs', region_name=REGION), sqs_url=os.getenv('SQS_URL')):
+def setup_logging():
+    logger = logging.getLogger()
+    for h in logger.handlers:
+        logger.removeHandler(h)
+    h = logging.StreamHandler(sys.stdout)
+    h.setFormatter(cis_logger.JsonFormatter(extra={"hostname": socket.gethostname()}))
+    logger.addHandler(h)
+    logger.setLevel(logging.INFO)
+
+    # Quiet botocore verbose logging...
+    logging.getLogger("botocore").setLevel(logging.WARNING)
+    return logger
+
+
+def lambda_handler(event, context, sqs_client = boto3.client('sqs', region_name=REGION), sqs_url=os.getenv('EVENT_SQS_URL')):
+    logger = setup_logging()
     # This parsing can and will be improved in the future
     logger.info("{} service initialized.".format(service))
     api_event = event
@@ -69,35 +81,3 @@ def lambda_handler(event, context, sqs_client = boto3.client('sqs', region_name=
         'statusCode': 200,
         'body': json.dumps('Event received')
     }
-
-def logs_handler(event, context):
-    # print(event)
-    cw_data = event['awslogs']['data']
-
-    compressed_payload = base64.b64decode(cw_data)
-    uncompressed = gzip.decompress(compressed_payload)
-    payload = json.loads(uncompressed)
-
-    # This is where we would send to SQS instead
-    # or maybe an S3 bucket?
-    log_events = payload['logEvents']
-    for log_event in log_events:
-        print(log_event)
-
-def subscribe_to_logs_handler(event, context):
-    print(event)
-    # Need to wrap this in try - except
-    logGroupName = event['detail']['requestParameters']['logGroupName']
-    print(logGroupName)
-
-    if prefix and prefix in logGroupName:
-        subscribe(logGroupName)
-        logger.info("Subscribed {} to {}".format(logGroupName, log_handler))
-
-def subscribe(log_group_name):
-    cw_logs.put_subscription_filter(
-       destinationArn=log_handler,
-       logGroupName=log_group_name,
-       filterName='ship-logs-to-SQS',
-       filterPattern='',
-    )

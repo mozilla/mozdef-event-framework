@@ -40,8 +40,11 @@ custom:
     automatic: true
     number: ${self:custom.cfg.keep}
   pythonRequirements:
+    useDownloadCache: false
+    useStaticCache: false
     dockerizePip: true
-
+    dockerRunCmdExtraArgs: ["-v", "${env:PWD}/mozilla/cis_logger:/var/task/vendor/mozilla/cis_logger"]
+    
 provider:
   name: aws
   runtime: python3.7
@@ -101,8 +104,10 @@ provider:
     TOKEN: "/${self:custom.cfg.project}/${self:custom.cfg.authToken}"
     # Adding resource queue URL as global environment variable
     # We could also store this in SSM
-    SQS_URL:
+    EVENT_SQS_URL:
       Ref: ResourceQueue
+    LOGS_SQS_URL:
+      Ref: LogsQueue
 
 package:
   # This is to keep the package to be uploaded as small as possible in size
@@ -121,8 +126,9 @@ functions:
     handler: functions/log_handler.subscribe_to_log_handler
     description: Subscribe logs to "shipLogsToSQS" function.
     environment:
-      LOG_HANDLER_FUNCTION: '#{ShipLogsToSQSLambdaFunction.Arn}'
-      # TODO: Need to find a way to exclude the logs of shipLogsToSQS lambda to itself
+      # Env vars local to this function only
+      LOG_HANDLER_FUNCTION: '#{ShipLogsToSQSLambdaFunction}'
+      LOG_HANDLER_FUNCTION_ARN: '#{ShipLogsToSQSLambdaFunction.Arn}'
       LOG_HANDLER_PREFIX: '/aws/lambda/${self:service}-${env:STAGE}'
     events:
       - cloudwatchEvent:
@@ -136,6 +142,7 @@ functions:
                 - logs.amazonaws.com
               eventName:
                 - CreateLogGroup
+                - CreateLogStream
   shipLogsToSQS:
     handler: functions/log_handler.handler
     description: Sends CloudWatch logs to an SQS queue for MozDef consumption.
