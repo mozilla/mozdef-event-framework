@@ -3,8 +3,10 @@ Examples
 
 We've  included some sample scripts you can modify for your deployment
 
+Buildpsec Example
+-----------------
+
 buildspec.yml::
-***************
 
   version: 0.2 
 
@@ -36,9 +38,10 @@ buildspec.yml::
         - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
         - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION
 
+Deploy Example
+--------------
 
 deploy.sh::
-***********
 
   #!/bin/bash     
    
