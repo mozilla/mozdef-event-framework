@@ -1,0 +1,5 @@
+pytest==4.6.2
+boto3==1.9.165
+moto==1.3.8
+aws_xray_sdk==0.95
+file:vendor/cis_logger

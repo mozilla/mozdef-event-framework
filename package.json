@@ -18,6 +18,7 @@
   "homepage": "https://github.com/mozilla/mozdef-event-framework#readme",
   "devDependencies": {
     "serverless-prune-plugin": "^1.4.1",
-    "serverless-pseudo-parameters": "^2.4.0"
+    "serverless-pseudo-parameters": "^2.4.0",
+    "serverless-python-requirements": "^5.0.1"
   }
 }

@@ -43,7 +43,7 @@ custom:
     useDownloadCache: false
     useStaticCache: false
     dockerizePip: true
-    dockerRunCmdExtraArgs: ["-v", "${env:PWD}/mozilla/cis_logger:/var/task/vendor/mozilla/cis_logger"]
+    dockerRunCmdExtraArgs: ["-v", "${env:PWD}/vendor/cis_logger:/var/task/vendor/cis_logger"]
     
 provider:
   name: aws
