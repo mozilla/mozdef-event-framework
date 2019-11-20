@@ -1,11 +1,10 @@
 Buildspec Example
 =================
 
-buildspec.yml
--------------
+buildspec.yml::
 
   version: 0.2 
-  
+
   env:  
     variables: 
       STAGE: dev 
@@ -13,7 +12,7 @@ buildspec.yml
       PROJECT: MozDef-EF 
       API_PATH: zoom 
     ssm: 
-  
+
   phases: 
     install: 
       runtime-versions: 
@@ -32,4 +31,4 @@ buildspec.yml
       commands: 
         # Invoke the deploy script here 
         - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
-        - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION::
+        - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION
