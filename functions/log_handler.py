@@ -18,8 +18,6 @@ log_handler = os.getenv('LOG_HANDLER_FUNCTION', 'default')
 log_handler_arn = os.getenv('LOG_HANDLER_FUNCTION_ARN', 'default')
 cw_logs = boto3.client('logs')
 sqs = boto3.client('sqs', region_name=REGION)
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
 
 patch_all()
 
@@ -71,10 +69,12 @@ def subscribe_to_log_handler(event, context, cw_logs_client=boto3.client('logs')
                     filterName='ship-logs-to-SQS',
                     filterPattern='{ $.levelname = "WARNING" || $.levelname = "ERROR" }'
                 )
+                logger.info("Subscribed {} to {}".format(log_group_name, log_handler_arn))
+                return True
             except Exception as e:
                 logger.warning("Failed to subscribe log group {}, exception: {}".format(log_group_name, e))
-            logger.info("Subscribed {} to {}".format(log_group_name, log_handler_arn))
+                return False
 
     except Exception as e:
         # We do not care about events that has a missing log group name
-        pass
+        return False

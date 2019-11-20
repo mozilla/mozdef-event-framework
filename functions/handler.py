@@ -13,8 +13,6 @@ REGION = os.getenv('REGION', 'us-west-2')
 service = os.getenv('SERVICE', 'default')
 sqs = boto3.client('sqs', region_name=REGION)
 ssm = boto3.client('ssm', region_name=REGION)
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
 
 patch_all()
 
