@@ -3,17 +3,12 @@ Architecture
 
 **Cloudformation:** Cloudformation will create the CI/CD components utilizing:
 
-    **CodePipeline**
-
-    **CodeCommit**
-
-    **CodeBuild**
-
-    **s3**
-
-    **CloudWatch**
-
-    **GitHub**
+    * **CodePipeline**
+    * **CodeCommit**
+    * **CodeBuild**
+    * **s3**
+    * **CloudWatch**
+    * **GitHub**
 
 
 The intended behavior is to pull the framework from GitHub, and the custom configuration for a specific event source from its CodeCommit repository.
