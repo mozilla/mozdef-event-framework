@@ -13,8 +13,7 @@ MozDef Event Framework Documentation
    architecture
    usage/installation
    usage/deployment
-   usage/examples/deploy_example
-   usage/examples/buildspec_example
+   usage/examples
    contributors
 
 
