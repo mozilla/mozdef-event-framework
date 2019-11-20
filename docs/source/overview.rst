@@ -5,7 +5,7 @@ Purpose
 -------
 
 
-It's easiest to describe The MozDef Event Framework as a set of micro-services you can use to integrate event sources with the `Mozilla Enterprise Defense platform https://mozdef.readthedocs.io/en/latest/` (MozDef).
+It's easiest to describe The MozDef Event Framework as a set of micro-services you can use to integrate event sources with the `Mozilla Enterprise Defense platform <https://mozdef.readthedocs.io/en/latest/>` (MozDef).
 
 Provides
 --------
