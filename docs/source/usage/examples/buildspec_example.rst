@@ -1,9 +1,10 @@
 Buildspec Example
 =================
 
-buildspec.yml
-*************
 """
+buildspec.yml
+=============
+
 version: 0.2 
 
 env:  
