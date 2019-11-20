@@ -4,6 +4,7 @@ Examples
 We've  included some sample scripts you can modify for your deployment
 
 buildspec.yml::
+***************
 
   version: 0.2 
 
@@ -37,6 +38,7 @@ buildspec.yml::
 
 
 deploy.sh::
+***********
 
   #!/bin/bash     
    
