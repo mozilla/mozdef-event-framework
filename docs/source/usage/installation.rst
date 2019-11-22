@@ -7,7 +7,7 @@ To deploy this framework you will need the following established:
 
         /<Project_name>/<event_source_name>/<environment>/<authorizer_token_var>/
 
-This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
+    This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
 
 
     2. An AWS Account with the ability to use all of the AWS services previously mentioned.
