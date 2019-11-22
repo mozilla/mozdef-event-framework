@@ -3,11 +3,11 @@ Installation
 
 To deploy this framework you will need the following established:
 
-    1. You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure:
+    1. You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure::
 
         /<Project_name>/<event_source_name>/<environment>/<authorizer_token_var>/
 
-        This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
+This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
 
 
     2. An AWS Account with the ability to use all of the AWS services previously mentioned.
