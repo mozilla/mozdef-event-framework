@@ -28,5 +28,5 @@ To deploy this framework you will need the following established:
        * A private S3 bucket to hold the merge lambda code (merge.zip)
        * Add an archive of your zipped configuration files (templates are in the framework Github repo you clone) to the bucket you use for the merge lambda.
 
-      **Note:** The CF template will create a CodeCommit Repo if you choose to use it for your config repo.
+      **Note:** The CF template will create a CodeCommit Repo with your configuration structure.
        This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
