@@ -26,7 +26,8 @@ To deploy this framework you will need the following established:
 
     4. **GitHub Framework Repo:** 
       This repo contains all the templates you'll need to build out the pipeline. 
-      The cloudformation template will automatically build your CI/CD pipeline which will deploy the serverless application. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK for us!
+      The cloudformation template will automatically build your CI/CD pipeline which will deploy the serverless application. 
+      You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK with us!
 
 
     5. **Pick a Cloudformation template:**
@@ -35,4 +36,4 @@ To deploy this framework you will need the following established:
        * Add an archive of your zipped configuration files (templates are in the framework Github repo you clone) to the bucket you use for the merge lambda.
 
       **Note:** The CF template will create a CodeCommit Repo with your configuration structure.
-       This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
+      This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
