@@ -20,9 +20,13 @@ To deploy this framework you will need the following established:
       **Note:** The env: variables that must be filled out, these can essentially be whatever you want them to be.
 
 
-    4. **GitHub Framework Repo:** This contains all the templates you'll need to build out the pipeline. The cloudformation template will automatically build your CI/CD pipeline which will deploy the serverless application. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK for us!
+    4. **GitHub Framework Repo:** This contains all the templates you'll need to build out the pipeline. 
+      The cloudformation template will automatically build your CI/CD pipeline which will deploy the serverless application. You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK for us!
 
 
-    5. **Pick a Cloudformation template:** If you choose to use the multiple source cloudformation template, you'll need an S3 bucket to hold the merge lambda code (merge.zip) and an archive of your zipped configuration files (templates are in the framework Github repo you clone), for your specific event source, mark this bucket private (not public).
+    5. **Pick a Cloudformation template:** If you choose to use the multiple source cloudformation template, you'll need:
+       * A private S3 bucket to hold the merge lambda code (merge.zip)
+       * Add an archive of your zipped configuration files (templates are in the framework Github repo you clone) to the bucket you use for the merge lambda.
 
-      **Note:** The CF template will create a CodeCommit Repo if you choose to use it for your config repo. This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
+      **Note:** The CF template will create a CodeCommit Repo if you choose to use it for your config repo.
+       This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
