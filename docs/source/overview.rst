@@ -9,9 +9,14 @@ It's easiest to describe The MozDef Event Framework as a set of micro-services y
 Provides
 --------
 
-Many sources are not wholly contained within the datacenter, there are SAAS and IAAS providers which may provide event logging that is external to the network where your SIEM resides. Exposing your security infrastructure doesn't ensure a secure pipeline. In order to solve for this we decided on pulling that information as our method of choice, as opposed to pushing.
-Utilizing cloud based microservices can reduce exposure, ensure efficiency and scalability, and leads to less maintenance. We created a framework using cloudformation and serverless to build a pipeline that will allow placement of lambda scripts specific for an event source and provide continuous deployment and integration.
-This takes the guesswork out of having to write serverless and cloudformation code every time  you want to deploy a pipeline for a new event source and creates a standard method to be used to obtain those events. Webhook sources utilize an AWS API gateway that they can post events to. As we scale this out the capabilities will increase.
+Many resources are not wholly contained within the datacenter, there are SAAS and IAAS providers which may provide event logging that is external to the network where your SIEM resides. 
+Exposing your security infrastructure doesn't ensure a secure pipeline. In order to solve for this we decided on pulling that information as our method of choice, as opposed to pushing.
+Utilizing cloud based microservices can reduce exposure, ensure efficiency and scalability, and leads to less maintenance.
+
+We created a framework using AWS Cloudformation and the Serverless framework to build a pipeline that will allow placement of lambda scripts specific for an event source and provide continuous deployment and integration.
+This takes the guesswork out of having to write serverless and cloudformation code every time  you want to deploy a pipeline for a new event source and creates a standard method to be used to obtain those events. 
+
+Webhook sources utilize an AWS API gateway that they can post events to. As we scale this out the capabilities will increase.
 The hope is to have a scalable framework that can be deployed for both rest and webhook based sources.
 
 Flow
