@@ -14,6 +14,13 @@ Utilizing cloud based microservices can reduce exposure, ensure efficiency and s
 This takes the guesswork out of having to write serverless and cloudformation code every time  you want to deploy a pipeline for a new event source and creates a standard method to be used to obtain those events. Webhook sources utilize an AWS API gateway that they can post events to. As we scale this out the capabilities will increase.
 The hope is to have a scalable framework that can be deployed for both rest and webhook based sources.
 
+Flow
+----
+
+.. image:: images/MozDef-Event-Framework_process_flow.png
+   :width: 600
+   :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
+
 Goals
 -----
 
