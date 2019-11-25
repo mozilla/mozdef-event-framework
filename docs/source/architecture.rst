@@ -9,7 +9,7 @@ Cloudformation will create the CI/CD components utilizing:
     * **CodePipeline**
     * **CodeCommit**
     * **CodeBuild**
-    * **s3**
+    * **S3**
     * **CloudWatch**
     * **Cloudtrail**
     * **GitHub**
