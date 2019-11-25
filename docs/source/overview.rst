@@ -22,9 +22,24 @@ The hope is to have a scalable framework that can be deployed for both REST and 
 Flow
 ----
 
-.. image:: images/MozDef-Event-Framework_process_flow.png
-   :width: 600
-   :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
+.. toggle-header::
+    :header: Diagram workflow for Multiple Repositories using the Multi-Source Merge Cloudformation Template
+
+      .. image:: images/MozDef-Event-Framework_process_flow.png
+         :width: 600
+         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
+
+.. toggle-header::
+    :header: Diagram workflow using CodeCommit Source Cloudformation Template
+
+      Placeholder for new diagram
+
+.. toggle-header::
+    :header: Diagram workflow using the GitHub Source Cloudformation Template
+
+      Placeholder for new diagram
+
+|
 
 Components
 ------------
