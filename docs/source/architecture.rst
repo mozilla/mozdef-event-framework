@@ -29,6 +29,6 @@ The Serverless framework deploys the application components that will handle the
     * An **SQS queue** to receive the events that have been handled by our lambda handler.
     * An **SQS Dead Letter Queue (DLQ)** to receive events that fail to be handled, so that they can be reprocessed once a fix is introduced. This is future functionality that has not been implemented yet.
 
-:sub `1: this repository can be in github or codecommit depending on the Cloudformation template used.`
+:sub `1: this repository can be in GitHub or CodeCommit depending on the Cloudformation template used.`
 
 
