@@ -17,7 +17,7 @@ We created a framework using AWS Cloudformation and the Serverless framework to 
 This takes the guesswork out of having to write serverless and cloudformation code every time  you want to deploy a pipeline for a new event source and creates a standard method to be used to obtain those events. 
 
 Webhook sources utilize an AWS API gateway that they can post events to. As we scale this out the capabilities will increase.
-The hope is to have a scalable framework that can be deployed for both rest and webhook based sources.
+The hope is to have a scalable framework that can be deployed for both REST and webhook based sources.
 
 Flow
 ----
@@ -82,7 +82,7 @@ ToDo
 
    * Implement Dead Letter Queue (DLQ) reprocessing functionality
    * Implement schema validation
-   * Implement function library to allow choice between webhook API or rEST API connectivity
+   * Implement function library to allow choice between webhook API or REST API connectivity
    * Implement monitoring of the entire stack that is created by this framework
 
 Inspiration
