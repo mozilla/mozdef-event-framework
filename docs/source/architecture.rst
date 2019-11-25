@@ -14,8 +14,9 @@ Cloudformation will create the CI/CD components utilizing:
     * **Cloudtrail**
     * **GitHub**
 
-The Cloudformation template has the potential to be separately deployed for various event sources, while the only difference will be the CodeCommit repository that contains the custom configuration data for that event source.
-This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data while still maintaining configuration revision history.
+There are multiple Cloudformation templates to choose from depending on the management style you prefer. The template can be deployed once for each event source you wish to integrate.
+Each event source will have it's own configuration repository that the Cloudformation template will pull from to build the framework.
+This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data while still maintaining configuration revision history specific to each event source.
 
 Serverless
 ----------
