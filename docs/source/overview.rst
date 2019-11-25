@@ -22,21 +22,32 @@ The hope is to have a scalable framework that can be deployed for both REST and 
 Flow
 ----
 
+There are three cloudformation templates to choose from. We've added toggles to view the diagrams below, feel free to choose what works best for you.
+
+Workflow Diagrams
+*****************
+
 .. toggle-header::
-    :header: Diagram workflow for Multiple Repositories using the Multi-Source Merge Cloudformation Template
+    :header: **1. CodeCommit and Github as Multi-Source Repos to Merge:**
+
+      Workflow for Multiple Repositories using the Multi-Source Merge Cloudformation Template
 
       .. image:: images/MozDef-Event-Framework_process_flow.png
          :width: 600
          :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
-.. toggle-header::
-    :header: Diagram workflow using CodeCommit Source Cloudformation Template
 
+.. toggle-header::
+    :header: **2. CodeCommit as the Source Repo:**
+
+      Workflow using CodeCommit Source Cloudformation Template
       Placeholder for new diagram
 
-.. toggle-header::
-    :header: Diagram workflow using the GitHub Source Cloudformation Template
 
+.. toggle-header::
+    :header: **3. Github as the Source Repo:**
+
+      Workflow using the GitHub Source Cloudformation Template
       Placeholder for new diagram
 
 |
