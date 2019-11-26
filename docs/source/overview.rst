@@ -100,7 +100,7 @@ Done
 
    * Allows the use of Webhook API connectivity
    * Can pull configuration from one or more sources (Github/CodeCommit) during build by selecting the appropriate CF template
-   * Utilizes ssm/keystore parameters to prevent exposure of secrets
+   * Utilizes SSM and Secrets manager parameters to prevent exposure of secrets through code
    * CI/CD pipeline is implemented using AWS Codepipeline
 
 ToDo
