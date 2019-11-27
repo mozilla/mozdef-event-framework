@@ -22,7 +22,13 @@ The hope is to have a scalable framework that can be deployed for both REST and 
 Flow
 ----
 
-There are three cloudformation templates to choose from. We've added toggles to view the diagrams below, feel free to choose what works best for you.
+There are There cloudformation templates to choose from in the templates directory:
+
+* Github repo used as source: templates/codepipeline-cf-template-github-source.yml
+* CodeCommit repo used as the config source: templates/codepipeline-cf-template-codecommit-source.yml
+* Github and CodeCommit used as a multiple source that can be merged: templates/multi_source_template/codepipeline-cf-template-with-merge.yml
+
+We've added toggles to view the basic workflow diagrams below, feel free to choose what works best for you.
 
 Workflow Diagrams
 *****************
