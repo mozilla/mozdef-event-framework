@@ -28,16 +28,6 @@ Workflow Diagrams
 *****************
 
 .. toggle-header::
-    :header: **1. CodeCommit and Github as Multi-Source Repos to Merge:**
-
-      Workflow for Multiple Repositories using the Multi-Source Merge Cloudformation Template
-
-      .. image:: images/MozDef-Event-Framework_process_flow.png
-         :width: 600
-         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
-
-
-.. toggle-header::
     :header: **1. Using a Single Source Repo:**
 
       Workflow using a Single Source Repo Cloudformation Template
