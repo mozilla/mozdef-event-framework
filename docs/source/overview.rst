@@ -38,17 +38,23 @@ Workflow Diagrams
 
 
 .. toggle-header::
-    :header: **2. CodeCommit as the Source Repo:**
+    :header: **1. Using a Single Source Repo:**
 
-      Workflow using CodeCommit Source Cloudformation Template
-      Placeholder for new diagram
+      Workflow using a Single Source Repo Cloudformation Template
+
+      .. image:: images/MozDef-Event-Framework_process_flow_single-source.png
+         :width: 600
+         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
 
 .. toggle-header::
-    :header: **3. Github as the Source Repo:**
+    :header: **2. Using Multiple Source Repos:**
 
-      Workflow using the GitHub Source Cloudformation Template
-      Placeholder for new diagram
+      Workflow using the Mutliple Source Repos w/ Merge Cloudformation Template
+
+      .. image:: images/MozDef-Event-Framework_process_flow_multi-source.png
+         :width: 600
+         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
 |
 
