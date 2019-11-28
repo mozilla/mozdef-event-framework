@@ -71,6 +71,7 @@ Parameters:
 
 # This helps grouping similar parameters together when deploying via AWS Console
 Metadata:
+  Source: https://github.com/mozilla/mozdef-event-framework/blob/master/templates/multi_source_template/codepipeline-cf-template-with-merge.yml
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
