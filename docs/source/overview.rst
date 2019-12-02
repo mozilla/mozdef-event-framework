@@ -52,7 +52,17 @@ Workflow Diagrams
          :width: 600
          :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
-|
+Dataflow Diagram
+*****************
+
+.. toggle-header::
+    :header: **Serverless Components and Data Flow:**
+
+      Example Dataflow using Zoom's Webhook
+
+      .. image:: images/mozdef_event_framework_dataflow.png
+         :width: 600
+         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
 Components
 ------------
