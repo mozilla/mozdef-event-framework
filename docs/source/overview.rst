@@ -53,7 +53,6 @@ Workflow Diagrams
          :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
 |
-
 Dataflow Diagram
 *****************
 
@@ -66,6 +65,7 @@ Dataflow Diagram
          :width: 600
          :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
 
+|
 Components
 ------------
 The following components make up this framework:
