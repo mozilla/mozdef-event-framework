@@ -99,7 +99,7 @@ Deploy Your Framework
 
 This is where we take everything we've done up to this point and start the deployment.
 
-  1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag with key: Project and value: MozDef-EF-prod.
+  1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag using these keys: <project>-<environment>.
   2. Using the connection settings, setup Git access with the git credential helper over HTTPS (ensure you can pull and push to the newly created repo)
   3. Pull the empty repository to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
   4. Go to “Services -> CloudFormation” on the AWS Console.
