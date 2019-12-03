@@ -15,7 +15,7 @@ Getting Started
      * PROJECT: MozDef-EF
      * SERVICE: zoom
      * STAGE: dev
-     * API_PATH: /
+     * API_PATH: events
      * Stack name: zoom2mozdef
 
 ************************
