@@ -108,8 +108,8 @@ This is where we take everything we've done up to this point and start the deplo
   7. Browse the filesystem, and select the CloudFormation template you wish to use under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
   8. For the stack name, enter something like: “servicename2mozdef”
   9. For stack parameters, enter the values decided in "Getting Started" Step 2.
-  10. For service, enter your servicename that you determined earlier in this process.
-  11. For environment, choose “prod”
+  10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
+  11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
   12. Leave the PLBucketPrefix value as is, this will match the project name created in step "Getting Started" step 2.
   13. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to watch for changes. For our example we used zoom, “mozdef-ef-zoom/master”.
   14. Under stack options, add a tag with key: Project and value: MozDef-EF-<environment>. Click Next
