@@ -12,7 +12,6 @@ MozDef Event Framework Documentation
    overview
    architecture
    usage/preparation
-   usage/installation
    usage/deployment
    usage/examples
    contributors
