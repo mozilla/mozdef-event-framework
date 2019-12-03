@@ -88,10 +88,10 @@ The following should be done in your local copy of the framework you cloned or f
              - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION
 
 
-  3. The important part here is the filling in of the “env” section on top. These environment variables will be used by the “serverless.yml” file when deployed by the serverless framework.
-     The idea is, for each different source (such as zoom), the service name and API path will be different.
+  3. The important part here is the filling in of the “env” section at the top of the file. These environment variables will be used by the “serverless.yml” file when deployed by the serverless framework.
+     For each service deployed for a source (such as zoom), the service name and API path will be different.
   4. Save the file.
-  5. Make any other desired changes on the local copy. For the zoom service, there should not be any other changes.
+  5. Make any other desired changes on the local copy. For webhook based services, like zoom, there should not be any additional changes needed.
 
 *********************
 Deploy Your Framework
