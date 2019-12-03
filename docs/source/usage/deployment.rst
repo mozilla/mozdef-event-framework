@@ -106,7 +106,7 @@ This is where we take everything we've done up to this point and start the deplo
   5. On top right, click “Create stack (with new resources)”
   6. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
   7. Browse the filesystem, and select the CloudFormation template you wish to use under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
-  8. For the stack name, enter something like: “servicename2mozdef”
+  8. For the stack name, enter something descriptive, like: <service>2mozdef
   9. For stack parameters, enter the values decided in "Getting Started" Step 2.
   10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
   11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
