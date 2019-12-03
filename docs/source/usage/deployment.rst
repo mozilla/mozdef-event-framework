@@ -110,9 +110,9 @@ This is where we take everything we've done up to this point and start the deplo
   9. For stack parameters, enter the values decided in "Getting Started" Step 2.
   10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
   11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-  12. Leave the PLBucketPrefix value as is, this will match the project name created in step "Getting Started" step 2.
+  12. Enter a name for the S3 bucket in the PLBucketPrefix field for AWS CodePipeline to store artifacts. You can leave the default value as is, which would create a bucket for you that will match the project name created in step "Getting Started" step 2, callled: <project>-utility-<stackname>-<environment>
   13. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to watch for changes. For our example we used zoom, “mozdef-ef-zoom/master”.
-  14. Under stack options, add a tag with key: Project and value: MozDef-EF-<environment>. Click Next
+  14. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next
   15. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
   16. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
   17. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
