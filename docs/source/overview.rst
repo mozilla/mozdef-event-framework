@@ -57,13 +57,13 @@ Dataflow Diagram
 *****************
 
 .. toggle-header::
-    :header: **Serverless Components and Data Flow:**
+    :header: **Data Flow Using Zoom Service:**
 
       Example Dataflow using Zoom's Webhook
 
       .. image:: images/mozdef_event_framework_dataflow.png
          :width: 600
-         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
+         :alt: High Level Overview of the Data Flow From Start to Finish
 
 |
 Components
