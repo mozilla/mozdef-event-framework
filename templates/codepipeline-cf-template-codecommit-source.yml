@@ -238,7 +238,6 @@ Resources:
             # Also not sure about this one
             Resource: 
               - !Join [ '', [ 'arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref Service, '-', !Ref Environment, '-', !Ref 'AWS::Region', '*' ] ]
-              - !GetAtt CBRole.Arn
           - Effect: Allow
             Action:
               - 'events:RemoveTargets'
