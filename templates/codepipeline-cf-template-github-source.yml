@@ -287,7 +287,7 @@ Resources:
     Type: "AWS::S3::Bucket"
     DeletionPolicy: Retain
     Properties:
-      BucketName: !Join [ "", [ !Ref 'AWS::StackName', "-", "utility", "-", !Ref 'Environment'] ]
+      BucketName: !Join [ "", [ !Ref 'AWS::StackName', "-", !Ref 'Environment', "-utility" ] ]
       Tags:
         - Key: "Project"
           Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
