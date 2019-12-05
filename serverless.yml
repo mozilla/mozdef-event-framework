@@ -31,6 +31,7 @@ custom:
     api_method: POST
     api_path: ${env:API_PATH}
     authToken: ${self:service}/${env:STAGE}/auth_token
+    tokenArn: ${env:TOKEN_ARN}
     # Reading project name from an environment variable
     # assumed to come from buildspec as well. This will
     # be applied as a tag for resources created by serverless
@@ -82,6 +83,9 @@ provider:
         # Using default AWS SSM key in KMS here, 
         # we can change if we want at the expense of more complexity
         - "arn:aws:kms:#{AWS::Region}:#{AWS::AccountId}:key/alias/aws/ssm"
+      Condition:
+        StringEquals:
+          "kms:EncryptionContext:PARAMETER_ARN": ${self:custom.cfg.tokenArn}
   # We can define environment variables here 
   # so can refer to them from within code
   environment:
