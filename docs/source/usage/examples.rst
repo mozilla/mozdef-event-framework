@@ -17,7 +17,8 @@ buildspec.yml::
       STAGE: dev 
       SERVICE: zoom 
       PROJECT: MozDef-EF 
-      API_PATH: zoom 
+      API_PATH: zoom
+      TOKEN_ARN: arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>
     ssm: 
 
   phases: 

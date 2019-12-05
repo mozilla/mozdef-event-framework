@@ -12,10 +12,11 @@ To deploy this framework you will need the following established:
 
       Decide on the various parameter and environment variable values, as these are referenced throughout the CF templates and serverless framework configuration. These include (example values in parenthesis):
 
-        * Project (MozDef-EF)
-        * Service (e.g. myservicename)
+        * Project (e.g., MozDef-EF)
+        * Service (e.g., zoom)
         * Environment or Stage (e.g. prod)
-        * Stack name (myservicename2mozdef)
+        * Stack name (e.g., <project>-<service>, MozDef-EF-zoom)
+        * Token Arn (e.g., arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/<project/service/environment/auth_token>, arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/MozDef-EF/zoom/dev/auth_token>)
 
 
     3. **SSM/KMS:**
@@ -32,7 +33,7 @@ To deploy this framework you will need the following established:
       This is where your configuration files will be stored in addition to the buildspec and deploy scripts.
       If you parameterize all your sensitive data, there shouldn't be any risk of sensitive data disclosure.
 
-      **Note:** The env: variables that must be filled out, these can essentially be whatever you want them to be.
+      **Note:** The env: variables that must be filled out, these can essentially be whatever you want them to be provided they fall in line with the naming conventions the cloudformation and serverless scripts expect.
 
 
     5. **GitHub Framework Repo:**

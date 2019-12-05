@@ -62,6 +62,7 @@ The following should be done in your local copy of the framework you cloned or f
            SERVICE: zoom
            PROJECT: MozDef-EF
            API_PATH: zoom
+           TOKEN_ARN: arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>
        
        phases:
          install:
@@ -110,7 +111,8 @@ This is where we take everything we've done up to this point and start the deplo
   9. For stack parameters, enter the values decided in "Getting Started" Step 2.
   10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
   11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-  12. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11: <stackname>-utility-<environment>
+  12. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the iam permissions for this resource.
+  12. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11: <stackname>-<environment>-utility
   13. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to watch for changes. For our example we used zoom, “mozdef-ef-zoom/master”.
   14. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next
   15. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
