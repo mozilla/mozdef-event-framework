@@ -106,11 +106,11 @@ This is where we take everything we've done up to this point and start the deplo
   5. On top right, click “Create stack (with new resources)”
   6. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
   7. Browse the filesystem, and select the CloudFormation template you wish to use under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
-  8. For the stack name, enter something descriptive, like: <service>2mozdef
+  8. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom )
   9. For stack parameters, enter the values decided in "Getting Started" Step 2.
   10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
   11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-  12. Enter a name for the S3 bucket in the PLBucketPrefix field for AWS CodePipeline to store artifacts. You can leave the default value as is, which would create a bucket for you that will match the project name created in step "Getting Started" step 2, callled: <stackname>-utility-<environment>
+  12. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11: <stackname>-utility-<environment>
   13. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to watch for changes. For our example we used zoom, “mozdef-ef-zoom/master”.
   14. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next
   15. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
