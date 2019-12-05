@@ -23,7 +23,7 @@ To deploy this framework you will need the following established:
 
       You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure::
 
-        /<project>/<service>/<environment>/<authorizer_token_var>/
+        /<project>/<service>/<environment>/auth_token
 
       **Note:** This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
 
