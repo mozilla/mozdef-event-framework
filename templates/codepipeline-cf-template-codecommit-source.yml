@@ -38,11 +38,6 @@ Parameters:
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
 
-  PLBucketPrefix:
-    Description: CodePipeline needs a utility bucket for its internal use. Specify a unique prefix for the bucket name.
-    Type: String
-    Default: mozdef-ef-utility-bucket
-
   CCRepo:
     Description:  A CodeCommit repository to be used as the source, in the form of "repository/branch".
     Type: String
@@ -58,7 +53,6 @@ Metadata:
         Parameters:
           - Service
           - Environment
-          - PLBucketPrefix
       - Label:
           default: "Source (Codecommit) Configuration"
         Parameters:
@@ -370,7 +364,7 @@ Resources:
     Type: "AWS::S3::Bucket"
     DeletionPolicy: Retain
     Properties:
-      BucketName: !Join [ "", [!Ref PLBucketPrefix,  "-", !Ref 'AWS::StackName', "-", !Ref 'Environment']]
+      BucketName: !Join [ "", [ !Ref 'AWS::StackName', "-", !Ref 'Environment', "-utility" ]]
       Tags:
         - Key: "Project"
           Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
