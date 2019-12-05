@@ -31,17 +31,23 @@ Parameters:
     Description: Environment
     Type: String
     Default: dev
+  
+  ParameterName:
+    Description: The parameter name you stored in ssm for your auth token
+    Type: String
+    Default: auth_token
+    ConstraintDescription: "Only a mix of letters, numbers and the following 3 symbols .-_ are allowed."
 
   Service:
     Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef.
     Type: String
     Default: template
-    ConstraintDescription: "Can contain only ASCII characters."
+    ConstraintDescription: "Service names can be any valid combination of letters, numbers, underscores, and dashes"
 
   CCRepo:
     Description:  A CodeCommit repository to be used as the source, in the form of "repository/branch".
     Type: String
-    ConstraintDescription: "Can contain only ASCII characters."
+    ConstraintDescription: "Repository names can be any valid combination of letters, numbers, periods, underscores, and dashes between 1 and 100 characters in length. Names are case sensitive."
 
 # This helps grouping similar parameters together when deploying via AWS Console
 Metadata:
@@ -243,7 +249,7 @@ Resources:
               - 'ssm:PutParameter'
               - 'ssm:GetParameter'
               - 'ssm:GetParametersByPath'
-            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/*' ] ]
+            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/', !Ref 'ParameterName' ] ]
           - Effect: Allow
             Action:
               - 'ssm:AddTagsToResource'

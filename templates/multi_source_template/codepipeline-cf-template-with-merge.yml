@@ -39,6 +39,12 @@ Parameters:
     Type: String
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
+  
+  ParameterName:
+    Description: The parameter name you stored in ssm for your auth token
+    Type: String
+    Default: auth_token
+    ConstraintDescription: "Only a mix of letters, numbers and the following 3 symbols .-_ are allowed."
 
   HelperBucket:
     Description: An EXISTING bucket which holds the merger lambda function code and codecommit code.
@@ -291,7 +297,7 @@ Resources:
               - 'ssm:PutParameter'
               - 'ssm:GetParameter'
               - 'ssm:GetParametersByPath'
-            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/*' ] ]
+            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/', !Ref 'ParameterName' ] ]
           - Effect: Allow
             Action:
               - 'ssm:AddTagsToResource'
