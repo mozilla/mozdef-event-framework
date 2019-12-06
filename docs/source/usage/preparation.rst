@@ -14,7 +14,7 @@ To deploy this framework you will need the following established:
 
         * Project (e.g., MozDef-EF)
         * Service (e.g., zoom)
-        * Environment or Stage (e.g. prod)
+        * Environment or Stage (e.g. dev)
         * Stack name (e.g., <project>-<service>, MozDef-EF-zoom)
         * Token Arn (e.g., arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/<project/service/environment/auth_token>, arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/MozDef-EF/zoom/dev/auth_token>)
 

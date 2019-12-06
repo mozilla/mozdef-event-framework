@@ -2,7 +2,8 @@
 Deployment
 ==========
 
-This guide uses Zoom as our service, your service may be different, be sure to name it something appropriately. 
+This guide uses Zoom as our service, your service may be different, be sure to name it something appropriately.
+The environment used in our examples is set to dev as the default.
 
 ***************
 Getting Started
@@ -35,7 +36,7 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
        
     .. image:: ../images/Parameter_Store_Example.png
        :width: 400
-       :alt: /MozDef-EF/zoom/prod/auth_token
+       :alt: /MozDef-EF/zoom/dev/auth_token
 
   5. In the description field, add “Authentication token used by the Webhook app to post events”.
   6. For type, select “SecureString”. 
@@ -58,7 +59,7 @@ The following should be done in your local copy of the framework you cloned or f
        
        env:
          variables:
-           STAGE: prod
+           STAGE: dev
            SERVICE: zoom
            PROJECT: MozDef-EF
            API_PATH: zoom
