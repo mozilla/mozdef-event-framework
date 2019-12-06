@@ -25,6 +25,12 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: 'This solution allows you to create a AWS Codepipline for deploying a serverless application with AWS CodeBuild triggered by a CodeCommit or Github repo commit. The setup of this solution is fully automated via a CloudFormation template.'
 
 Parameters:
+  ProjectName:
+    Description: Name of the project, or the framework. Ensure this matches the value in your buildspec.
+    Type: String
+    Default: MozDef-EF
+    ConstraintDescription: "Only a mix of letters, numbers, underscores, and dashes"
+
   Environment:
     AllowedValues:
     - dev
@@ -78,6 +84,7 @@ Metadata:
       - Label:
           default: "Pipeline Configuration"
         Parameters:
+          - ProjectName
           - Service
           - Environment
           - HelperBucket
@@ -108,7 +115,7 @@ Resources:
           Key: !Join [ "", [ "template-ef-config.zip" ]]
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [ !Ref 'ProjectName', "-", !Ref 'Environment' ] ]
 
   # CLOUD WATCH COMMIT EVENT ROLE
   CWCommitEventRole:
@@ -518,7 +525,7 @@ Resources:
       BucketName: !Join [ "", [ !Ref 'AWS::StackName', "-", !Ref 'Environment', "-utility" ]]
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [ !Ref 'ProjectName', "-", !Ref 'Environment' ] ]
 
   # LAMBDA CREATED TO MERGE INPUT ARTIFACTS  
   MergeLambda:
@@ -538,7 +545,7 @@ Resources:
       MemorySize: 128
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [ !Ref 'ProjectName', "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE CODEBUILD DEPLOYMENT
   TestBuildDeploy:
@@ -559,7 +566,7 @@ Resources:
         Type: CODEPIPELINE
       Tags:
         - Key: "Project"
-          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
+          Value: !Join [ "", [ !Ref 'ProjectName', "-", !Ref 'Environment' ] ]
 
   # CODEPIPELINE STAGE DEFINITIONS
   EFPipeline:
