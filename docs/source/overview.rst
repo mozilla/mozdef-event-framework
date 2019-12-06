@@ -22,7 +22,7 @@ The hope is to have a scalable framework that can be deployed for both REST and 
 Flow
 ----
 
-There are There cloudformation templates to choose from in the templates directory:
+There are three cloudformation templates to choose from in the templates directory:
 
 * Github repo used as source: templates/codepipeline-cf-template-github-source.yml
 * CodeCommit repo used as the config source: templates/codepipeline-cf-template-codecommit-source.yml
@@ -123,7 +123,7 @@ ToDo
 ****
 
    * Implement Dead Letter Queue (DLQ) reprocessing functionality
-   * Implement schema validation
+   * Implement schema validation on incoming events.
    * Implement function library to allow choice between webhook API or REST API connectivity
    * Implement monitoring of the entire stack that is created by this framework
 
