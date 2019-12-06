@@ -29,9 +29,9 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
   3. Once the page loads, under “Application Management, choose “Parameter Store"
   4. Create a parameter there in the form of:
 
-       “/<project>/<service>/<environment>/auth_token”
+      “/<project>/<service>/<environment>/auth_token”
 
-       **Example:** For our Zoom example, this would be something like:
+      **Example:** For our Zoom example, this would be something like:
        
     .. image:: ../images/Parameter_Store_Example.png
        :width: 400
