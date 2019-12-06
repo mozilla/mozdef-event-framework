@@ -105,10 +105,6 @@ This is where we take everything we've done up to this point and start the deplo
   3. Pull the empty repository to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
   4. Go to “Services -> CloudFormation” on the AWS Console.
   5. On top right, click “Create stack (with new resources)”
-     .. image:: ../images/create_stack.png
-        :width: 400
-        :alt: AWS Cloudformation Console
-
   6. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
      .. image:: ../images/create_stack.png
         :width: 400
@@ -116,6 +112,10 @@ This is where we take everything we've done up to this point and start the deplo
   
   7. Browse the filesystem, and select the CloudFormation template you wish to use under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
   8. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom )
+      .. image:: ../images/stack_details.png
+        :width: 400
+        :alt: AWS Cloudformation Console
+   
   9. For stack parameters, enter the values decided in "Getting Started" Step 2.
   10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
   11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
