@@ -123,7 +123,7 @@ This is where we take everything we've done up to this point and start the deplo
   11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
   12. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the iam permissions for this resource.
   13. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
-  14. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to watch for changes. For our example we used zoom, “mozdef-ef-zoom/master”.
+  14. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
   
        .. toggle-header::
            :header: **2. Stack Details:**
