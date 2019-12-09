@@ -21,11 +21,10 @@ To deploy this framework you will need the following established:
 
     3. **SSM/KMS/Secrets Manager:**
 
-      You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure::
+      You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
+      We used the following structure::
 
         /<project>/<service>/<environment>/auth_token
-
-      **Note:** This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
 
       .. note:: If you would like use Github in your workflow to host your code and/or configuration, you will need to generate a Personal Access Token in GitHub, and store the token in AWS Secrets Manager. We assumed the following structure in our Cloudformation template::
         
