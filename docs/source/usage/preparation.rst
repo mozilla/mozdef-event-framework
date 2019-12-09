@@ -19,7 +19,7 @@ To deploy this framework you will need the following established:
         * Token Arn (e.g., arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/<project/service/environment/auth_token>, arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/MozDef-EF/zoom/dev/auth_token>)
 
 
-    3. **SSM/KMS:**
+    3. **SSM/KMS/Secrets Manager:**
 
       You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. We used the following structure::
 
@@ -27,6 +27,11 @@ To deploy this framework you will need the following established:
 
       **Note:** This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
 
+      .. note:: If you would like use Github in your workflow to host your code and/or configuration, you will need to generate a Personal Access Token in GitHub, and store the token in AWS Secrets Manager. We assumed the following structure in our Cloudformation template::
+        
+        <environment>/codepipeline/github
+
+      See :doc:`deployment` section for more details.
 
     4. **A CodeCommit or Github repository:**
 
