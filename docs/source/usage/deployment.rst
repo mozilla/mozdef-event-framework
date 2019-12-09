@@ -10,7 +10,7 @@ Getting Started
 ***************
 
   1. Clone the master branch of the repository at “https://github.com/mozilla/mozdef-event-framework” to the local file system.
-  
+
   2. Before any action, decide on the various parameter and environment variable values, as these are referenced throughout the CF templates and serverless framework configuration.
      The following are the environment variables with example values:
 
@@ -55,7 +55,7 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
   5. In the description field, add “Authentication token used by the Webhook app to post events”.
   6. For type, select “SecureString”. 
   7. For value, paste the value from the app’s configuration from your webhook's configured authentication token.
-  8. Add a Tag with key: Project and value: MozDef-EF-<environment>, then create the parameter.
+  8. Add a Tag with key: Project and value: <project>-<environment>, then create the parameter.
 
     .. note:: The rest of these steps are not needed if you will not use Github in your workflow.
 
