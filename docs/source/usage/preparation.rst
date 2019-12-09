@@ -37,7 +37,7 @@ To deploy this framework you will need the following established:
       This is where your configuration files will be stored in addition to the buildspec and deploy scripts.
       If you parameterize all your sensitive data, there shouldn't be any risk of sensitive data disclosure.
 
-      **Note:** The env: variables that must be filled out, these can essentially be whatever you want them to be provided they fall in line with the naming conventions the cloudformation and serverless scripts expect.
+      .. note:: The env: variables that must be filled out, these can essentially be whatever you want them to be provided they fall in line with the naming conventions the cloudformation and serverless scripts expect.
 
 
     5. **GitHub Framework Repo:**
@@ -54,5 +54,5 @@ To deploy this framework you will need the following established:
       * A private S3 bucket to hold the merge lambda code (merge.zip)
       * Add an archive of your zipped configuration files (templates are in the framework Github repo you clone) to the bucket you use for the merge lambda.
 
-      **Note:** The CF template will create a CodeCommit Repo with your configuration structure.
+      .. note:: The CF template will create a CodeCommit Repo with your configuration structure.
       This will only need to be done once per event source, once the repo is created, you may commit to it via git or directly through aws-cli or the console.
