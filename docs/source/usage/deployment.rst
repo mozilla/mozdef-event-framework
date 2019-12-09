@@ -10,6 +10,7 @@ Getting Started
 ***************
 
   1. Clone the master branch of the repository at “https://github.com/mozilla/mozdef-event-framework” to the local file system.
+  
   2. Before any action, decide on the various parameter and environment variable values, as these are referenced throughout the CF templates and serverless framework configuration.
      The following are the environment variables with example values:
 
@@ -18,6 +19,7 @@ Getting Started
      * STAGE: dev
      * API_PATH: events
      * Stack name: zoom2mozdef
+
   3. If you would like to use Github as a repository (either as the single repo to host everything, or in the multi-source scenario), create:
   
      * A Github repository,
