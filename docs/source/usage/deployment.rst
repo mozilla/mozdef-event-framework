@@ -19,18 +19,23 @@ Getting Started
      * STAGE: dev
      * API_PATH: events
      * Stack name: zoom2mozdef
+  
+    .. note:: The rest of these steps are not needed if you will not use Github in your workflow.
 
   3. If you would like to use Github as a repository (either as the single repo to host everything, or in the multi-source scenario), create:
   
      * A Github repository,
      * A Personal Access Token (Your account settings -> Developer Settings -> Personal access token)
-      * It is sufficient for the generated token to have the following scopes only:
+      * It is sufficient for the generated token to have the following scopes:
           
         .. image:: ../images/github_personal_access_token_scopes.png
            :width: 400
            :alt: Scopes required for GitHub personal access token
 
-    .. note:: The 3rd step is not needed if you will not use Github in your workflow.
+  4. Decide on how you would like store your GitHub token using AWS Secrets Manager. You will have to specify this as a stack parameter during deployment.
+     You should determine the name of the secret so CloudFormation can refer to it. We recommend this to be specific for your stack, for instance:
+
+       "<project>/<service>/<environment>/codepipeline/github"
 
 ************************
 Steps in the AWS Console
@@ -60,8 +65,8 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
 
   9. If you are using Github as a repository, you need to store the personal access token value in AWS Secrets Manager. Navigate to “Services” and select "Secrets Manager".
   10. Store a new secret of type "Other type of secrets".
-  11. Specify the key/value pair as "PersonalAccessToken" (without quotes) and the value of the personal access token and click next.
-  12. For the secret name, enter "<environment>/codepipeline/github" without the quotes.
+  11. Specify the key/value pair as "PersonalAccessToken" (without quotes) and the value of the token and click next.
+  12. For the secret name, enter the name you determined in step 4 of `Getting Started`.
   13. Add a description and a tag using these "Project" as key and <project>-<environment> as the value. Click next.
   14. Configure if you would like to automatic rotation of this secret. Click Next.
   15. Review the details and click store when ready.
@@ -143,12 +148,12 @@ This is where we take everything we've done up to this point and start the deplo
                 :width: 400
                 :alt: AWS Cloudformation Console Create Stack
 
-     7. Browse the filesystem, and select the CloudFormation template you wish to use under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
+     7. Browse the filesystem, and select the "codepipeline-cf-template-codecommit-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      8. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 8 through 14)
      9. For stack parameters, enter the values decided in "Getting Started" Step 2.
      10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
      11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-     12. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the iam permissions for this resource.
+     12. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      13. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      14. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
   
@@ -183,12 +188,12 @@ This is where we take everything we've done up to this point and start the deplo
                 :width: 400
                 :alt: AWS Cloudformation Console Create Stack
 
-     5. Browse the filesystem, and select the CloudFormation template you wish to use under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
+     5. Browse the filesystem, and select the "codepipeline-cf-template-github-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      6. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 8 through 14)
      7. For stack parameters, enter the values decided in "Getting Started" Step 2.
      8. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
      9. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-     10. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the iam permissions for this resource.
+     10. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      12. For source configuration, enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
      13. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next
