@@ -222,7 +222,7 @@ This is where we take everything we've done up to this point and start the deplo
      6. On top right, click “Create stack (with new resources)”
      7. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”.
      8. Browse the filesystem, and select the "codepipeline-cf-template-with-merge.yml" CloudFormation template under the “templates” directory of the cloned framework code. Assuming no syntax errors, click next.
-     9. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 9 through 13).
+     9. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 9 through 14).
      10. For stack parameters, enter the values decided in :ref:`Getting Started` Step 2.
         * For service, enter your <service> name that you determined earlier.
         * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
