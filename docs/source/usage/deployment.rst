@@ -151,9 +151,9 @@ This is where we take everything we've done up to this point and start the deplo
      7. Browse the filesystem, and select the "codepipeline-cf-template-codecommit-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      8. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 8 through 14)
      9. For stack parameters, enter the values decided in "Getting Started" Step 2.
-     10. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
-     11. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-     12. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
+       * For service, enter your <service> name that you determined earlier.
+       * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
+       * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      13. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      14. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
   
@@ -191,12 +191,12 @@ This is where we take everything we've done up to this point and start the deplo
      5. Browse the filesystem, and select the "codepipeline-cf-template-github-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      6. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 8 through 14)
      7. For stack parameters, enter the values decided in "Getting Started" Step 2.
-     8. For service, enter your <service> name that you determined in the "Getting Started" section Step 2.
-     9. For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-     10. In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
+       * For service, enter your <service> name that you determined earlier.
+       * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
+       * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      12. For source configuration, enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
-     13. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next
+     13. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next.
      14. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
      15. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
      16. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
