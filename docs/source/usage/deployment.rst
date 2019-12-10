@@ -57,7 +57,7 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
        :alt: /MozDef-EF/zoom/dev/auth_token
 
   5. In the description field, add “Authentication token used by the Webhook app to post events”.
-  6. For type, select “SecureString”. 
+  6. For type, select “SecureString”.
   7. For value, paste the value from the app’s configuration from your webhook's configured authentication token.
   8. Add a Tag with key: Project and value: <project>-<environment>, then create the parameter.
 
@@ -132,7 +132,7 @@ This is where we take everything we've done up to this point and start the deplo
 .. toggle-header::
     :header: **1. Using a Single Source Repo (CodeCommit)**
     
-     1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag using these keys: <project>-<environment>.
+     1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag with key: Project and value: <project>-<environment>.
      2. Using the connection settings, setup Git access with the git credential helper over HTTPS (ensure you can pull and push to the newly created repo)
      3. Pull the empty repository to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
      4. Go to “Services -> CloudFormation” on the AWS Console.
@@ -166,7 +166,7 @@ This is where we take everything we've done up to this point and start the deplo
                 :width: 400
                 :alt: AWS Cloudformation Console Stack Details
   
-     12. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next
+     12. Under stack options, add a tag with key: "Project" and value: <project>-<environment>. Click Next
      13. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
      14. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
      15. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
@@ -185,7 +185,9 @@ This is where we take everything we've done up to this point and start the deplo
        * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
        * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      8. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
-     9. For source configuration, enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
+     9. For source configuration:
+       * Enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
+       * For the token reference, enter the name you determined in step 4 of `Getting Started`. This way the template will be able to find the secret (Github token) stored in AWS Secrets Manager.
         
        .. toggle-header::
            :header: **Stack Details:**
@@ -196,7 +198,7 @@ This is where we take everything we've done up to this point and start the deplo
                 :width: 400
                 :alt: AWS Cloudformation Console Stack Details
     
-     10. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next.
+     10. Under stack options, add a tag with key: "Project" and value: <project>-<environment>. Click Next.
      11. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
      12. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
      13. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
@@ -204,21 +206,30 @@ This is where we take everything we've done up to this point and start the deplo
 .. toggle-header::
     :header: **3. Using Multiple Source Repos (CodeCommit + Github)**
 
-     1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag using these keys: <project>-<environment>.
+     1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag with key: Project and value: <project>-<environment>.
      2. Using the connection settings, setup Git access with the git credential helper over HTTPS (ensure you can pull and push to the newly created repo).
-     3. Pull the empty repository to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
-     4. Now, also pull the empty Github repository created earlier in section `Getting Started` to another local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
+     3. Pull the empty repository to a local directory, then `only` add the `config` directory contents from the cloned framework code to this repository. Make relevant configuration changes (such as to the deploy script, buildspec etc.), commit all changes, then push.
+     4. Now, also pull the empty Github repository created earlier in section `Getting Started` to another local directory. Add/move all the cloned framework code to this repository, `except "config" directory`. Make changes to the code if desired, commit all changes, then push.
+
+      .. note:: You could also move everything to this repository (including the config directory), but add "config/" to the `.gitignore` file in order to avoid having multiple config directories tracked by source control.
+
      5. Go to “Services -> CloudFormation” on the AWS Console.
      6. On top right, click “Create stack (with new resources)”
      7. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”.
-     8. Browse the filesystem, and select the "codepipeline-cf-template-with-merge.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
+     8. Browse the filesystem, and select the "codepipeline-cf-template-with-merge.yml" CloudFormation template under the “templates” directory of the cloned framework code. Assuming no syntax errors, click next.
      9. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 9 through 13).
      10. For stack parameters, enter the values decided in "Getting Started" Step 2.
-       * For service, enter your <service> name that you determined earlier.
-       * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-       * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
+        * For service, enter your <service> name that you determined earlier.
+        * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
+        * For helper bucket, enter the name of the S3 bucket that houses the merge lambda code (created in step X).
+        * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
-     12. For source configuration, enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
+     12. For GitHub configuration:
+        * Enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
+        * For the token reference, enter the name you determined in step 4 of `Getting Started`. This way the template will be able to find the secret (Github token) stored in AWS Secrets Manager.
+     13. For CodeCommit configuration:
+        * Enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
+        * Enter the name of the directory that has configuration data for the pipeline (default: config).
 
         .. toggle-header::
            :header: **Stack Details:**
@@ -228,7 +239,8 @@ This is where we take everything we've done up to this point and start the deplo
              .. image:: ../images/create_stack_multi_source.png
                 :width: 400
                 :alt: AWS Cloudformation Console Stack Details
-     13. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next.
-     14. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
-     15. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
-     16. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
+
+     14. Under stack options, add a tag with key: "Project" and value: <project>-<environment>. Click Next.
+     15. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
+     16. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
+     17. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
