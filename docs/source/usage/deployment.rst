@@ -210,4 +210,25 @@ This is where we take everything we've done up to this point and start the deplo
      4. Now, also pull the empty Github repository created earlier in section `Getting Started` to another local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
      5. Go to “Services -> CloudFormation” on the AWS Console.
      6. On top right, click “Create stack (with new resources)”
-     7. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
+     7. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”.
+     8. Browse the filesystem, and select the "codepipeline-cf-template-with-merge.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
+     9. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 9 through 13).
+     10. For stack parameters, enter the values decided in "Getting Started" Step 2.
+       * For service, enter your <service> name that you determined earlier.
+       * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
+       * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
+     11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
+     12. For source configuration, enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
+
+        .. toggle-header::
+           :header: **Stack Details:**
+       
+             Example screenshot for creating a stack using multi-source template
+       
+             .. image:: ../images/create_stack_multi_source.png
+                :width: 400
+                :alt: AWS Cloudformation Console Stack Details
+     13. Under stack options, add a tag with key: Project and value: <project>-<environment>. Click Next.
+     14. On the review step, check the box under “Capabilities” saying “I acknowledge that AWS CloudFormation might create IAM resources with custom names.”.
+     15. Click Create Stack. On the Cloudformation page, check the stack creation status. It should deploy the pipeline stack successfully.
+     16. Once the API Gateway has been created, copy the URL into your webhook application's configuration as the endpoint to post events to begin sending events to the AWS infra that was deployed using this framework.
