@@ -71,6 +71,11 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
   14. Configure if you would like to automatic rotation of this secret. Click Next.
   15. Review the details and click store when ready.
 
+    .. note:: The next step is `only` required if you would like to use the multi-source deployment option.
+
+  16. If you would like to keep the source code for the framework and its configuration separately, you will need to use a merger function (as lambda). We have provided this code as a ZIP archive in the folder "templates/multi_source_template/merge_function". For this to be used as a part of the pipeline, you need to create an S3 bucket and upload this ZIP file to that bucket.
+    Once created, take a note of the name of the S3 bucket, as you will have to provide this as a stack parameter during deployment. We used a default name of "mozdef-ef-helper-bucket".
+
 *************************************
 Fill in the Framework Config Template
 *************************************
@@ -221,7 +226,7 @@ This is where we take everything we've done up to this point and start the deplo
      10. For stack parameters, enter the values decided in "Getting Started" Step 2.
         * For service, enter your <service> name that you determined earlier.
         * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-        * For helper bucket, enter the name of the S3 bucket that houses the merge lambda code (created in step X).
+        * For helper bucket, enter the name of the S3 bucket created previously (created in the last step of `Steps in the AWS Console` section) that houses the merge lambda code.
         * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      12. For GitHub configuration:
