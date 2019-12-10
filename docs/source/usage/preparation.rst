@@ -30,6 +30,8 @@ To deploy this framework you will need the following established:
         
         <environment>/codepipeline/github
 
+      We recommend creating a personal access token per repo / event source, and naming it accordingly in AWS Secrets Manager. A single token can be used across multiple stacks as long as it has necessary scopes, however if the token needs to be revoked/rotated for some reason, this would affect multiple stacks.
+
       See :doc:`deployment` section for more details.
 
     4. **A CodeCommit or Github repository:**
