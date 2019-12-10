@@ -46,13 +46,14 @@ Parameters:
     Default: mozdef-ef-utility-bucket
 
   HelperBucket:
-    Description: An EXISTING bucket which holds the merger lambda function code.
+    Description: An EXISTING bucket which holds the merger lambda function code and codecommit code.
     Type: String
     Default: mozdef-ef-helper-bucket
 
-  CCRepo:
-    Description: A CodeCommit repository to be used as the source, in the form of "repository/branch".
+  CCRepoBranch:
+    Description: The name of the branch for the CodeCommit repo.
     Type: String
+    Default: master
     ConstraintDescription: "Can contain only ASCII characters."
   
   ConfDir:
@@ -92,10 +93,27 @@ Metadata:
       - Label:
           default: "CodeCommit Configuration"
         Parameters:
-          - CCRepo
+          - CCRepoBranch
           - ConfDir
 
 Resources:
+
+  # CODE COMMIT REPO  
+  CCRepo:
+    Type: AWS::CodeCommit::Repository
+    Properties: 
+      RepositoryDescription: CodeCommit repository to hold configuration files for the external source
+      RepositoryName: !Join [ "", [ !Ref Service, "-ef-config" ]]
+      Code:
+        S3:
+          Bucket: !Join [ "", [!Ref HelperBucket ]]
+          # Hardcoding the name of the zip file containing
+          # the skeleton/template files in the Codecommit repo 
+          # (this does not have to change)
+          Key: !Join [ "", [ "template-ef-config.zip" ]]
+      Tags:
+        - Key: "Project"
+          Value: !Join [ "", [ "MozDef-EF", "-", !Ref 'Environment' ] ]
 
   # CLOUD WATCH COMMIT EVENT ROLE
   CWCommitEventRole:
@@ -137,15 +155,15 @@ Resources:
         detail-type: 
           - "CodeCommit Repository State Change"
         resources: 
-          - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Select [0, !Split [ "/" , !Ref CCRepo ]]]]
+          - !GetAtt 'CCRepo.Arn'
         detail:
           event:
             - referenceCreated
             - referenceUpdated
           repositoryName:
-            - !Select [0, !Split [ "/" , !Ref CCRepo ]]
+            - !GetAtt 'CCRepo.Name'
           referenceName:
-            - !Select [1, !Split [ "/" , !Ref CCRepo ]]
+            - !Ref CCRepoBranch
       Targets:
         -
           Arn: 
@@ -188,8 +206,7 @@ Resources:
               - 'codecommit:UploadArchive'
               - 'codecommit:GetUploadArchiveStatus'
               - 'codecommit:CancelUploadArchive'
-            Resource:
-              - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Select [0, !Split [ "/" , !Ref CCRepo ]]]]
+            Resource: !GetAtt 'CCRepo.Arn'
           - Effect: Allow
             Action:
               - 'cloudformation:ListChangeSets'
@@ -380,8 +397,7 @@ Resources:
               - 'codecommit:UploadArchive'
               - 'codecommit:GetUploadArchiveStatus'
               - 'codecommit:CancelUploadArchive'
-            Resource:
-              - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Select [0, !Split [ "/" , !Ref CCRepo ]]]]
+            Resource: !GetAtt CCRepo.Arn
           - Effect: Allow
             Action:
               - 'lambda:InvokeFunction'
@@ -449,8 +465,7 @@ Resources:
               - codecommit:UploadArchive
               - codecommit:GetUploadArchiveStatus
               - codecommit:CancelUploadArchive
-            Resource:
-              - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Select [0, !Split [ "/" , !Ref CCRepo ]]]]
+            Resource: !GetAtt CCRepo.Arn
           - Effect: Allow
             Action:
               - 'codebuild:StartBuild'
@@ -570,8 +585,8 @@ Resources:
                 Provider: CodeCommit
                 Version: 1
               Configuration:
-                BranchName: !Select [1, !Split [ "/" , !Ref CCRepo ]]
-                RepositoryName: !Select [0, !Split [ "/" , !Ref CCRepo ]]
+                BranchName: !Ref CCRepoBranch
+                RepositoryName: !GetAtt 'CCRepo.Name'
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: ConfigSourceOutput
@@ -636,9 +651,9 @@ Outputs:
   Environment:
     Value: !Ref Environment
   CodecommitRepository:
-    Value: !Select [0, !Split [ "/" , !Ref CCRepo ]]
+    Value: !GetAtt 'CCRepo.Name'
   CodecommitBranch:
-    Value: !Select [1, !Split [ "/" , !Ref CCRepo ]]
+    Value: !Ref CCRepoBranch
   GithubRepository:
     Value: !Ref GHRepo
   CodeBuildRole:
