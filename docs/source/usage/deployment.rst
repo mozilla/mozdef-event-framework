@@ -140,7 +140,7 @@ This is where we take everything we've done up to this point and start the deplo
      6. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
 
        .. toggle-header::
-           :header: **2. Create stack from Template:**
+           :header: **Create stack from Template:**
        
              Example screenshot for creating a stack from the template
        
@@ -158,7 +158,7 @@ This is where we take everything we've done up to this point and start the deplo
      14. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
   
        .. toggle-header::
-           :header: **2. Stack Details:**
+           :header: **Stack Details:**
        
              Example screenshot for steps 8 through 14
        
@@ -180,13 +180,13 @@ This is where we take everything we've done up to this point and start the deplo
      4. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
 
        .. toggle-header::
-           :header: **2. Create stack from Template:**
+           :header: **Stack Details:**
        
-             Example screenshot for creating a stack from the template
+             Example screenshot for creating a stack from the template with GitHub
        
-             .. image:: ../images/create_stack.png
+             .. image:: ../images/create_stack_github.png
                 :width: 400
-                :alt: AWS Cloudformation Console Create Stack
+                :alt: AWS Cloudformation Console Stack Details
 
      5. Browse the filesystem, and select the "codepipeline-cf-template-github-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      6. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 8 through 14)

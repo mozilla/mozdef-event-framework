@@ -26,11 +26,11 @@ To deploy this framework you will need the following established:
 
         /<project>/<service>/<environment>/auth_token
 
-      .. note:: If you would like use Github in your workflow to host your code and/or configuration, you will need to generate a Personal Access Token in GitHub, and store the token in AWS Secrets Manager. We assumed the following structure in our Cloudformation template::
+      .. note:: If you would like use Github in your workflow to host your code and/or configuration, you will need to generate a Personal Access Token in GitHub, and store the token in AWS Secrets Manager. We recommend creating a personal access token per repo / event source, and naming it accordingly (as per below) in AWS Secrets Manager::
         
-        <environment>/codepipeline/github
+        "<project>/<service>/<environment>/codepipeline/github"
 
-      We recommend creating a personal access token per repo / event source, and naming it accordingly in AWS Secrets Manager. A single token can be used across multiple stacks as long as it has necessary scopes, however if the token needs to be revoked/rotated for some reason, this would affect multiple stacks.
+        A single token can be used across multiple stacks as long as it has necessary scopes, however if the token needs to be revoked/rotated for some reason, this would affect multiple stacks.
 
       See :doc:`deployment` section for more details.
 
