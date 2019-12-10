@@ -66,7 +66,7 @@ You'll need to log into the AWS console or you can alternatively use the aws-cli
   9. If you are using Github as a repository, you need to store the personal access token value in AWS Secrets Manager. Navigate to “Services” and select "Secrets Manager".
   10. Store a new secret of type "Other type of secrets".
   11. Specify the key/value pair as "PersonalAccessToken" (without quotes) and the value of the token and click next.
-  12. For the secret name, enter the name you determined in step 4 of `Getting Started`.
+  12. For the secret name, enter the name you determined in step 4 of :ref:`Getting Started`.
   13. Add a description and a tag using these "Project" as key and <project>-<environment> as the value. Click next.
   14. Configure if you would like to automatic rotation of this secret. Click Next.
   15. Review the details and click store when ready.
@@ -155,7 +155,7 @@ This is where we take everything we've done up to this point and start the deplo
 
      7. Browse the filesystem, and select the "codepipeline-cf-template-codecommit-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      8. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 8 through 12).
-     9. For stack parameters, enter the values decided in "Getting Started" Step 2.
+     9. For stack parameters, enter the values decided in :ref:`Getting Started` Step 2.
        * For service, enter your <service> name that you determined earlier.
        * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
        * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
@@ -179,20 +179,20 @@ This is where we take everything we've done up to this point and start the deplo
 .. toggle-header::
     :header: **2. Using a Single Source Repo (GitHub)**
    
-     1. Pull the empty Github repository created earlier in section `Getting Started` to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
+     1. Pull the empty Github repository created earlier in section :ref:`Getting Started` to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
      2. Go to “Services -> CloudFormation” on the AWS Console.
      3. On top right, click “Create stack (with new resources)”
      4. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file.
      5. Browse the filesystem, and select the "codepipeline-cf-template-github-source.yml" CloudFormation template under the “templates” directory of the cloned and updated framework code. Assuming no syntax errors, click next.
      6. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 6 through 10).
-     7. For stack parameters, enter the values decided in "Getting Started" Step 2.
+     7. For stack parameters, enter the values decided in :ref:`Getting Started` Step 2.
        * For service, enter your <service> name that you determined earlier.
        * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
        * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      8. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      9. For source configuration:
        * Enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
-       * For the token reference, enter the name you determined in step 4 of `Getting Started`. This way the template will be able to find the secret (Github token) stored in AWS Secrets Manager.
+       * For the token reference, enter the name you determined in step 4 of :ref:`Getting Started`. This way the template will be able to find the secret (Github token) stored in AWS Secrets Manager.
         
        .. toggle-header::
            :header: **Stack Details:**
@@ -214,7 +214,7 @@ This is where we take everything we've done up to this point and start the deplo
      1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag with key: Project and value: <project>-<environment>.
      2. Using the connection settings, setup Git access with the git credential helper over HTTPS (ensure you can pull and push to the newly created repo).
      3. Pull the empty repository to a local directory, then `only` add the `config` directory contents from the cloned framework code to this repository. Make relevant configuration changes (such as to the deploy script, buildspec etc.), commit all changes, then push.
-     4. Now, also pull the empty Github repository created earlier in section `Getting Started` to another local directory. Add/move all the cloned framework code to this repository, `except "config" directory`. Make changes to the code if desired, commit all changes, then push.
+     4. Now, also pull the empty Github repository created earlier in section :ref:`Getting Started` to another local directory. Add/move all the cloned framework code to this repository, `except "config" directory`. Make changes to the code if desired, commit all changes, then push.
 
       .. note:: You could also move everything to this repository (including the config directory), but add "config/" to the `.gitignore` file in order to avoid having multiple config directories tracked by source control.
 
@@ -223,15 +223,15 @@ This is where we take everything we've done up to this point and start the deplo
      7. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”.
      8. Browse the filesystem, and select the "codepipeline-cf-template-with-merge.yml" CloudFormation template under the “templates” directory of the cloned framework code. Assuming no syntax errors, click next.
      9. For the stack name, enter something descriptive, like: <project>-<service> (e.g., mozdef-ef-zoom, see the example image below for steps 9 through 13).
-     10. For stack parameters, enter the values decided in "Getting Started" Step 2.
+     10. For stack parameters, enter the values decided in :ref:`Getting Started` Step 2.
         * For service, enter your <service> name that you determined earlier.
         * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-        * For helper bucket, enter the name of the S3 bucket created previously (created in the last step of `Steps in the AWS Console` section) that houses the merge lambda code.
+        * For helper bucket, enter the name of the S3 bucket created previously (created in the last step of :ref:`Steps in the AWS Console` section) that houses the merge lambda code.
         * In the TOKEN_ARN field, you'll need to enter your token arn to correctly map the IAM permissions for this resource.
      11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      12. For GitHub configuration:
         * Enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
-        * For the token reference, enter the name you determined in step 4 of `Getting Started`. This way the template will be able to find the secret (Github token) stored in AWS Secrets Manager.
+        * For the token reference, enter the name you determined in step 4 of :ref:`Getting Started`. This way the template will be able to find the secret (Github token) stored in AWS Secrets Manager.
      13. For CodeCommit configuration:
         * Enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
         * Enter the name of the directory that has configuration data for the pipeline (default: config).
