@@ -49,6 +49,12 @@ Parameters:
     Type: String
     Description:  A public or private Github repository to be used as the source, in the form of "owner/repository/branch".
 
+  GHTokenReference:
+    Description: The name of the token as secret, as it is stored in AWS Secrets Manager. See default value as an example.
+    Type: String
+    Default: <project>/<service>/<environment>/codepipeline/github
+
+
 # This helps grouping similar parameters together when deploying via AWS Console
 Metadata:
   AWS::CloudFormation::Interface:
@@ -63,6 +69,7 @@ Metadata:
           default: "Source (GitHub) Configuration"
         Parameters:
           - GHRepo
+          - GHTokenReference
 
 Resources:
 
@@ -424,7 +431,7 @@ Resources:
                 # Since we are not using a webhook, we need to poll
                 PollForSourceChanges: true
                 # Obtaining from Secrets Manager
-                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
+                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref GHTokenReference, ":SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
   
