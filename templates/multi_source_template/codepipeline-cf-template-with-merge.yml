@@ -61,6 +61,11 @@ Parameters:
     Description: A CodeCommit repository to be used as the source, in the form of "repository/branch".
     Type: String
     ConstraintDescription: "Can contain only ASCII characters."
+
+  ConfDir:
+    Type: String
+    Default: config
+    Description: Directory name for private configuration files for the merger lambda function.
   
   # Removed personal access token parameter as 
   # it is accessed from AWS Secrets Manager
@@ -70,10 +75,10 @@ Parameters:
     Default: mozilla/mozdef-event-framework/master
     Description:  Github repository to be used as a source, in the form of "owner/repository/branch".
 
-  ConfDir:
+  GHTokenReference:
+    Description: The name of the token as secret, as it is stored in AWS Secrets Manager. See default value as an example.
     Type: String
-    Default: config
-    Description: Directory name for private configuration files for the merger lambda function.
+    Default: <project>/<service>/<environment>/codepipeline/github
 
 # This helps grouping similar parameters together when deploying via AWS Console
 Metadata:
@@ -91,6 +96,7 @@ Metadata:
           default: "GitHub Configuration"
         Parameters:
           - GHRepo
+          - GHTokenReference
       - Label:
           default: "CodeCommit Configuration"
         Parameters:
@@ -597,7 +603,7 @@ Resources:
                 # Since we are not using a webhook, we need to poll
                 PollForSourceChanges: true
                 # Obtaining from Secrets Manager
-                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref Environment, "/codepipeline/github:SecretString:PersonalAccessToken}}" ]]
+                OAuthToken: !Join [ "", [ "{{resolve:secretsmanager:", !Ref GHTokenReference, ":SecretString:PersonalAccessToken}}" ]]
               OutputArtifacts:
                 - Name: CodeSourceOutput
         # Stage 2: Merge the Sources into one Artifact
