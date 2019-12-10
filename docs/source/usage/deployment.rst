@@ -25,11 +25,10 @@ Getting Started
      * A Github repository,
      * A Personal Access Token (Your account settings -> Developer Settings -> Personal access token)
       * It is sufficient for the generated token to have the following scopes only:
-         * `read:repo_hook`
-         * `repo:status`
-         * `repo_deployment`
-         * `public_repo`
-         * `repo_invite`
+          
+        .. image:: ../images/github_personal_access_token_scopes.png
+           :width: 400
+           :alt: Scopes required for GitHub personal access token
 
     .. note:: The 3rd step is not needed if you will not use Github in your workflow.
 
