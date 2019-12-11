@@ -42,7 +42,7 @@ buildspec.yml::
         - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION
 
 Deploy Script Example
---------------
+---------------------
 
 deploy.sh::
 

@@ -39,8 +39,9 @@ Workflow Diagrams
       Workflow using a Single Source Repo Cloudformation Template
 
       .. image:: images/MozDef-Event-Framework_process_flow_single-source.png
+         :target: Overview.rst
          :width: 600
-         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
+         :alt: High Level Overview of the Single Source Process Flow From Start to Finish
 
 
 .. toggle-header::
@@ -49,8 +50,9 @@ Workflow Diagrams
       Workflow using the Mutliple Source Repos w/ Merge Cloudformation Template
 
       .. image:: images/MozDef-Event-Framework_process_flow_multi-source.png
+         :target: overview.rst
          :width: 600
-         :alt: High Level Overview of the Work/Process Flow Steps From Start to Finish
+         :alt: High Level Overview of the Multi-Source Based Process Flow From Start to Finish
 
 |
 
