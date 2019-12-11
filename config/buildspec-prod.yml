@@ -3,9 +3,10 @@ version: 0.2
 env: 
   variables:
     STAGE: prod
-    SERVICE: 
+    SERVICE: exampleservice
     PROJECT: MozDef-EF
-    API_PATH:
+    API_PATH: /example/event/api
+    TOKEN_ARN: "arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>"
   ssm:
 
 phases:
