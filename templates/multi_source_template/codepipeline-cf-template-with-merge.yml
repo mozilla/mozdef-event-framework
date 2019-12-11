@@ -29,7 +29,7 @@ Parameters:
     Description: Name of the project, or the framework. Ensure this matches the value in your buildspec.
     Type: String
     Default: MozDef-EF
-    ConstraintDescription: "Only a mix of letters, numbers, underscores, and dashes"
+    ConstraintDescription: "Only a mix of letters, numbers, underscores, and dashes are allowed"
 
   Environment:
     AllowedValues:
@@ -44,13 +44,13 @@ Parameters:
     Description: The name of the service/external resource that will utilise this pipeline, e.g. zoom2mozdef.
     Type: String
     Default: template
-    ConstraintDescription: "Can contain only ASCII characters."
+    ConstraintDescription: "Service names can be any valid combination of letters, numbers, underscores, and dashes."
   
   SSMParamName:
     Description: The parameter name you stored in SSM for your auth token.
     Type: String
     Default: /<project>/<service>/<environment>/auth_token
-    ConstraintDescription: "Only a mix of letters, numbers and the following 3 symbols .-_ are allowed."
+    ConstraintDescription: "Only a mix of letters, numbers and the following symbols /.-_ are allowed."
 
   HelperBucket:
     Description: An EXISTING bucket which holds the merger lambda function code.
@@ -60,12 +60,13 @@ Parameters:
   CCRepo:
     Description: A CodeCommit repository to be used as the source, in the form of "repository/branch".
     Type: String
-    ConstraintDescription: "Can contain only ASCII characters."
+    ConstraintDescription: "Only a mix of letters, numbers, underscores, and dashes and the / separator are allowed"
 
   ConfDir:
     Type: String
     Default: config
     Description: Directory name for private configuration files for the merger lambda function.
+    ConstraintDescription: "Only a mix of letters, numbers, underscores, and dashes and the / separator are allowed"
   
   # Removed personal access token parameter as 
   # it is accessed from AWS Secrets Manager
