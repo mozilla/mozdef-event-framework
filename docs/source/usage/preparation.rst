@@ -18,8 +18,13 @@ To deploy this framework you will need the following established:
         * Stack name (e.g., <project>-<service>, MozDef-EF-zoom)
         * Token Arn (e.g., arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/<project/service/environment/auth_token>, arn:aws:ssm:us-west-2:<ACCOUNT_ID>:parameter/MozDef-EF/zoom/dev/auth_token>)
 
+    3. **Event Handler Lambda Code:**
+      
+      The event handler lambda code that currently lives in the public github repo under functions/handler.py should be viewed as a template to get you going with your own service.
+      If you are implementing a simple webhook pipeline and the response returns a body and a payload, then it should function just fine. However, if it does not contain either of those parameters, 
+      then you will need to modify the handler.py to evaluate the webhook content for what you expect.
 
-    3. **SSM/KMS/Secrets Manager:**
+    4. **SSM/KMS/Secrets Manager:**
 
       You'll need to design your parameter store pathing, and add your tokens or other data to be used with the framework. This allows us to keep track of the various event sources, what environment they are used in, and keep the same variables across all event sources that will contain different values.
       We used the following structure::
@@ -34,7 +39,7 @@ To deploy this framework you will need the following established:
 
       See :doc:`deployment` section for more details.
 
-    4. **A CodeCommit or Github repository:**
+    5. **A CodeCommit or Github repository:**
 
       This is where your configuration files will be stored in addition to the buildspec and deploy scripts.
       If you parameterize all your sensitive data, there shouldn't be any risk of sensitive data disclosure.
@@ -42,14 +47,14 @@ To deploy this framework you will need the following established:
       .. note:: The env: variables that must be filled out, these can essentially be whatever you want them to be provided they fall in line with the naming conventions the cloudformation and serverless scripts expect.
 
 
-    5. **GitHub Framework Repo:**
+    6. **GitHub Framework Repo:**
 
       This repo contains all the templates you'll need to build out the pipeline. 
       The cloudformation template will automatically build your CI/CD pipeline which will deploy the serverless application. 
       You should not need to make any changes to it unless you plan to modify it for your own purposes, which is entirely OK with us!
 
 
-    6. **Pick a Cloudformation template:**
+    7. **Pick a Cloudformation template:**
     
       If you choose to use the multiple source cloudformation template, you'll need:
 

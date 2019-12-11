@@ -34,7 +34,7 @@ Workflow Diagrams
 *****************
 
 .. toggle-header::
-    :header: **1. Using a Single Source Repo:**
+    :header: **1. Workflow Using a Single Source Repo:**
 
       Workflow using a Single Source Repo Cloudformation Template
 
@@ -44,7 +44,7 @@ Workflow Diagrams
 
 
 .. toggle-header::
-    :header: **2. Using Multiple Source Repos:**
+    :header: **2. Workflow Using Multiple Source Repos:**
 
       Workflow using the Mutliple Source Repos w/ Merge Cloudformation Template
 
@@ -58,7 +58,7 @@ Dataflow Diagram
 *****************
 
 .. toggle-header::
-    :header: **Data Flow Using Zoom Service:**
+    :header: **Example Data Flow Using Zoom's Webhook:**
 
       Example Dataflow using Zoom's Webhook
 
