@@ -39,7 +39,7 @@ To deploy this framework you will need the following established:
 
       See :doc:`deployment` section for more details.
 
-    5. **A CodeCommit or Github repository:**
+    5. **A CodeCommit or separate Github repository:**
 
       This is where your configuration files will be stored in addition to the buildspec and deploy scripts.
       If you parameterize all your sensitive data, there shouldn't be any risk of sensitive data disclosure.
