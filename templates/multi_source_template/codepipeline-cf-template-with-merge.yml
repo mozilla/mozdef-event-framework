@@ -46,10 +46,10 @@ Parameters:
     Default: template
     ConstraintDescription: "Can contain only ASCII characters."
   
-  ParameterName:
-    Description: The parameter name you stored in ssm for your auth token
+  SSMParamName:
+    Description: The parameter name you stored in SSM for your auth token.
     Type: String
-    Default: auth_token
+    Default: /<project>/<service>/<environment>/auth_token
     ConstraintDescription: "Only a mix of letters, numbers and the following 3 symbols .-_ are allowed."
 
   HelperBucket:
@@ -91,6 +91,7 @@ Metadata:
           - ProjectName
           - Service
           - Environment
+          - SSMParamName
           - HelperBucket
       - Label:
           default: "GitHub Configuration"
@@ -290,7 +291,7 @@ Resources:
             Action:
               - 'ssm:GetParameter'
               - 'ssm:GetParametersByPath'
-            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/', !Ref 'ParameterName' ] ]
+            Resource: !Join [ '', [ 'arn:aws:ssm:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':parameter/', !Ref 'SSMParamName' ] ]
           - Effect: Allow
             Action:
               - 'ssm:AddTagsToResource'
