@@ -31,7 +31,10 @@ This framework creates the following resources:
 
 There are plans to include testing modules in this framework as well.
 
+## Documentation
+
 To deploy this framework please refer to our documentation located at the Read the Docs:
-[MozDef Event Framework Documentation]("https://mozdef-event-framework.readthedocs.io/en/latest/")
+
+  [MozDef Event Framework Documentation]("https://mozdef-event-framework.readthedocs.io/en/latest/")
 
 For convenience, you may run the CloudFormation template with an AWS account that has administrative rights. This should be fine, as dedicated IAM roles associated with the resources are created by both the Cloudformation template and the Serverless framework. You can fine tune permissions for these roles within the Cloudformation template and/or serverless yaml configuration file (serverless.yml).
