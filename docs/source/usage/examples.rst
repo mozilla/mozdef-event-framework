@@ -5,7 +5,7 @@ We've  included some sample scripts you can modify for your deployment.
 
 You'll want to replace the [env:variables]: for 'SERVICE' and 'API_PATH' to whatever you have decided upon for your event source pipeline and API gateway path.
 
-Buildpsec Example
+Buildspec Example
 -----------------
 
 buildspec.yml::
