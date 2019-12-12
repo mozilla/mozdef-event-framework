@@ -96,7 +96,7 @@ The following should be done in your local copy of the framework you cloned or f
            SERVICE: zoom
            PROJECT: MozDef-EF
            API_PATH: zoom
-           TOKEN_ARN: arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>
+           TOKEN_ARN: arn:aws:ssm:$AWS_REGION:<ACCOUNT_ID>:parameter/<parameter-name>
        
        phases:
          install:
@@ -112,6 +112,9 @@ The following should be done in your local copy of the framework you cloned or f
              - npm install -g --silent --progress=false serverless
              - npm install --silent --save-dev serverless-pseudo-parameters
              - npm install --silent --save-dev serverless-prune-plugin
+             # Uncomment this if you are using "serverless-python-requirements" 
+             # plugin for 3rd party libraries
+             # - npm install --silent --save-dev serverless-python-requirements
          pre_build:
            commands:
              # Perform pre-build actions here
@@ -180,6 +183,7 @@ This is where we take everything we've done up to this point and start the deplo
     :header: **2. Using a Single Source Repo (GitHub)**
    
      1. Pull the empty Github repository created earlier in section :ref:`Getting Started` to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
+      * Do not forget to modify the ``deploy.sh`` configuration file to remove the reference to ``$CODEBUILD_SRC_DIR`` environment variable (as it is specific to CodeCommit build image).
      2. Go to “Services -> CloudFormation” on the AWS Console.
      3. On top right, click “Create stack (with new resources)”
      4. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file.
