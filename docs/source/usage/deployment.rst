@@ -113,7 +113,7 @@ The following should be done in your local copy of the framework you cloned or f
              - npm install --silent --save-dev serverless-pseudo-parameters
              - npm install --silent --save-dev serverless-prune-plugin
              # Uncomment this if you are using "serverless-python-requirements" 
-             # plugin for 3rd party libraries
+             # plugin to manage 3rd party Python libraries
              # - npm install --silent --save-dev serverless-python-requirements
          pre_build:
            commands:
@@ -143,6 +143,7 @@ This is where we take everything we've done up to this point and start the deplo
      1. Go back to AWS Console  “Services -> CodeCommit” and create a repository with the name “<project>-<service>”, in this case “mozdef-ef-zoom”. Add a description and a tag with key: Project and value: <project>-<environment>.
      2. Using the connection settings, setup Git access with the git credential helper over HTTPS (ensure you can pull and push to the newly created repo)
      3. Pull the empty repository to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
+      .. note:: Make sure to not override the ``.git`` directory while moving the framework code from Github to your newly created custom CodeCommit repository.
      4. Go to “Services -> CloudFormation” on the AWS Console.
      5. On top right, click “Create stack (with new resources)”
      6. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
@@ -184,6 +185,7 @@ This is where we take everything we've done up to this point and start the deplo
    
      1. Pull the empty Github repository created earlier in section :ref:`Getting Started` to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
       * Do not forget to modify the ``deploy.sh`` configuration file to remove the reference to ``$CODEBUILD_SRC_DIR`` environment variable (as it is specific to CodeCommit build image).
+      .. note:: Make sure to not override the ``.git`` directory while moving the framework code from Github to your newly created custom GitHub repository.
      2. Go to “Services -> CloudFormation” on the AWS Console.
      3. On top right, click “Create stack (with new resources)”
      4. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file.
@@ -221,6 +223,8 @@ This is where we take everything we've done up to this point and start the deplo
      4. Now, also pull the empty Github repository created earlier in section :ref:`Getting Started` to another local directory. Add/move all the cloned framework code to this repository, `except "config" directory`. Make changes to the code if desired, commit all changes, then push.
 
       .. note:: You could also move everything to this repository (including the config directory), but add "config/" to the `.gitignore` file in order to avoid having multiple config directories tracked by source control.
+                
+                Also make sure to not override the ``.git`` directory while moving the framework code from Github to your newly created custom repositories.
 
      5. Go to “Services -> CloudFormation” on the AWS Console.
      6. On top right, click “Create stack (with new resources)”
