@@ -18,7 +18,7 @@ buildspec.yml::
       SERVICE: zoom 
       PROJECT: MozDef-EF 
       API_PATH: zoom
-      TOKEN_ARN: arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>
+      TOKEN_ARN: arn:aws:ssm:$AWS_REGION:<ACCOUNT_ID>:parameter/<parameter-name>
     ssm: 
 
   phases: 
@@ -27,11 +27,14 @@ buildspec.yml::
         python: 3.7 
         nodejs: 10 
       commands: 
-        # Install dependencies here 
+        # Install dependencies here
         - pip3 install --upgrade awscli -q 
         - npm install -g --silent --progress=false serverless 
         - npm install --silent --save-dev serverless-pseudo-parameters 
-        - npm install --silent --save-dev serverless-prune-plugin 
+        - npm install --silent --save-dev serverless-prune-plugin
+        # Remove or comment out the next line if you are not using 
+        # "serverless-python-requirements" plugin to manage 3rd party Python libraries
+        - npm install --silent --save-dev serverless-python-requirements
     pre_build: 
       commands: 
         # Perform pre-build actions here, maybe tests for instance 

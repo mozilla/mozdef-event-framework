@@ -112,9 +112,9 @@ The following should be done in your local copy of the framework you cloned or f
              - npm install -g --silent --progress=false serverless
              - npm install --silent --save-dev serverless-pseudo-parameters
              - npm install --silent --save-dev serverless-prune-plugin
-             # Uncomment this if you are using "serverless-python-requirements" 
-             # plugin to manage 3rd party Python libraries
-             # - npm install --silent --save-dev serverless-python-requirements
+             # Remove or comment out the next line if you are not using 
+             # "serverless-python-requirements" plugin to manage 3rd party Python libraries
+             - npm install --silent --save-dev serverless-python-requirements
          pre_build:
            commands:
              # Perform pre-build actions here
