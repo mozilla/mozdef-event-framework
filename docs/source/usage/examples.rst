@@ -5,7 +5,7 @@ We've  included some sample scripts you can modify for your deployment.
 
 You'll want to replace the [env:variables]: for 'SERVICE' and 'API_PATH' to whatever you have decided upon for your event source pipeline and API gateway path.
 
-Buildpsec Example
+Buildspec Example
 -----------------
 
 buildspec.yml::
@@ -18,32 +18,34 @@ buildspec.yml::
       SERVICE: zoom 
       PROJECT: MozDef-EF 
       API_PATH: zoom
-      TOKEN_ARN: arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>
+      TOKEN_ARN: arn:aws:ssm:$AWS_REGION:<ACCOUNT_ID>:parameter/<parameter-name>
 
   phases: 
     install: 
       runtime-versions: 
         python: 3.7 
         nodejs: 10 
-    commands: 
-      # Install dependencies here 
-      - pip3 install --upgrade awscli -q 
-      - pip3 install --upgrade pytest -q 
-      - pip3 install --upgrade moto -q 
-      - pip3 install --upgrade aws-xray-sdk -q 
-      - npm install -g --silent --progress=false serverless 
-      - npm install --silent --save-dev serverless-pseudo-parameters 
-      - npm install --silent --save-dev serverless-prune-plugin 
-      - npm install --silent --save-dev serverless-python-requirements 
-  pre_build: 
-    commands: 
-      # Perform pre-build actions here 
-      - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh 
-      - $CODEBUILD_SRC_DIR/config/deploy.sh unit-test 
-  build: 
-    commands: 
-      # Invoke the deploy script here 
-      - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION 
+      commands: 
+        # Install dependencies here
+        - pip3 install --upgrade awscli -q 
+        - pip3 install --upgrade pytest -q 
+        - pip3 install --upgrade moto -q 
+        - pip3 install --upgrade aws-xray-sdk -q 
+        - npm install -g --silent --progress=false serverless 
+        - npm install --silent --save-dev serverless-pseudo-parameters 
+        - npm install --silent --save-dev serverless-prune-plugin
+        # Remove or comment out the next line if you are not using 
+        # "serverless-python-requirements" plugin to manage 3rd party Python libraries
+        - npm install --silent --save-dev serverless-python-requirements
+    pre_build: 
+      commands: 
+        # Perform pre-build actions here
+        - chmod +x $CODEBUILD_SRC_DIR/config/deploy.sh
+        - $CODEBUILD_SRC_DIR/config/deploy.sh unit-test
+    build: 
+      commands: 
+        # Invoke the deploy script here 
+        - $CODEBUILD_SRC_DIR/config/deploy.sh deploy $STAGE $AWS_REGION
 
 Deploy Script Example
 ---------------------

@@ -17,10 +17,10 @@ if [ $# -eq 0 ]; then
   instruction  
   exit 1  
 elif [ "$1" = "int-test" ] && [ $# -eq 1 ]; then
-  python3 -m pytest ../tests/int-tests/
+  python3 -m pytest "$CODEBUILD_SRC_DIR/tests/int-tests/"
   
 elif [ "$1" = "unit-test" ] && [ $# -eq 1 ]; then
-  python3 -m pytest ../tests/unit-tests/
+  python3 -m pytest "$CODEBUILD_SRC_DIR/tests/unit-tests/"
   
 elif [ "$1" = "deploy" ] && [ $# -eq 3 ]; then
   STAGE=$2  

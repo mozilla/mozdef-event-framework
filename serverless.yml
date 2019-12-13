@@ -14,10 +14,11 @@
 
 service: ${env:SERVICE}
 plugins:
-# Removing the serverless-stack-output plugin, as I do not think
-# we need it, but I may be wrong
   - serverless-prune-plugin
   - serverless-pseudo-parameters
+  # Feel free to remove the below plugin if you plan to manage
+  # 3rd party / custom libraries in a different way.
+  - serverless-python-requirements
 custom:
   authorizer:
     validate_token:
@@ -41,6 +42,10 @@ custom:
   prune:
     automatic: true
     number: ${self:custom.cfg.keep}
+  # # Feel free to remove the below section if you plan to manage
+  # 3rd party / custom libraries in a different way.
+  pythonRequirements:
+    dockerizePip: non-linux
 
 provider:
   name: aws
