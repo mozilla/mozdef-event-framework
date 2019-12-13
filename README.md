@@ -18,7 +18,7 @@ __Cloudformation:__ Cloudformation will create the CI/CD components utilizing:
 - __CloudWatch__
 - __GitHub__.
 
-The intention is to have a template of a framework which we store in GitHub, however, the custom configuration for each specific event source can be stored in  either a CodeCommit or separate GitHubrepository. The Cloudformation template has the potential to be separately deployed for various event sources, where the difference between each deployed stack will be the event source's configuration stored in the CodeCommit/GitHub repository. This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data. 
+The intention is to have a template of a framework which we store in GitHub, however, the custom configuration for each specific event source can be stored in  either a CodeCommit or separate GitHub repository. The Cloudformation template has the potential to be separately deployed for various event sources, where the difference between each deployed stack will be the event source's configuration stored in the CodeCommit/GitHub repository. This allows us to maintain a generic framework that is event source agnostic and relieved of sensitive data. 
 
 __Serverless:__ The Serverless framework is utilized to deploy the application components that will handle intake of the event source data, do some minor structuring for MozDef via Lambda and add it to an SQS queue. 
 This framework creates the following resources:
