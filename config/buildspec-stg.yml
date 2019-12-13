@@ -5,6 +5,7 @@ env:
     STAGE: stage
     SERVICE: exampleservice
     PROJECT: MozDef-EF
+    TYPE: <event-source-type>
     API_PATH: /example/event/api
     TOKEN_ARN: "arn:aws:ssm:<REGION_NAME>:<ACCOUNT_ID>:parameter/<parameter-name>"
   ssm:

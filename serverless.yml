@@ -14,10 +14,11 @@
 
 service: ${env:SERVICE}
 plugins:
-# Removing the serverless-stack-output plugin, as I do not think
-# we need it, but I may be wrong
   - serverless-prune-plugin
   - serverless-pseudo-parameters
+  # Feel free to remove the below plugin if you plan to manage
+  # 3rd party / custom libraries in a different way.
+  - serverless-python-requirements
 custom:
   authorizer:
     validate_token:
@@ -36,11 +37,16 @@ custom:
     # assumed to come from buildspec as well. This will
     # be applied as a tag for resources created by serverless
     project: ${env:PROJECT}
+    type: ${env:TYPE}
     keep: 5
   # Keeping the last 5 versions of our Lambda functions
   prune:
     automatic: true
     number: ${self:custom.cfg.keep}
+  # # Feel free to remove the below section if you plan to manage
+  # 3rd party / custom libraries in a different way.
+  pythonRequirements:
+    dockerizePip: non-linux
 
 provider:
   name: aws
@@ -53,8 +59,9 @@ provider:
     lambda: true
   stackTags:
     Project: ${self:custom.cfg.project}-${self:provider.stage}
-  stackName: ${self:service}-${self:provider.stage}
-  apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
+  stackName: ${self:custom.cfg.project}-${self:service}-${self:custom.cfg.type}-${self:provider.stage}
+  # apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
+  apiName: ${self:stackName}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -70,7 +77,7 @@ provider:
         - sqs:DeleteQueue
         - sqs:TagQueue
       Resource: 
-        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:stackName}"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
@@ -128,7 +135,7 @@ resources:
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
+        QueueName: ${self:stackName}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
         RedrivePolicy:
@@ -143,7 +150,7 @@ resources:
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-DLQ
+        QueueName: ${self:stackName}-DLQ
         MessageRetentionPeriod: 1209600
         Tags:
         - Key: "Project"
