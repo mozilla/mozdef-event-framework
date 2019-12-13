@@ -144,6 +144,9 @@ This is where we take everything we've done up to this point and start the deplo
      2. Using the connection settings, setup Git access with the git credential helper over HTTPS (ensure you can pull and push to the newly created repo)
      3. Pull the empty repository to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
       .. note:: Make sure to not override the ``.git`` directory while moving the framework code from Github to your newly created custom CodeCommit repository.
+      .. note:: Currently, the Serverless app uses `serverless-python-requirements <https://www.npmjs.com/package/serverless-python-requirements>`_ plugin to manage 3rd party libraries. Do not forget to update the ``requirements.txt`` with your dependent libraries/modules.
+                
+                Also, if you would like to manage the requirements in another way (without this plugin), do not forget to update the ``serverless.yml`` file accordingly.
      4. Go to “Services -> CloudFormation” on the AWS Console.
      5. On top right, click “Create stack (with new resources)”
      6. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file”
@@ -188,6 +191,9 @@ This is where we take everything we've done up to this point and start the deplo
      1. Pull the empty Github repository created earlier in section :ref:`Getting Started` to a local directory, then add/move all the cloned and updated framework code to this repository. Add and commit all changes, then push.
       * Do not forget to modify the ``deploy.sh`` configuration file to remove the reference to ``$CODEBUILD_SRC_DIR`` environment variable (as it is specific to CodeCommit build image).
       .. note:: Make sure to not override the ``.git`` directory while moving the framework code from Github to your newly created custom GitHub repository.
+      .. note:: Currently, the Serverless app uses `serverless-python-requirements <https://www.npmjs.com/package/serverless-python-requirements>`_ plugin to manage 3rd party libraries. Do not forget to update the ``requirements.txt`` with your dependent libraries/modules.
+                
+                Also, if you would like to manage the requirements in another way (without this plugin), do not forget to update the ``serverless.yml`` file accordingly.
      2. Go to “Services -> CloudFormation” on the AWS Console.
      3. On top right, click “Create stack (with new resources)”
      4. Select “template is ready” on the first option. In “specify template” menu, select “upload a template file.
@@ -229,6 +235,10 @@ This is where we take everything we've done up to this point and start the deplo
       .. note:: You could also move everything to this repository (including the config directory), but add "config/" to the `.gitignore` file in order to avoid having multiple config directories tracked by source control.
                 
                 Also make sure to not override the ``.git`` directory while moving the framework code from Github to your newly created custom repositories.
+
+      .. note:: Currently, the Serverless app uses `serverless-python-requirements <https://www.npmjs.com/package/serverless-python-requirements>`_ plugin to manage 3rd party libraries. Do not forget to update the ``requirements.txt`` with your dependent libraries/modules.
+                
+                Also, if you would like to manage the requirements in another way (without this plugin), do not forget to update the ``serverless.yml`` file accordingly.
 
      5. Go to “Services -> CloudFormation” on the AWS Console.
      6. On top right, click “Create stack (with new resources)”
