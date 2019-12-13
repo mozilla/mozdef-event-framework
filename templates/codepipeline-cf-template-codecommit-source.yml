@@ -50,6 +50,14 @@ Parameters:
     Default: template
     ConstraintDescription: "Service names can be any valid combination of letters, numbers, underscores, and dashes."
 
+  EventSourceType:
+    AllowedValues:
+      - webhook
+      - api
+    Description: The type/means of event source to emit. Valid values are "webhook" or "api".
+    Type: String
+    Default: webhook
+
   CCRepo:
     Description:  A CodeCommit repository to be used as the source, in the form of "repository/branch".
     Type: String
@@ -65,6 +73,7 @@ Metadata:
         Parameters:
           - ProjectName
           - Service
+          - EventSourceType
           - Environment
           - SSMParamName
       - Label:

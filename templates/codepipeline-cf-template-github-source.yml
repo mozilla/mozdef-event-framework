@@ -43,6 +43,14 @@ Parameters:
     Type: String
     Default: template
     ConstraintDescription: "Service names can be any valid combination of letters, numbers, underscores, and dashes."
+
+  EventSourceType:
+    AllowedValues:
+      - webhook
+      - api
+    Description: The type/means of event source to emit. Valid values are "webhook" or "api".
+    Type: String
+    Default: webhook
   
   SSMParamName:
     Description: The parameter name you stored in SSM for your auth token.
@@ -71,6 +79,7 @@ Metadata:
         Parameters:
           - ProjectName
           - Service
+          - EventSourceType
           - Environment
           - SSMParamName
       - Label:
