@@ -165,7 +165,7 @@ This is where we take everything we've done up to this point and start the deplo
      9. For stack parameters, enter the values decided in :ref:`Getting Started` Step 2.
        * For service, enter your <service> name that you determined earlier.
        * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-       * In the SSMParamName field, you'll need to enter the name of the SSM parameter used to store the auth token, to correctly map the IAM permissions for this resource.
+       * In the SSMParamName field you'll need to enter the name of the SSM parameter used to store the auth token to correctly map the IAM permissions for this resource.
      10. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      11. For source configuration, enter the name of the codecommit repo created in step 1, and the branch to monitor for changes and trigger rebuilds of the deployment. For our example we used zoom, “mozdef-ef-zoom/master”.
   
@@ -202,7 +202,7 @@ This is where we take everything we've done up to this point and start the deplo
      7. For stack parameters, enter the values decided in :ref:`Getting Started` Step 2.
        * For service, enter your <service> name that you determined earlier.
        * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
-       * In the SSMParamName field, you'll need to enter the name of the SSM parameter used to store the auth token, to correctly map the IAM permissions for this resource.
+       * In the SSMParamName field you'll need to enter the name of the SSM parameter used to store the auth token to correctly map the IAM permissions for this resource.
      8. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      9. For source configuration:
        * Enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
@@ -249,7 +249,7 @@ This is where we take everything we've done up to this point and start the deplo
         * For service, enter your <service> name that you determined earlier.
         * For environment, choose “dev”, "staging", or "prod" according to the environment you are working out of.
         * For helper bucket, enter the name of the S3 bucket created previously (created in the last step of :ref:`Steps in the AWS Console` section) that houses the merge lambda code.
-        * In the SSMParamName field, you'll need to enter the name of the SSM parameter used to store the auth token, to correctly map the IAM permissions for this resource.
+        * In the SSMParamName field you'll need to enter the name of the SSM parameter used to store the auth token to correctly map the IAM permissions for this resource.
      11. An S3 utility bucket will be created for AWS CodePipeline to store artifacts. The bucket name will match the parameters you created for your stack name in step 8 and the environment in step 11 (e.g., <stackname>-<environment>-utility)
      12. For GitHub configuration:
         * Enter the name of the Github repo housing the code, in the following format: `owner/repository/branch`.
