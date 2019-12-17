@@ -415,7 +415,7 @@ Resources:
           - Effect: Allow
             Action:
               - 'secretsmanager:GetSecretValue'
-            Resource: !Join [ '', [ 'arn:aws:secretsmanager:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "secret", ':', !Ref Environment, '/codepipeline/github*' ] ]
+            Resource: !Join [ '', [ 'arn:aws:secretsmanager:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', "secret", ':', !Ref GHTokenReference ] ]
           - Effect: Allow
             Action:
               - 'codebuild:*'
@@ -551,7 +551,7 @@ Resources:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Name: !Join ["", ["Test-Build",  "-", !Ref 'AWS::StackName'] ]
-      Description: Demo of CodeBuild with CodeDeploy pipeline.
+      Description: CodeBuild project to test & deploy the serverless stack.
       ServiceRole: !Ref CBRole
       TimeoutInMinutes: 5
       Source:
