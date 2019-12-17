@@ -19,5 +19,8 @@
   "devDependencies": {
     "serverless-prune-plugin": "^1.4.1",
     "serverless-pseudo-parameters": "^2.4.0"
+  },
+  "dependencies": {
+    "serverless-python-requirements": "^5.0.1"
   }
 }

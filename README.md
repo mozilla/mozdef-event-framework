@@ -2,7 +2,7 @@
 
 A PoC using AWS + Serverless framework
 
-This is a work in progess which will eventually be used as a template to create a pipeline which will send events from external sources to [MozDef]("https://mozdef.readthedocs.io/en/latest/").
+This is a work in progess which will eventually be used as a template to create a pipeline which will send events from external sources to [MozDef](https://mozdef.readthedocs.io/en/latest/).
 
 The idea behind this work was to create a repeatable process for introducing new event sources to MozDef without having to specially craft it every time. While this is new and we haven't onboarded many sources yet, it is expected the function library may grow, and with it we will introduce further changes to this framework as it becomes more mature. 
 
@@ -35,6 +35,6 @@ There are plans to include testing modules in this framework as well.
 
 To deploy this framework please refer to our documentation located at the Read the Docs:
 
-  [MozDef Event Framework Documentation]("https://mozdef-event-framework.readthedocs.io/en/latest/")
+  [MozDef Event Framework Documentation](https://mozdef-event-framework.readthedocs.io/en/latest/)
 
 For convenience, you may run the CloudFormation template with an AWS account that has administrative rights. This should be fine, as dedicated IAM roles associated with the resources are created by both the Cloudformation template and the Serverless framework. You can fine tune permissions for these roles within the Cloudformation template and/or serverless yaml configuration file (serverless.yml).
