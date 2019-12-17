@@ -131,6 +131,7 @@ functions:
           authorizer: ${self:custom.authorizer.validate_token}
 
 resources:
+  Description: Serverless application for ingesting events from ${self:service}.
   Resources:
     ResourceQueue:    
       Type: AWS::SQS::Queue
