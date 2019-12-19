@@ -37,6 +37,7 @@ custom:
     # assumed to come from buildspec as well. This will
     # be applied as a tag for resources created by serverless
     project: ${env:PROJECT}
+    type: ${env:TYPE}
     keep: 5
   # Keeping the last 5 versions of our Lambda functions
   prune:
@@ -56,10 +57,10 @@ provider:
   tracing:
     apiGateway: true
     lambda: true
+  stackName: ${self:service}-${self:custom.cfg.type}-${self:provider.stage}
   stackTags:
     Project: ${self:custom.cfg.project}-${self:provider.stage}
-  stackName: ${self:service}-${self:provider.stage}
-  apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
+  apiName: ${self:provider.stackName}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -75,7 +76,7 @@ provider:
         - sqs:DeleteQueue
         - sqs:TagQueue
       Resource: 
-        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:custom.cfg.project}-${self:service}-${self:provider.stage}"
+        - "arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${self:provider.stackName}"
     - Effect: Allow
       Action: 
         - ssm:GetParameter
@@ -129,11 +130,12 @@ functions:
           authorizer: ${self:custom.authorizer.validate_token}
 
 resources:
+  Description: Serverless application for ingesting events from ${self:service}. Deployed using ${self:custom.cfg.project}.
   Resources:
     ResourceQueue:    
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
+        QueueName: ${self:provider.stackName}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
         RedrivePolicy:
@@ -148,7 +150,7 @@ resources:
     DeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}-DLQ
+        QueueName: ${self:provider.stackName}-DLQ
         MessageRetentionPeriod: 1209600
         Tags:
         - Key: "Project"
