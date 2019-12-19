@@ -57,11 +57,10 @@ provider:
   tracing:
     apiGateway: true
     lambda: true
+  stackName: ${self:service}-${self:custom.cfg.type}-${self:provider.stage}
   stackTags:
     Project: ${self:custom.cfg.project}-${self:provider.stage}
-  stackName: ${self:custom.cfg.project}-${self:service}-${self:custom.cfg.type}-${self:provider.stage}
-  # apiName: ${self:custom.cfg.project}-${self:service}-${self:provider.stage}
-  apiName: ${self:provider.stackName}
+  apiName: ${self:provider.stackName}-apigw
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -131,7 +130,7 @@ functions:
           authorizer: ${self:custom.authorizer.validate_token}
 
 resources:
-  Description: Serverless application for ingesting events from ${self:service}.
+  Description: Serverless application for ingesting events from ${self:service}. Deployed using ${self:custom.cfg.project}.
   Resources:
     ResourceQueue:    
       Type: AWS::SQS::Queue
