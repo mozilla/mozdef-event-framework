@@ -60,7 +60,7 @@ provider:
   stackName: ${self:service}-${self:custom.cfg.type}-${self:provider.stage}
   stackTags:
     Project: ${self:custom.cfg.project}-${self:provider.stage}
-  apiName: ${self:provider.stackName}-apigw
+  apiName: ${self:provider.stackName}
   iamRoleStatements:
     - Effect: Allow
       Action:

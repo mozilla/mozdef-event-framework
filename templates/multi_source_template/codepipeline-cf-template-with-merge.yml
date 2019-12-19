@@ -48,11 +48,11 @@ Parameters:
 
   EventSourceType:
     AllowedValues:
-      - webhook
-      - api
-    Description: The type/means of event source to emit. Valid values are "webhook" or "api".
+      - push
+      - pull
+    Description: The type/means of event source to emit. Valid values are "push" (e.g. a webhook) or "pull" (e.g. an API).
     Type: String
-    Default: webhook
+    Default: push
   
   SSMParamName:
     Description: The parameter name you stored in SSM for your auth token.
@@ -273,10 +273,10 @@ Resources:
             Resource: 
               - !GetAtt S3Pipeline.Arn
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket ] ]
-              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref EventSourceType, '-', !Ref Environment, '-serverless*' ] ]
               - !Join [ '', [ !GetAtt S3Pipeline.Arn, '/*' ] ]
               - !Join [ '', [ 'arn:aws:s3:::', !Ref HelperBucket, '/*' ] ]
-              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref Environment, '-', 'serverlessdeploymentbucket*', '/*' ] ]
+              - !Join [ '', [ 'arn:aws:s3:::', !Ref Service, '-', !Ref EventSourceType, '-', !Ref Environment, '-serverless*', '/*' ] ]
           - Effect: Allow
             Action:
               - 'iam:PassRole'
